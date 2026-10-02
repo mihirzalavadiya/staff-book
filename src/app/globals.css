@@ -1,26 +1,230 @@
 @import "tailwindcss";
 
+/* ---------- Design tokens (Staffbook · Peach Sunrise) ---------- */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg: #fff7f1;
+  --surface: #ffffff;
+  --surface-2: #fff7f1;
+  --surface-glass: rgba(255, 255, 255, 0.7);
+  --surface-glass-2: rgba(255, 255, 255, 0.65);
+
+  --ink: #2b1d17;
+  --ink-2: #1f1d2b;
+  --muted: #735f55;
+  --muted-2: #8e8a9c;
+  --nav-idle: #a8958a;
+
+  --peach: #ffe0cc;
+  --coral: #c9502b;
+  --coral-soft: #ffe9de;
+
+  --line: #f5eae2;
+  --line-dashed: #f5e1d5;
+
+  --shadow-card: 0 10px 28px rgba(201, 80, 43, 0.1);
+  --shadow-nav: 0 -8px 24px rgba(201, 80, 43, 0.08);
+  --shadow-float: 0 12px 32px rgba(31, 29, 43, 0.14);
+
+  /* day states */
+  --present-bg: #eaf8f0;
+  --present-icon: #bfebd1;
+  --present-fg: #1b6a43;
+  --present-cell: #d4f3e2;
+  --present-dot: #5cc98a;
+  --present-sub: #3c6b52;
+
+  --leave-bg: #f4f1f5;
+  --leave-icon: #e4e1ea;
+  --leave-fg: #55526a;
+  --leave-cell: #ece9f0;
+
+  --claim-bg: #fff4d1;
+  --claim-icon: #ffe08f;
+  --claim-fg: #6e4c00;
+  --claim-dot: #f2b53a;
+
+  --dispute-bg: #ffe3e0;
+  --dispute-icon: #ffc6c6;
+  --dispute-fg: #a2302c;
+  --dispute-dot: #e5615b;
+
+  --unknown-fg: #8e8a9c;
+  --off-fg: #b4b0be;
+
+  /* avatar tones */
+  --av-purple: #e7e0fa;
+  --av-blue: #d8ebfb;
+  --av-green: #d3f0e1;
+  --av-yellow: #ffefb5;
+  --av-peach: #ffe1d1;
+}
+
+:root[data-theme="dark"] {
+  --bg: #181210;
+  --surface: #241b18;
+  --surface-2: #181210;
+  --surface-glass: rgba(255, 255, 255, 0.08);
+  --surface-glass-2: rgba(255, 255, 255, 0.06);
+
+  --ink: #f8efe8;
+  --ink-2: #f8efe8;
+  --muted: #bfa99d;
+  --muted-2: #9a908f;
+  --nav-idle: #8b7a72;
+
+  --peach: #3a2419;
+  --coral: #e0673f;
+  --coral-soft: #4a2619;
+
+  --line: #35281f;
+  --line-dashed: #3d2d24;
+
+  --shadow-card: 0 10px 28px rgba(0, 0, 0, 0.35);
+  --shadow-nav: 0 -8px 24px rgba(0, 0, 0, 0.35);
+  --shadow-float: 0 12px 32px rgba(0, 0, 0, 0.5);
+
+  --present-bg: #14301f;
+  --present-icon: #1f5a3a;
+  --present-fg: #8fe0b3;
+  --present-cell: #1a4a2c;
+  --present-sub: #8fd3aa;
+
+  --leave-bg: #2a2630;
+  --leave-icon: #3c3746;
+  --leave-fg: #c4bfd1;
+  --leave-cell: #332e3d;
+
+  --claim-bg: #3a2e0f;
+  --claim-icon: #6e4c00;
+  --claim-fg: #ffe08f;
+
+  --dispute-bg: #3d1a18;
+  --dispute-icon: #7a2a27;
+  --dispute-fg: #ffb3ae;
+
+  --unknown-fg: #9a908f;
+  --off-fg: #5e5560;
+
+  --av-purple: #3b3358;
+  --av-blue: #2c3f52;
+  --av-green: #274434;
+  --av-yellow: #4d4320;
+  --av-peach: #4d3126;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-glass: var(--surface-glass);
+  --color-glass-2: var(--surface-glass-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-muted: var(--muted);
+  --color-muted-2: var(--muted-2);
+  --color-nav-idle: var(--nav-idle);
+  --color-peach: var(--peach);
+  --color-coral: var(--coral);
+  --color-coral-soft: var(--coral-soft);
+  --color-line: var(--line);
+  --color-line-dashed: var(--line-dashed);
+
+  --color-present-bg: var(--present-bg);
+  --color-present-icon: var(--present-icon);
+  --color-present-fg: var(--present-fg);
+  --color-present-cell: var(--present-cell);
+  --color-present-dot: var(--present-dot);
+  --color-present-sub: var(--present-sub);
+  --color-leave-bg: var(--leave-bg);
+  --color-leave-icon: var(--leave-icon);
+  --color-leave-fg: var(--leave-fg);
+  --color-leave-cell: var(--leave-cell);
+  --color-claim-bg: var(--claim-bg);
+  --color-claim-icon: var(--claim-icon);
+  --color-claim-fg: var(--claim-fg);
+  --color-claim-dot: var(--claim-dot);
+  --color-dispute-bg: var(--dispute-bg);
+  --color-dispute-icon: var(--dispute-icon);
+  --color-dispute-fg: var(--dispute-fg);
+  --color-dispute-dot: var(--dispute-dot);
+  --color-unknown-fg: var(--unknown-fg);
+  --color-off-fg: var(--off-fg);
+
+  --color-av-purple: var(--av-purple);
+  --color-av-blue: var(--av-blue);
+  --color-av-green: var(--av-green);
+  --color-av-yellow: var(--av-yellow);
+  --color-av-peach: var(--av-peach);
+
+  --font-sans: var(--font-figtree), var(--font-devanagari), system-ui, sans-serif;
+  --font-display: var(--font-bricolage), var(--font-figtree), sans-serif;
+  --font-deva: var(--font-devanagari), var(--font-figtree), sans-serif;
+
+  --shadow-card: var(--shadow-card);
+  --shadow-nav: var(--shadow-nav);
+  --shadow-float: var(--shadow-float);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ---------- Base ---------- */
+/* Inside @layer base so Tailwind utilities (a later layer) always win over these resets. */
+@layer base {
+  html {
+    height: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100%;
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.35;
+    overflow-x: hidden;
+  }
+
+  button {
+    font: inherit;
+    color: inherit;
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button:active:not(:disabled) {
+    transform: scale(0.985);
+  }
+
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  input,
+  select,
+  textarea {
+    font: inherit;
+    color: inherit;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Safe area for phones with a home indicator */
+@utility pb-safe {
+  padding-bottom: max(16px, env(safe-area-inset-bottom));
 }

@@ -1,0 +1,102 @@
+"use server";
+
+import { revalidatePath } from "next/cache";
+import { db } from "../db";
+import { attendance, reminders } from "../db/schema";
+import { tokenCanAct } from "../queries/worker";
+import { todayIST } from "../today";
+import { inEditWindow, isIsoDate, isMonthFinalized, latestEntry, monthOf } from "./guards";
+import { fail, ok, type ActionResult } from "./result";
+
+/**
+ * Worker-side mutations. The secret token is the identity; each action checks
+ * it maps to the engagement being touched. Rule from the spec: entries against
+ * your own interest (leave) are final, entries in your favour (came) are claims.
+ */
+
+function refresh() {
+  revalidatePath("/", "layout");
+}
+
+export async function workerMark(input: {
+  token: string;
+  engagementId: string;
+  date: string;
+  state: "present" | "leave";
+  note?: string;
+}): Promise<ActionResult> {
+  try {
+    if (!(await tokenCanAct(input.token, input.engagementId))) return fail("forbidden");
+    if (!isIsoDate(input.date)) return fail("bad date");
+    const today = todayIST();
+    if (input.state === "present") {
+      // "I came" is a claim, only for today or the last 7 days.
+      if (!inEditWindow(input.date, today)) return fail("window");
+      const last = await latestEntry(input.engagementId, input.date);
+      if (last && last.state !== "claim") return fail("already marked");
+      await db.insert(attendance).values({ engagementId: input.engagementId, date: input.date, state: "claim", markedBy: "worker" });
+    } else {
+      // Leave is final and may be planned ahead; a finalized month cannot change.
+      if (await isMonthFinalized(input.engagementId, monthOf(input.date))) return fail("finalized");
+      if (input.date < today && !inEditWindow(input.date, today)) return fail("window");
+      await db.insert(attendance).values({
+        engagementId: input.engagementId,
+        date: input.date,
+        state: "leave",
+        markedBy: "worker",
+        note: input.note?.trim() || null,
+      });
+    }
+    refresh();
+    return ok();
+  } catch (err) {
+    return fail((err as Error).message);
+  }
+}
+
+export async function workerRaiseDispute(input: {
+  token: string;
+  engagementId: string;
+  date: string;
+  note: string;
+  voiceSeconds?: number;
+}): Promise<ActionResult> {
+  try {
+    if (!(await tokenCanAct(input.token, input.engagementId))) return fail("forbidden");
+    if (!isIsoDate(input.date)) return fail("bad date");
+    const last = await latestEntry(input.engagementId, input.date);
+    // Only a household-recorded day can be disputed, and only once at a time.
+    if (!last || last.markedBy !== "household" || last.state === "dispute") return fail("nothing to dispute");
+    if (await isMonthFinalized(input.engagementId, monthOf(input.date))) return fail("finalized");
+    await db.insert(attendance).values({
+      engagementId: input.engagementId,
+      date: input.date,
+      state: "dispute",
+      markedBy: "worker",
+      note: input.note.slice(0, 80),
+      voiceSeconds: input.voiceSeconds ? Math.min(600, Math.round(input.voiceSeconds)) : null,
+    });
+    refresh();
+    return ok();
+  } catch (err) {
+    return fail((err as Error).message);
+  }
+}
+
+/** "Remind them": recorded so the household sees the nudge at the top of Pending. Push comes later. */
+export async function workerRemind(input: { token: string; engagementId: string; date: string }): Promise<ActionResult> {
+  try {
+    if (!(await tokenCanAct(input.token, input.engagementId))) return fail("forbidden");
+    if (!isIsoDate(input.date) || input.date > todayIST()) return fail("bad date");
+    const last = await latestEntry(input.engagementId, input.date);
+    if (last) return fail("already marked");
+    await db
+      .insert(reminders)
+      .values({ engagementId: input.engagementId, date: input.date })
+      .onConflictDoUpdate({ target: [reminders.engagementId, reminders.date], set: { createdAt: new Date() } });
+    refresh();
+    return ok();
+  } catch (err) {
+    return fail((err as Error).message);
+  }
+}

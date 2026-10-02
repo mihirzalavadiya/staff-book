@@ -1,0 +1,38 @@
+{
+  "name": "Staffbook",
+  "short_name": "Staffbook",
+  "description": "A shared daily attendance register between households and the people who work in them.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FFF7F1",
+  "theme_color": "#FFE0CC",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "id": "/",
+  "scope": "/",
+  "lang": "en",
+  "orientation": "portrait"
+}
