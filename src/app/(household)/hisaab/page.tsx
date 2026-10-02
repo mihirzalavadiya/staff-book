@@ -9,7 +9,7 @@ import { formatINR } from "@/lib/money";
 import { useStore } from "@/lib/store";
 import { HEADER_CLASS, MobileTopRow } from "@/components/household/PageHeader";
 import { MonthPicker } from "@/components/household/MonthPicker";
-import { PendingRow } from "@/components/household/PendingList";
+import { ResolveRow } from "@/components/household/ResolveRow";
 import { SettlementBreakdown } from "@/components/household/SettlementBreakdown";
 import { WorkerSwitcher } from "@/components/household/WorkerSwitcher";
 import { Button } from "@/components/ui/Button";
@@ -29,7 +29,8 @@ function HisaabScreen() {
   const [workerId, setWorkerId] = useState(
     paramWorker && workers.some((w) => w.id === paramWorker) ? paramWorker : workers[0]?.id,
   );
-  const [month, setMonth] = useState(thisMonth);
+  const paramMonth = params.get("month");
+  const [month, setMonth] = useState(paramMonth && /^\d{4}-\d{2}$/.test(paramMonth) && paramMonth <= thisMonth ? paramMonth : thisMonth);
   const worker = workers.find((w) => w.id === workerId) ?? workers[0];
   if (!worker) return null;
 
@@ -125,7 +126,7 @@ function HisaabScreen() {
           {blocked && (
             <Card padding="none" className="px-[18px] py-1">
               {summary.pending.map((item, i) => (
-                <PendingRow key={item.date} item={item} className={i > 0 ? "border-t border-line" : ""} />
+                <ResolveRow key={item.date} item={item} className={i > 0 ? "border-t border-line" : ""} />
               ))}
             </Card>
           )}

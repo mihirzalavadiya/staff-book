@@ -40,7 +40,18 @@ export const WORKERS = [
   { key: "remind", name: "Meena", gender: "female", role: "cook", salary: 4000 },
   { key: "settle", name: "Ravi", gender: "male", role: "milk", salary: 3000 },
   { key: "hindi", name: "Suresh", gender: "male", role: "driver", salary: 8000 },
+  // Started last month; last month is fully marked except the 10th, which is far outside the 7-day window.
+  { key: "older", name: "Pooja", gender: "female", role: "cook", salary: 3100 },
 ] as const;
+
+/** YYYY-MM of the month before `today`. */
+export function previousMonth(today: string): string {
+  const [y, m] = today.split("-").map(Number);
+  const d = new Date(y, m - 2, 1);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
+
+export const OLDER_GAP_DAY = 10;
 
 export function todayIST(): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date());
@@ -93,6 +104,12 @@ export async function createFixture({ withAuthUser }: { withAuthUser: boolean })
     for (const w of WORKERS) {
       const [row] = await db.insert(schema.workers).values({ name: w.name, gender: w.gender, language: "hi" }).returning();
       const token = `e2e-${w.key}-${run}`;
+      const prev = previousMonth(today);
+      const prevDays: string[] = [];
+      if (w.key === "older") {
+        const last = new Date(Number(prev.slice(0, 4)), Number(prev.slice(5, 7)), 0).getDate();
+        for (let d = 1; d <= last; d++) if (d !== OLDER_GAP_DAY) prevDays.push(`${prev}-${String(d).padStart(2, "0")}`);
+      }
       const [e] = await db
         .insert(schema.engagements)
         .values({
@@ -101,14 +118,15 @@ export async function createFixture({ withAuthUser }: { withAuthUser: boolean })
           role: w.role,
           monthlySalary: w.salary,
           workDays: ALL_DAYS,
-          startDate: monthStart,
+          startDate: w.key === "older" ? `${prev}-01` : monthStart,
           workerToken: token,
         })
         .returning();
-      if (pastDays.length) {
+      const toFill = [...prevDays, ...pastDays];
+      if (toFill.length) {
         await db
           .insert(schema.attendance)
-          .values(pastDays.map((date) => ({ engagementId: e.id, date, state: "present" as const, markedBy: "household" as const })));
+          .values(toFill.map((date) => ({ engagementId: e.id, date, state: "present" as const, markedBy: "household" as const })));
       }
       workers[w.key] = { key: w.key, name: w.name, gender: w.gender, engagementId: e.id, token, salary: w.salary };
     }

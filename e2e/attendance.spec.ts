@@ -76,6 +76,7 @@ test.describe("attendance flows between the two sides", () => {
     await sheet.getByRole("button", { name: "I came" }).click();
     await sheet.getByRole("button", { name: "Send" }).click();
     await expect(phone.getByText("Sent. The house will look at it.")).toBeVisible();
+    await waitForRows(w.engagementId, f.today, 2);
 
     await page.goto("/inbox");
     const row = page.locator("div.py-3\\.5").filter({ hasText: w.name });

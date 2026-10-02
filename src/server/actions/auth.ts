@@ -2,6 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
+import { ensureConfirmedUser } from "../auth/admin";
 import { createSupabaseServer, getAuthUser } from "../auth/supabase";
 import { db } from "../db";
 import { households } from "../db/schema";
@@ -13,8 +14,13 @@ const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export async function sendEmailOtp(email: string): Promise<ActionResult> {
   const clean = email.trim().toLowerCase();
   if (!EMAIL.test(clean)) return fail("bad email");
+  try {
+    await ensureConfirmedUser(clean);
+  } catch (err) {
+    return fail((err as Error).message);
+  }
   const supabase = await createSupabaseServer();
-  const { error } = await supabase.auth.signInWithOtp({ email: clean, options: { shouldCreateUser: true } });
+  const { error } = await supabase.auth.signInWithOtp({ email: clean, options: { shouldCreateUser: false } });
   return error ? fail(error.message) : ok();
 }
 

@@ -116,7 +116,7 @@ export function DayDetail({ worker, date }: Props) {
           <div className="flex items-center gap-2.5 rounded-[18px] bg-surface-2 px-3.5 py-3 text-[13px] font-semibold text-muted">
             <Icon name="clock" size={16} />
             <span className="flex-1">{t("calendar.editWindow")}</span>
-            <Link href={`/hisaab?worker=${worker.id}`} className="font-extrabold text-coral">
+            <Link href={`/hisaab?worker=${worker.id}&month=${date.slice(0, 7)}`} className="font-extrabold text-coral">
               {t("nav.hisaab")} →
             </Link>
           </div>
