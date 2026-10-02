@@ -3,7 +3,7 @@
 import { formatDayMonth, formatTime } from "@/lib/date";
 import { useI18n } from "@/lib/i18n";
 import { pendingItems, type PendingItem } from "@/lib/ledger";
-import { useStore } from "@/lib/store";
+import { useAct, useStore } from "@/lib/store";
 import { HEADER_CLASS, MobileTopRow } from "@/components/household/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -13,7 +13,8 @@ import Link from "next/link";
 
 function InboxRow({ item, first }: { item: PendingItem; first: boolean }) {
   const { t, lang } = useI18n();
-  const { state, dispatch } = useStore();
+  const { state } = useStore();
+  const act = useAct();
   const { worker, date, info, reminder } = item;
   const dateLabel = date === state.today ? t("common.todayLabel") : formatDayMonth(date, lang);
   const inSentence = date === state.today ? dateLabel.toLowerCase() : dateLabel;
@@ -51,11 +52,11 @@ function InboxRow({ item, first }: { item: PendingItem; first: boolean }) {
       <div className="mt-2.5 grid grid-cols-2 gap-2 pl-[46px]">
         {info.state === "claim" && (
           <>
-            <Button size="md" onClick={() => dispatch({ type: "confirmClaim", workerId: worker.id, date })}>
+            <Button size="md" {...act({ type: "confirmClaim", workerId: worker.id, date })}>
               <Icon name="check" size={14} />
               {t("inbox.confirm")}
             </Button>
-            <Button size="md" variant="outline" onClick={() => dispatch({ type: "rejectClaim", workerId: worker.id, date })}>
+            <Button size="md" variant="outline" {...act({ type: "rejectClaim", workerId: worker.id, date })}>
               <Icon name="x" size={12} />
               {t("inbox.reject")}
             </Button>
@@ -63,11 +64,11 @@ function InboxRow({ item, first }: { item: PendingItem; first: boolean }) {
         )}
         {info.state === "dispute" && (
           <>
-            <Button size="md" onClick={() => dispatch({ type: "resolveDispute", workerId: worker.id, date, resolution: "present" })}>
+            <Button size="md" {...act({ type: "resolveDispute", workerId: worker.id, date, resolution: "present" })}>
               <Icon name="check" size={14} />
               {t("calendar.confirmPresent", g)}
             </Button>
-            <Button size="md" variant="outline" onClick={() => dispatch({ type: "resolveDispute", workerId: worker.id, date, resolution: "leave" })}>
+            <Button size="md" variant="outline" {...act({ type: "resolveDispute", workerId: worker.id, date, resolution: "leave" })}>
               <Icon name="x" size={12} />
               {t("calendar.keepLeave")}
             </Button>
@@ -75,11 +76,11 @@ function InboxRow({ item, first }: { item: PendingItem; first: boolean }) {
         )}
         {info.state === "unknown" && (
           <>
-            <Button size="md" onClick={() => dispatch({ type: "mark", workerId: worker.id, date, state: "present", by: "household" })}>
+            <Button size="md" {...act({ type: "mark", workerId: worker.id, date, state: "present", by: "household" })}>
               <Icon name="check" size={14} />
               {t("inbox.came", g)}
             </Button>
-            <Button size="md" variant="soft" onClick={() => dispatch({ type: "mark", workerId: worker.id, date, state: "leave", by: "household" })}>
+            <Button size="md" variant="soft" {...act({ type: "mark", workerId: worker.id, date, state: "leave", by: "household" })}>
               <Icon name="x" size={12} />
               {t("inbox.leave")}
             </Button>

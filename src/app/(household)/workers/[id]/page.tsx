@@ -9,6 +9,7 @@ import { attendancePercent, dayInfo, monthSummary } from "@/lib/ledger";
 import { formatINR } from "@/lib/money";
 import { roleName } from "@/lib/roles";
 import { useStore } from "@/lib/store";
+import type { Phase } from "@/lib/phase";
 import { useOrigin } from "@/lib/useOrigin";
 import { DayStateBlock } from "@/components/household/WorkerCard";
 import { MonthGrid } from "@/components/household/MonthGrid";
@@ -28,6 +29,7 @@ export default function WorkerDetailPage({ params }: { params: Promise<{ id: str
   const [endOpen, setEndOpen] = useState(false);
   const [endDate, setEndDate] = useState(state.today);
   const [copied, setCopied] = useState(false);
+  const [endPhase, setEndPhase] = useState<Phase>("idle");
   const origin = useOrigin();
   const worker = state.workers.find((w) => w.id === id);
   if (!worker) return null;
@@ -183,8 +185,11 @@ export default function WorkerDetailPage({ params }: { params: Promise<{ id: str
             size="xl"
             block
             variant="danger"
-            onClick={() => {
-              dispatch({ type: "endWork", workerId: worker.id, endDate });
+            phase={endPhase}
+            loadingText={t("common.saving")}
+            onClick={async () => {
+              const ok = await dispatch({ type: "endWork", workerId: worker.id, endDate }, setEndPhase);
+              if (!ok) return;
               setEndOpen(false);
               router.push("/workers");
             }}

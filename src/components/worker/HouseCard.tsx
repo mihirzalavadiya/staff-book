@@ -13,18 +13,27 @@ import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
 import { StateIcon } from "@/components/ui/StateIcon";
 import { DisputeSheet } from "./DisputeSheet";
+import { Spinner } from "@/components/ui/Spinner";
+import type { Phase } from "@/lib/phase";
 import { useWorkerLink } from "./WorkerStore";
+
+interface ActProps {
+  phase: Phase;
+  loadingText: string;
+  disabled: boolean;
+  onClick: () => void;
+}
 
 interface Props {
   engagement: Engagement;
   info: DayInfo;
-  onCame: () => void;
-  onLeave: () => void;
-  onDispute: (reason: string, voiceSeconds?: number) => void;
+  came: ActProps;
+  leave: ActProps;
+  onDispute: (reason: string, voiceSeconds: number | undefined, onPhase: (p: Phase) => void) => Promise<boolean>;
 }
 
 /** One house on the worker's "today" screen: big actions, or the recorded state. */
-export function HouseCard({ engagement: e, info, onCame, onLeave, onDispute }: Props) {
+export function HouseCard({ engagement: e, info, came, leave, onDispute }: Props) {
   const { t, lang } = useI18n();
   const { me } = useWorkerLink();
   const g = { gender: me.gender };
@@ -53,19 +62,41 @@ export function HouseCard({ engagement: e, info, onCame, onLeave, onDispute }: P
           <>
             <button
               type="button"
-              onClick={onCame}
-              className="flex h-[72px] items-center justify-center gap-3 rounded-[22px] bg-coral text-[26px] font-extrabold text-white"
+              onClick={came.onClick}
+              aria-busy={came.phase !== "idle" || undefined}
+              disabled={came.disabled || came.phase !== "idle"}
+              className={cn("flex h-[72px] items-center justify-center gap-3 rounded-[22px] bg-coral text-[26px] font-extrabold text-white", came.phase !== "idle" ? "cursor-progress" : "disabled:opacity-60")}
             >
-              <Icon name="check" size={30} strokeWidth={3} />
-              {t("worker.came", g)}
+              {came.phase !== "idle" ? (
+                <>
+                  <Spinner size={28} />
+                  {came.loadingText}
+                </>
+              ) : (
+                <>
+                  <Icon name="check" size={30} strokeWidth={3} />
+                  {t("worker.came", g)}
+                </>
+              )}
             </button>
             <button
               type="button"
-              onClick={onLeave}
-              className="flex h-16 items-center justify-center gap-2.5 rounded-[22px] border-[2.5px] border-ink bg-surface text-[21px] font-extrabold"
+              onClick={leave.onClick}
+              aria-busy={leave.phase !== "idle" || undefined}
+              disabled={leave.disabled || leave.phase !== "idle"}
+              className={cn("flex h-16 items-center justify-center gap-2.5 rounded-[22px] border-[2.5px] border-ink bg-surface text-[21px] font-extrabold", leave.phase !== "idle" ? "cursor-progress" : "disabled:opacity-60")}
             >
-              <Icon name="x" size={20} strokeWidth={3} />
-              {t("worker.leaveToday")}
+              {leave.phase !== "idle" ? (
+                <>
+                  <Spinner size={22} />
+                  {leave.loadingText}
+                </>
+              ) : (
+                <>
+                  <Icon name="x" size={20} strokeWidth={3} />
+                  {t("worker.leaveToday")}
+                </>
+              )}
             </button>
           </>
         )}
@@ -136,9 +167,8 @@ export function HouseCard({ engagement: e, info, onCame, onLeave, onDispute }: P
       <DisputeSheet
         open={disputeOpen}
         onClose={() => setDisputeOpen(false)}
-        onSend={(reason, secs) => {
-          onDispute(reason, secs);
-          setDisputeOpen(false);
+        onSend={async (reason, secs, onPhase) => {
+          if (await onDispute(reason, secs, onPhase)) setDisputeOpen(false);
         }}
       />
     </Card>

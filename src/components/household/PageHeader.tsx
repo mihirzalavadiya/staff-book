@@ -67,6 +67,7 @@ export function MobileTopRow({ title }: { title?: string }) {
       <div className="flex-1 font-display text-xl font-extrabold tracking-[-0.03em]">{title ?? t("app.name")}</div>
       <HeaderIconButton icon="contrast" onClick={toggle} label={t("nav.theme")} />
       <HeaderIconButton icon="bell" href="/inbox" badge={pending} label={t("nav.inbox")} />
+      <HeaderIconButton icon="settings" href="/settings" label={t("nav.settings")} />
     </div>
   );
 }

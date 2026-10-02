@@ -5,12 +5,14 @@ import { cn } from "@/lib/cn";
 import { useI18n } from "@/lib/i18n";
 import { Icon } from "@/components/ui/Icon";
 import { Sheet } from "@/components/ui/Sheet";
+import { Spinner } from "@/components/ui/Spinner";
+import type { Phase } from "@/lib/phase";
 import { useWorkerLink } from "./WorkerStore";
 
 interface Props {
   open: boolean;
   onClose: () => void;
-  onSend: (reason: string, voiceSeconds?: number) => void;
+  onSend: (reason: string, voiceSeconds: number | undefined, onPhase: (p: Phase) => void) => Promise<void>;
 }
 
 const REASONS = ["came", "half", "other"] as const;
@@ -35,6 +37,8 @@ function DisputeBody({ onSend }: { onSend: Props["onSend"] }) {
   const [reason, setReason] = useState<(typeof REASONS)[number] | null>(null);
   const [recording, setRecording] = useState(false);
   const [seconds, setSeconds] = useState(0);
+  const [phase, setPhase] = useState<Phase>("idle");
+  const sending = phase !== "idle";
   const timer = useRef<number | null>(null);
 
   const start = () => {
@@ -93,12 +97,25 @@ function DisputeBody({ onSend }: { onSend: Props["onSend"] }) {
       </button>
       <button
         type="button"
-        disabled={!reason}
-        onClick={() => reason && onSend(reason, seconds || undefined)}
-        className="flex h-[66px] items-center justify-center gap-3 rounded-[22px] bg-coral text-[24px] font-extrabold text-white disabled:opacity-40"
+        disabled={!reason || sending}
+        aria-busy={sending || undefined}
+        onClick={async () => {
+          if (!reason) return;
+          await onSend(reason, seconds || undefined, setPhase);
+        }}
+        className={cn("flex h-[66px] items-center justify-center gap-3 rounded-[22px] bg-coral text-[24px] font-extrabold text-white", sending ? "cursor-progress" : "disabled:opacity-40")}
       >
-        <Icon name="check" size={26} strokeWidth={3} />
-        {t("worker.send")}
+        {sending ? (
+          <>
+            <Spinner size={26} />
+            {t("common.saving")}
+          </>
+        ) : (
+          <>
+            <Icon name="check" size={26} strokeWidth={3} />
+            {t("worker.send")}
+          </>
+        )}
       </button>
     </div>
   );

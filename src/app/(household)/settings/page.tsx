@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { cn } from "@/lib/cn";
 import { LANGUAGES, useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
@@ -32,6 +32,7 @@ export default function SettingsPage() {
   const { theme, setTheme } = useTheme();
   const [push, setPush] = useState(true);
   const [located, setLocated] = useState(true);
+  const [loggingOut, startLogout] = useTransition();
 
   return (
     <div className="lg:flex lg:min-h-dvh lg:flex-col lg:gap-4 lg:p-5">
@@ -109,7 +110,7 @@ export default function SettingsPage() {
         </Section>
 
         <Section title={t("settings.account")}>
-          <Button variant="danger" size="lg" block onClick={() => signOut()}>
+          <Button variant="danger" size="lg" block loading={loggingOut} loadingText={t("settings.loggingOut")} onClick={() => startLogout(() => signOut())}>
             <Icon name="logout" size={16} />
             {t("settings.logout")}
           </Button>

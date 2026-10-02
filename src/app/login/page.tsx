@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
+import { usePhase } from "@/lib/usePhase";
 import { googleSignInUrl, postLoginPath, sendEmailOtp, signInWithPassword, verifyEmailOtp } from "@/server/actions/auth";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -18,45 +19,54 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [sendPhase, runSend] = usePhase({ ceremony: true });
+  const [verifyPhase, runVerify] = usePhase({ ceremony: true });
+  const [passwordPhase, runPassword] = usePhase({ ceremony: true });
+  const [googleBusy, setGoogleBusy] = useState(false);
+  const busy = sendPhase !== "idle" || verifyPhase !== "idle" || passwordPhase !== "idle" || googleBusy;
   const [error, setError] = useState<string | null>(null);
 
   const send = async () => {
-    setBusy(true);
     setError(null);
-    const r = await sendEmailOtp(email);
-    setBusy(false);
-    if (!r.ok) return setError(r.error);
+    let failure: string | null = null;
+    const ok = await runSend(async () => {
+      const r = await sendEmailOtp(email);
+      if (!r.ok) failure = r.error;
+      return r.ok;
+    });
+    if (!ok) return setError(failure);
     setStep("code");
   };
 
   const verify = async () => {
-    setBusy(true);
     setError(null);
-    const r = await verifyEmailOtp(email, code);
-    if (!r.ok) {
-      setBusy(false);
-      return setError(r.error);
-    }
+    let failure: string | null = null;
+    const ok = await runVerify(async () => {
+      const r = await verifyEmailOtp(email, code);
+      if (!r.ok) failure = r.error;
+      return r.ok;
+    });
+    if (!ok) return setError(failure);
     router.replace(await postLoginPath());
   };
 
   const loginWithPassword = async () => {
-    setBusy(true);
     setError(null);
-    const r = await signInWithPassword(email, password);
-    if (!r.ok) {
-      setBusy(false);
-      return setError(r.error);
-    }
+    let failure: string | null = null;
+    const ok = await runPassword(async () => {
+      const r = await signInWithPassword(email, password);
+      if (!r.ok) failure = r.error;
+      return r.ok;
+    });
+    if (!ok) return setError(failure);
     router.replace(await postLoginPath());
   };
 
   const google = async () => {
-    setBusy(true);
+    setGoogleBusy(true);
     const r = await googleSignInUrl();
     if (!r.ok) {
-      setBusy(false);
+      setGoogleBusy(false);
       return setError(r.error);
     }
     window.location.assign(r.data.url);
@@ -84,7 +94,7 @@ export default function LoginPage() {
                 placeholder="you@example.com"
                 autoFocus
               />
-              <Button size="xl" block disabled={busy || !email.includes("@")} onClick={send}>
+              <Button size="xl" block disabled={!email.includes("@")} phase={sendPhase} loader="walk" loadingText={t("login.sending")} onClick={send}>
                 {t("login.sendCode")}
               </Button>
               <div className="my-1 flex items-center gap-3 text-xs font-bold text-muted-2">
@@ -92,7 +102,7 @@ export default function LoginPage() {
                 {t("login.or")}
                 <span className="h-px flex-1 bg-line" />
               </div>
-              <Button size="xl" variant="outline" block disabled={busy} onClick={google}>
+              <Button size="xl" variant="outline" block disabled={busy && !googleBusy} loading={googleBusy} loadingText={t("login.redirecting")} onClick={google}>
                 <Icon name="globe" size={18} />
                 {t("login.google")}
               </Button>
@@ -120,7 +130,7 @@ export default function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 onKeyDown={(e) => e.key === "Enter" && loginWithPassword()}
               />
-              <Button size="xl" block disabled={busy || !email.includes("@") || password.length < 6} onClick={loginWithPassword}>
+              <Button size="xl" block disabled={!email.includes("@") || password.length < 6} phase={passwordPhase} loader="walk" loadingText={t("login.signingIn")} onClick={loginWithPassword}>
                 {t("login.signIn")}
               </Button>
               <Button size="lg" variant="ghost" block disabled={busy} onClick={() => setStep("email")}>
@@ -140,7 +150,7 @@ export default function LoginPage() {
                 placeholder="123456"
                 autoFocus
               />
-              <Button size="xl" block disabled={busy || code.length < 6} onClick={verify}>
+              <Button size="xl" block disabled={code.length < 6} phase={verifyPhase} loader="walk" loadingText={t("login.verifying")} onClick={verify}>
                 {t("login.verify")}
               </Button>
               <Button size="lg" variant="ghost" block disabled={busy} onClick={() => setStep("email")}>

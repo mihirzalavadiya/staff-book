@@ -4,7 +4,7 @@ import Link from "next/link";
 import { dayLong, formatDayMonth, weekdayOf } from "@/lib/date";
 import { useI18n } from "@/lib/i18n";
 import { dayInfo } from "@/lib/ledger";
-import { useStore } from "@/lib/store";
+import { useAct, useStore } from "@/lib/store";
 import { HouseCard } from "@/components/worker/HouseCard";
 import { WorkerHeader } from "@/components/worker/WorkerShell";
 import { useWorkerLink } from "@/components/worker/WorkerStore";
@@ -15,6 +15,7 @@ import { InstallBanner } from "@/components/pwa/InstallBanner";
 export default function WorkerTodayPage() {
   const { t, lang } = useI18n();
   const { state, dispatch } = useStore();
+  const act = useAct();
   const { token, me, houses } = useWorkerLink();
   const today = state.today;
 
@@ -37,9 +38,9 @@ export default function WorkerTodayPage() {
               key={house.id}
               engagement={house}
               info={dayInfo(state, engagement, today)}
-              onCame={() => dispatch({ type: "mark", workerId: house.id, date: today, state: "present", by: "worker" })}
-              onLeave={() => dispatch({ type: "mark", workerId: house.id, date: today, state: "leave", by: "worker" })}
-              onDispute={(reason, secs) => dispatch({ type: "raiseDispute", workerId: house.id, date: today, note: reason, voiceSeconds: secs })}
+              came={act({ type: "mark", workerId: house.id, date: today, state: "present", by: "worker" })}
+              leave={act({ type: "mark", workerId: house.id, date: today, state: "leave", by: "worker" })}
+              onDispute={(reason, secs, onPhase) => dispatch({ type: "raiseDispute", workerId: house.id, date: today, note: reason, voiceSeconds: secs }, onPhase)}
             />
           );
         })}

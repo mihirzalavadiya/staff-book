@@ -1,6 +1,9 @@
 "use client";
 
-import { createContext, startTransition, useCallback, useContext, useMemo, useOptimistic } from "react";
+import { createContext, startTransition, useCallback, useContext, useMemo, useOptimistic, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useI18n } from "./i18n";
+import { withPhases, type Phase } from "./phase";
 import type { LedgerState } from "./ledger";
 import type { Advance, AttendanceEntry, Household, Reminder, Side, Worker } from "./types";
 
@@ -100,11 +103,41 @@ export function reduce<S extends LedgerState & { household?: Household }>(state:
 
 export type Perform = (action: Action) => Promise<{ ok: boolean; error?: string }>;
 
+/**
+ * Settings edits update the screen as you type; everything else waits for the
+ * server so the button that was tapped can show its own loader until then.
+ */
+const OPTIMISTIC: ReadonlySet<Action["type"]> = new Set(["updateHousehold", "updateWorker"]);
+
+/** Stable identity of an action, so the exact button that sent it can show a loader. */
+export function actionKey(action: Action): string {
+  return JSON.stringify(action);
+}
+
+/** The day an action touches, so sibling buttons for that day lock while it runs. */
+function dayKey(action: Action): string | null {
+  if ("workerId" in action && "date" in action) return `${action.workerId}:${action.date}`;
+  if ("workerId" in action && "month" in action) return `${action.workerId}:${action.month}`;
+  return null;
+}
+
+interface Flight {
+  key: string;
+  day: string | null;
+  phase: Exclude<Phase, "idle">;
+}
+
 interface StoreContextValue<S> {
   state: S;
-  dispatch: (action: Action) => void;
-  /** Last server rejection, if any (e.g. "finalized"). */
-  lastError: string | null;
+  /** Runs an action on the server; resolves after the success animation, or at once on failure. */
+  dispatch: (action: Action, onPhase?: (p: Phase) => void) => Promise<boolean>;
+  /** Where this exact action is in its save animation. */
+  phaseOf: (action: Action) => Phase;
+  /** True while any action for the same worker and day (or month) is in flight. */
+  isLocked: (action: Action) => boolean;
+  /** Set when the server rejected or could not be reached. */
+  error: string | null;
+  clearError: () => void;
 }
 
 const StoreContext = createContext<StoreContextValue<AppState> | null>(null);
@@ -120,21 +153,108 @@ export function StoreProvider<S extends LedgerState & { household?: Household }>
   onError?: (error: string) => void;
   children: React.ReactNode;
 }) {
-  const [state, apply] = useOptimistic(initialState, reduce<S>);
+  const [live, apply] = useOptimistic(initialState, reduce<S>);
+  const [flights, setFlights] = useState<ReadonlyArray<Flight>>([]);
+  const [error, setError] = useState<string | null>(null);
+  // While a save animates, keep showing the screen as it was when the button was tapped,
+  // so the button does not vanish mid-sprint when the server's fresh data lands.
+  const [frozen, setFrozen] = useState<S | null>(null);
+  const state = frozen ?? live;
+  const router = useRouter();
+
+  const setPhase = useCallback((key: string, day: string | null, phase: Phase) => {
+    setFlights((list) => {
+      const rest = list.filter((f) => f.key !== key);
+      const next = phase === "idle" ? rest : [...rest, { key, day, phase }];
+      if (next.length === 0) setFrozen(null);
+      return next;
+    });
+  }, []);
 
   const dispatch = useCallback(
-    (action: Action) => {
-      startTransition(async () => {
-        apply(action);
-        const result = await perform(action);
-        if (!result.ok) onError?.(result.error ?? "failed");
-      });
+    (action: Action, onPhase?: (p: Phase) => void) => {
+      const key = actionKey(action);
+      const day = dayKey(action);
+      setError(null);
+      if (OPTIMISTIC.has(action.type)) {
+        return new Promise<boolean>((resolve) => {
+          startTransition(async () => {
+            apply(action);
+            const result = await perform(action).catch(() => ({ ok: false, error: "network" }));
+            if (!result.ok) setError(result.error ?? "failed");
+            resolve(result.ok);
+          });
+        });
+      }
+      setFrozen((f) => f ?? live);
+      let settled = false;
+      return withPhases(
+        () =>
+          new Promise<boolean>((resolve) => {
+            startTransition(async () => {
+              const result = await perform(action).catch(() => ({ ok: false, error: "network" }));
+              if (!result.ok) {
+                setError(result.error ?? "failed");
+                onError?.(result.error ?? "failed");
+              }
+              settled = result.ok;
+              resolve(result.ok);
+            });
+          }),
+        (p) => {
+          setPhase(key, day, p);
+          onPhase?.(p);
+          // A failure may be a timeout whose request still landed: reload so the screen shows what the server has.
+          if (p === "idle" && !settled) {
+            // Ended without success: maybe a timeout whose request still landed. Reload to show the server's truth.
+            setError((e) => e ?? "timeout");
+            router.refresh();
+          }
+        },
+      );
     },
-    [apply, perform, onError],
+    [apply, perform, onError, live, setPhase, router],
   );
 
-  const value = useMemo(() => ({ state, dispatch, lastError: null }), [state, dispatch]);
+  const phaseOf = useCallback(
+    (action: Action): Phase => flights.find((f) => f.key === actionKey(action))?.phase ?? "idle",
+    [flights],
+  );
+
+  const isLocked = useCallback(
+    (action: Action) => {
+      const day = dayKey(action);
+      return day !== null && flights.some((f) => f.day === day);
+    },
+    [flights],
+  );
+
+  const clearError = useCallback(() => setError(null), []);
+  const value = useMemo(
+    () => ({ state, dispatch, phaseOf, isLocked, error, clearError }),
+    [state, dispatch, phaseOf, isLocked, error, clearError],
+  );
   return <StoreContext.Provider value={value as unknown as StoreContextValue<AppState>}>{children}</StoreContext.Provider>;
+}
+
+/**
+ * Props for a button that sends one action: its own walker-and-ball loader
+ * while it runs, and disabled while another action for the same day runs.
+ *
+ *   <Button {...act({ type: "confirmClaim", workerId, date })}>Yes</Button>
+ */
+export function useAct() {
+  const { dispatch, phaseOf, isLocked } = useStore();
+  const { t } = useI18n();
+  return (action: Action, opts: { disabled?: boolean } = {}) => {
+    const phase = phaseOf(action);
+    return {
+      phase,
+      loadingText: t("common.saving"),
+      disabled: Boolean(opts.disabled) || (isLocked(action) && phase === "idle"),
+      onClick: () => void dispatch(action),
+    };
+  };
 }
 
 export function useStore(): StoreContextValue<AppState> {

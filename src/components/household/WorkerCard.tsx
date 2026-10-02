@@ -7,7 +7,7 @@ import { useI18n } from "@/lib/i18n";
 import { dayInfo, type DayInfo } from "@/lib/ledger";
 import { formatINR } from "@/lib/money";
 import { roleName } from "@/lib/roles";
-import { useStore } from "@/lib/store";
+import { useAct, useStore } from "@/lib/store";
 import type { Worker } from "@/lib/types";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
@@ -44,7 +44,7 @@ export function WorkerHeaderRow({ worker, href }: { worker: Worker; href?: strin
 /** The state area under the worker header: chip + actions depending on today's state. */
 export function DayStateBlock({ worker, date, info }: { worker: Worker; date: string; info: DayInfo }) {
   const { t } = useI18n();
-  const { dispatch } = useStore();
+    const act = useAct();
 
   if (info.state === "claim" && info.entry) {
     return (
@@ -57,11 +57,11 @@ export function DayStateBlock({ worker, date, info }: { worker: Worker; date: st
           </div>
         </div>
         <div className="mt-2.5 grid grid-cols-2 gap-2">
-          <Button size="md" onClick={() => dispatch({ type: "confirmClaim", workerId: worker.id, date })}>
+          <Button size="md" {...act({ type: "confirmClaim", workerId: worker.id, date })}>
             <Icon name="check" size={14} />
             {t("common.yes")}
           </Button>
-          <Button size="md" variant="outline" onClick={() => dispatch({ type: "rejectClaim", workerId: worker.id, date })}>
+          <Button size="md" variant="outline" {...act({ type: "rejectClaim", workerId: worker.id, date })}>
             <Icon name="x" size={12} />
             {t("common.no")}
           </Button>
@@ -81,11 +81,11 @@ export function DayStateBlock({ worker, date, info }: { worker: Worker; date: st
           </div>
         </div>
         <div className="mt-2.5 grid grid-cols-2 gap-2">
-          <Button size="md" onClick={() => dispatch({ type: "resolveDispute", workerId: worker.id, date, resolution: "present" })}>
+          <Button size="md" {...act({ type: "resolveDispute", workerId: worker.id, date, resolution: "present" })}>
             <Icon name="check" size={14} />
             {t("calendar.confirmPresent", { gender: worker.gender })}
           </Button>
-          <Button size="md" variant="outline" onClick={() => dispatch({ type: "resolveDispute", workerId: worker.id, date, resolution: "leave" })}>
+          <Button size="md" variant="outline" {...act({ type: "resolveDispute", workerId: worker.id, date, resolution: "leave" })}>
             <Icon name="x" size={12} />
             {t("calendar.keepLeave")}
           </Button>
@@ -119,11 +119,11 @@ export function DayStateBlock({ worker, date, info }: { worker: Worker; date: st
         <span className="truncate text-[13px] font-semibold text-muted">{t("home.cameToday", { name: worker.name, gender: worker.gender })}</span>
       </div>
       <div className="mt-3 grid grid-cols-2 gap-2">
-        <Button size="lg" onClick={() => dispatch({ type: "mark", workerId: worker.id, date, state: "present", by: "household" })}>
+        <Button size="lg" {...act({ type: "mark", workerId: worker.id, date, state: "present", by: "household" })}>
           <Icon name="check" size={16} strokeWidth={3.2} />
           {t("home.markPresent", { gender: worker.gender })}
         </Button>
-        <Button size="lg" variant="soft" onClick={() => dispatch({ type: "mark", workerId: worker.id, date, state: "leave", by: "household" })}>
+        <Button size="lg" variant="soft" {...act({ type: "mark", workerId: worker.id, date, state: "leave", by: "household" })}>
           <Icon name="x" size={13} />
           {t("home.markLeave")}
         </Button>

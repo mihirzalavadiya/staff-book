@@ -9,6 +9,10 @@ import { useStore } from "@/lib/store";
 import { useTheme } from "@/lib/theme";
 import { Icon, type IconName } from "@/components/ui/Icon";
 import { Avatar } from "@/components/ui/Avatar";
+import { SavingStatus } from "@/components/ui/SavingStatus";
+import { Spinner } from "@/components/ui/Spinner";
+import { signOut } from "@/server/actions/auth";
+import { useTransition } from "react";
 
 interface NavItem {
   href: string;
@@ -78,10 +82,11 @@ export function Sidebar() {
         <Icon name="contrast" size={19} />
         {t("nav.theme")}
       </button>
-      <Link href="/settings" className="mb-2 flex h-11 items-center gap-3 rounded-[15px] px-3.5 font-semibold text-muted">
+      <Link href="/settings" className="flex h-11 items-center gap-3 rounded-[15px] px-3.5 font-semibold text-muted">
         <Icon name="settings" size={19} />
         {t("nav.settings")}
       </Link>
+      <LogoutItem />
       <Link
         href="/workers/new"
         className="flex h-[46px] items-center justify-center gap-2 rounded-2xl bg-coral text-[15px] font-bold text-white"
@@ -97,6 +102,22 @@ export function Sidebar() {
         </div>
       </Link>
     </aside>
+  );
+}
+
+function LogoutItem() {
+  const { t } = useI18n();
+  const [pending, start] = useTransition();
+  return (
+    <button
+      type="button"
+      onClick={() => start(() => signOut())}
+      disabled={pending}
+      className="mb-2 flex h-11 items-center gap-3 rounded-[15px] px-3.5 font-semibold text-muted disabled:cursor-progress"
+    >
+      {pending ? <Spinner size={19} /> : <Icon name="logout" size={19} />}
+      {pending ? t("settings.loggingOut") : t("nav.logout")}
+    </button>
   );
 }
 
@@ -141,6 +162,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         {children}
       </div>
       <BottomNav />
+      <SavingStatus />
     </div>
   );
 }

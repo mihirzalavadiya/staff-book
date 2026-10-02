@@ -228,3 +228,73 @@
 @utility pb-safe {
   padding-bottom: max(16px, env(safe-area-inset-bottom));
 }
+
+/* ---------- Loading: a little person walking across the button ---------- */
+@keyframes sb-leg-a {
+  0%, 100% { transform: rotate(28deg); }
+  50% { transform: rotate(-28deg); }
+}
+@keyframes sb-leg-b {
+  0%, 100% { transform: rotate(-28deg); }
+  50% { transform: rotate(28deg); }
+}
+@keyframes sb-bob {
+  0%, 50%, 100% { transform: translateY(0); }
+  25%, 75% { transform: translateY(-1.2px); }
+}
+@keyframes sb-juggle {
+  0%, 100% { transform: translate(-4px, 0); }
+  50% { transform: translate(-6px, -13px) rotate(180deg); }
+}
+@keyframes sb-miss {
+  0% { transform: translate(0, 0); opacity: 1; }
+  30% { transform: translate(0, 0); }
+  55% { transform: translate(-6px, -14px) rotate(-120deg); }
+  100% { transform: translate(-18px, -2px) rotate(-260deg); opacity: 0; }
+}
+@keyframes sb-pop {
+  0% { transform: scale(0.4); opacity: 0; }
+  60% { transform: scale(1.18); opacity: 1; }
+  100% { transform: scale(1); }
+}
+
+@layer components {
+  .sb-leg-a, .sb-arm-b { transform-origin: 12px 13.8px; animation: sb-leg-a 0.5s ease-in-out infinite; }
+  .sb-leg-b, .sb-arm-a { transform-origin: 12px 13.8px; animation: sb-leg-b 0.5s ease-in-out infinite; }
+  .sb-arm-a, .sb-arm-b { transform-origin: 12px 8.8px; }
+  .sb-walker-body { animation: sb-bob 0.5s ease-in-out infinite; }
+  .sb-walker * { transform-box: view-box; }
+
+  .sb-walk-track { display: block; }
+  .sb-walk-path {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 2px; border-radius: 2px;
+    background: repeating-linear-gradient(90deg, currentColor 0 3px, transparent 3px 7px);
+    opacity: 0.3;
+  }
+  .sb-walk-trail {
+    position: absolute; left: 0; bottom: 0; height: 2px; border-radius: 2px;
+    background: currentColor;
+  }
+  .sb-walker-fast .sb-leg-a, .sb-walker-fast .sb-leg-b,
+  .sb-walker-fast .sb-arm-a, .sb-walker-fast .sb-arm-b,
+  .sb-walker-fast .sb-walker-body { animation-duration: 0.22s; }
+  /* A tiny goal: two posts and a crossbar drawn with borders. */
+  .sb-goal {
+    border: 2px solid currentColor;
+    border-left: 0;
+    border-radius: 0 4px 0 0;
+    opacity: 0.55;
+  }
+  /* Waiting long: keepy-uppy, the ball bounces off the walker's foot. */
+  .sb-ball-juggle { animation: sb-juggle 0.7s cubic-bezier(0.3, 0, 0.7, 1) infinite; }
+  .sb-walker-stopped * { animation-play-state: paused !important; }
+  /* Missed shot: the ball clips the post and flies up and away. */
+  .sb-ball-miss { transition: left 0.28s ease-in; animation: sb-miss 0.9s ease-out both; }
+  .sb-goal-scored { opacity: 1; animation: sb-pop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.3) both; }
+  .sb-busy { position: relative; overflow: hidden; }
+  .sb-pop { animation: sb-pop 0.35s cubic-bezier(0.2, 0.9, 0.3, 1.3) both; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sb-leg-a, .sb-leg-b, .sb-arm-a, .sb-arm-b, .sb-walker-body { animation-duration: 2s; }
+}

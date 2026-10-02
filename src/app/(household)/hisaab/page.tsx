@@ -6,7 +6,7 @@ import { formatDayMonth, formatMonthLong, monthOf } from "@/lib/date";
 import { useI18n } from "@/lib/i18n";
 import { monthSummary, pastSettlements } from "@/lib/ledger";
 import { formatINR } from "@/lib/money";
-import { useStore } from "@/lib/store";
+import { useAct, useStore } from "@/lib/store";
 import { HEADER_CLASS, MobileTopRow } from "@/components/household/PageHeader";
 import { MonthPicker } from "@/components/household/MonthPicker";
 import { ResolveRow } from "@/components/household/ResolveRow";
@@ -19,7 +19,8 @@ import { StateIcon } from "@/components/ui/StateIcon";
 
 function HisaabScreen() {
   const { t, lang } = useI18n();
-  const { state, dispatch } = useStore();
+  const { state } = useStore();
+  const act = useAct();
   const router = useRouter();
   const params = useSearchParams();
   const workers = state.workers.filter((w) => !w.endDate);
@@ -72,7 +73,7 @@ function HisaabScreen() {
         </div>
       </div>
       {!settlement.paidAt && (
-        <Button size="sm" onClick={() => dispatch({ type: "markPaid", workerId: worker.id, month })}>
+        <Button size="sm" {...act({ type: "markPaid", workerId: worker.id, month })}>
           {t("hisaab.markPaid")}
         </Button>
       )}
@@ -81,8 +82,7 @@ function HisaabScreen() {
     <Button
       size="xl"
       block
-      disabled={blocked}
-      onClick={() => dispatch({ type: "finalize", workerId: worker.id, month, amountDue: summary.amountDue })}
+      {...act({ type: "finalize", workerId: worker.id, month, amountDue: summary.amountDue }, { disabled: blocked })}
     >
       <span className="flex h-[26px] w-[26px] items-center justify-center rounded-full bg-present-icon text-present-fg">
         <Icon name="check" size={14} strokeWidth={3.4} />

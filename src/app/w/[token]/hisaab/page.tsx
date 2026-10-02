@@ -7,20 +7,22 @@ import { useI18n } from "@/lib/i18n";
 import { monthSummary } from "@/lib/ledger";
 import { formatINR } from "@/lib/money";
 import { roleName } from "@/lib/roles";
-import { useStore } from "@/lib/store";
+import { useAct, useStore } from "@/lib/store";
 import { MonthGrid } from "@/components/household/MonthGrid";
 import { SettlementBreakdown } from "@/components/household/SettlementBreakdown";
 import { WorkerHeader } from "@/components/worker/WorkerShell";
 import { WorkerTopRow } from "@/components/worker/WorkerTopRow";
 import { useWorkerLink } from "@/components/worker/WorkerStore";
 import { Avatar } from "@/components/ui/Avatar";
+import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
 import { StateIcon } from "@/components/ui/StateIcon";
 
 export default function WorkerHisaabPage() {
   const { t, lang } = useI18n();
-  const { state, dispatch } = useStore();
+  const { state } = useStore();
+  const act = useAct();
   const { token, me, houses: engagements } = useWorkerLink();
   const month = monthOf(state.today);
   const [open, setOpen] = useState(engagements[0]?.id ?? "");
@@ -72,14 +74,13 @@ export default function WorkerHisaabPage() {
                             <div className="text-sm font-semibold text-muted">{p.info.state === "unknown" ? t("worker.unknownDay") : t(`state.${p.info.state}`, { gender: me.gender })}</div>
                           </div>
                           {p.info.state === "unknown" && (
-                            <button
-                              type="button"
-                              disabled={Boolean(p.reminder)}
-                              onClick={() => dispatch({ type: "remind", workerId: e.id, date: p.date })}
-                              className={cn("h-11 rounded-full px-4 text-sm font-extrabold", p.reminder ? "bg-present-bg text-present-fg" : "bg-coral text-white")}
+                            <Button
+                              size="sm"
+                              className={cn("!h-11 !rounded-full !px-4 !text-sm", p.reminder ? "!bg-present-bg !text-present-fg !opacity-100" : "")}
+                              {...act({ type: "remind", workerId: e.id, date: p.date }, { disabled: Boolean(p.reminder) })}
                             >
                               {p.reminder ? t("worker.reminded") : t("worker.remind")}
-                            </button>
+                            </Button>
                           )}
                         </div>
                       ))}

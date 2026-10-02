@@ -33,7 +33,7 @@ test.describe("access", () => {
   test("log out returns to login and protects pages again", async ({ page }) => {
     await signIn(page, loadFixture());
     await page.goto("/settings");
-    await page.getByRole("button", { name: "Log out" }).click();
+    await page.getByRole("button", { name: "Log out" }).last().click();
     await page.waitForURL("**/login");
     await page.goto("/today");
     await expect(page).toHaveURL(/\/login/);

@@ -12,7 +12,8 @@
     "settings": "सेटिंग",
     "theme": "लाइट / डार्क",
     "addWorker": "नया वर्कर",
-    "workersCount": "{count} वर्कर"
+    "workersCount": "{count} वर्कर",
+    "logout": "लॉग आउट"
   },
   "common": {
     "yes": "हाँ",
@@ -48,7 +49,12 @@
     "copy": "कॉपी",
     "copied": "कॉपी हो गया",
     "share": "शेयर",
-    "voice": "आवाज़"
+    "voice": "आवाज़",
+    "saving": "सेव हो रहा है…",
+    "saveFailed": "सेव नहीं हुआ। इंटरनेट देखो और फिर से कोशिश करो।",
+    "dismiss": "ठीक है",
+    "notSaved": "सेव नहीं हुआ",
+    "stillSaving": "अभी भी सेव हो रहा है… इंटरनेट धीमा है"
   },
   "state": {
     "present": "{gender, select, male {आया} other {आई}}",
@@ -190,7 +196,8 @@
     "otherPlaceholder": "जैसे माली, आया, गार्ड",
     "gender": "महिला / पुरुष",
     "female": "महिला",
-    "male": "पुरुष"
+    "male": "पुरुष",
+    "creating": "बना रहे हैं…"
   },
   "settings": {
     "title": "सेटिंग",
@@ -210,7 +217,8 @@
     "logout": "लॉग आउट",
     "notifications": "सूचनाएँ",
     "push": "पुश सूचनाएँ",
-    "pushHint": "सिर्फ़ जब कुछ करना हो। और कभी नहीं।"
+    "pushHint": "सिर्फ़ जब कुछ करना हो। और कभी नहीं।",
+    "loggingOut": "लॉग आउट हो रहा है…"
   },
   "worker": {
     "greeting": "नमस्ते {name}",
@@ -270,7 +278,11 @@
     "usePassword": "पासवर्ड से लॉगिन करो",
     "password": "पासवर्ड",
     "signIn": "लॉगिन",
-    "useCode": "ईमेल कोड से लॉगिन करो"
+    "useCode": "ईमेल कोड से लॉगिन करो",
+    "sending": "कोड भेज रहे हैं…",
+    "verifying": "जाँच रहे हैं…",
+    "signingIn": "लॉगिन हो रहा है…",
+    "redirecting": "Google खुल रहा है…"
   },
   "onboarding": {
     "step": "स्टेप {n} / 3",
@@ -279,6 +291,7 @@
     "locationTitle": "घर की जगह",
     "workerTitle": "पहला वर्कर जोड़ो",
     "skip": "अभी छोड़ो",
-    "yourName": "आपका नाम"
+    "yourName": "आपका नाम",
+    "saving": "सेव हो रहा है…"
   }
 }

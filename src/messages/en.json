@@ -12,7 +12,8 @@
     "settings": "Settings",
     "theme": "Light / Dark",
     "addWorker": "New worker",
-    "workersCount": "{count} workers"
+    "workersCount": "{count} workers",
+    "logout": "Log out"
   },
   "common": {
     "yes": "Yes",
@@ -48,7 +49,12 @@
     "copy": "Copy",
     "copied": "Copied",
     "share": "Share",
-    "voice": "voice"
+    "voice": "voice",
+    "saving": "Saving…",
+    "saveFailed": "Couldn't save that. Check your internet and try again.",
+    "dismiss": "OK",
+    "notSaved": "Not saved",
+    "stillSaving": "Still saving… slow internet"
   },
   "state": {
     "present": "Came",
@@ -190,7 +196,8 @@
     "otherPlaceholder": "e.g. Gardener, Nanny, Security",
     "gender": "Gender",
     "female": "Female",
-    "male": "Male"
+    "male": "Male",
+    "creating": "Creating…"
   },
   "settings": {
     "title": "Settings",
@@ -210,7 +217,8 @@
     "logout": "Log out",
     "notifications": "Notifications",
     "push": "Push notifications",
-    "pushHint": "Only when there is something to act on. Nothing else, ever."
+    "pushHint": "Only when there is something to act on. Nothing else, ever.",
+    "loggingOut": "Logging out…"
   },
   "worker": {
     "greeting": "Namaste {name}",
@@ -270,7 +278,11 @@
     "usePassword": "Sign in with password instead",
     "password": "Password",
     "signIn": "Sign in",
-    "useCode": "Use an email code instead"
+    "useCode": "Use an email code instead",
+    "sending": "Sending code…",
+    "verifying": "Checking…",
+    "signingIn": "Signing in…",
+    "redirecting": "Opening Google…"
   },
   "onboarding": {
     "step": "Step {n} of 3",
@@ -279,6 +291,7 @@
     "locationTitle": "Set home location",
     "workerTitle": "Add your first worker",
     "skip": "Skip for now",
-    "yourName": "Your name"
+    "yourName": "Your name",
+    "saving": "Saving…"
   }
 }

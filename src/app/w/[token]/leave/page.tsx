@@ -13,6 +13,8 @@ import { useWorkerLink } from "@/components/worker/WorkerStore";
 import { Avatar } from "@/components/ui/Avatar";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
+import { Spinner } from "@/components/ui/Spinner";
+import { withPhases, type Phase } from "@/lib/phase";
 
 const REASONS = ["sick", "village", "festival", "other"] as const;
 
@@ -71,6 +73,8 @@ export default function PlanLeavePage() {
   const [reason, setReason] = useState<(typeof REASONS)[number] | null>(null);
   const [houses, setHouses] = useState<Set<string>>(new Set(engagements.map((e) => e.id)));
   const [done, setDone] = useState(false);
+  const [phase, setPhase] = useState<Phase>("idle");
+  const saving = phase !== "idle";
 
   const month = monthOf(state.today);
   const next = addMonths(month, 1);
@@ -96,11 +100,15 @@ export default function PlanLeavePage() {
       return n;
     });
 
-  const submit = () => {
-    if (selected.size === 0 || !reason) return;
-    for (const id of houses) {
-      for (const d of selected) dispatch({ type: "mark", workerId: id, date: d, state: "leave", by: "worker", note: reason });
-    }
+  const submit = async () => {
+    if (selected.size === 0 || !reason || saving) return;
+    const ok = await withPhases(async () => {
+      const jobs = [...houses].flatMap((id) =>
+        [...selected].map((d) => dispatch({ type: "mark", workerId: id, date: d, state: "leave", by: "worker", note: reason })),
+      );
+      return (await Promise.all(jobs)).every(Boolean);
+    }, setPhase);
+    if (!ok) return;
     setDone(true);
     setTimeout(() => router.push(`/w/${token}`), 1400);
   };
@@ -182,12 +190,22 @@ export default function PlanLeavePage() {
         ) : (
           <button
             type="button"
-            disabled={selected.size === 0 || !reason}
+            disabled={selected.size === 0 || !reason || saving}
+            aria-busy={saving || undefined}
             onClick={submit}
-            className="flex h-[66px] w-full items-center justify-center gap-3 rounded-[22px] bg-coral text-[24px] font-extrabold text-white disabled:opacity-40"
+            className={cn("flex h-[66px] w-full items-center justify-center gap-3 rounded-[22px] bg-coral text-[24px] font-extrabold text-white", saving ? "cursor-progress" : "disabled:opacity-40")}
           >
-            <Icon name="check" size={26} strokeWidth={3} />
-            {t("common.done")} {selected.size > 0 ? `· ${selected.size} ${t("common.days")}` : ""}
+            {saving ? (
+              <>
+                <Spinner size={26} />
+                {t("common.saving")}
+              </>
+            ) : (
+              <>
+                <Icon name="check" size={26} strokeWidth={3} />
+                {`${t("common.done")}${selected.size > 0 ? ` · ${selected.size} ${t("common.days")}` : ""}`}
+              </>
+            )}
           </button>
         )}
       </div>

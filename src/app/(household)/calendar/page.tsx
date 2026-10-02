@@ -6,6 +6,7 @@ import { formatDayMonth, monthOf } from "@/lib/date";
 import { useI18n } from "@/lib/i18n";
 import { formatINR } from "@/lib/money";
 import { useStore } from "@/lib/store";
+import type { Phase } from "@/lib/phase";
 import type { DayState } from "@/lib/types";
 import { DayDetail } from "@/components/household/DayDetail";
 import { MonthGrid } from "@/components/household/MonthGrid";
@@ -41,6 +42,7 @@ function CalendarScreen() {
   const [amount, setAmount] = useState("");
   const [advDate, setAdvDate] = useState(state.today);
   const [note, setNote] = useState("");
+  const [advancePhase, setAdvancePhase] = useState<Phase>("idle");
 
   const worker = workers.find((w) => w.id === workerId) ?? workers[0];
   if (!worker) return null;
@@ -56,10 +58,11 @@ function CalendarScreen() {
     setSelected(date);
     setSheetOpen(true);
   };
-  const submitAdvance = () => {
+  const submitAdvance = async () => {
     const n = Number(amount);
-    if (!n || n <= 0) return;
-    dispatch({ type: "addAdvance", workerId: worker.id, amount: n, date: advDate, note: note || undefined });
+    if (!n || n <= 0 || advancePhase !== "idle") return;
+    const ok = await dispatch({ type: "addAdvance", workerId: worker.id, amount: n, date: advDate, note: note || undefined }, setAdvancePhase);
+    if (!ok) return;
     setAmount("");
     setNote("");
     setAdvanceOpen(false);
@@ -137,7 +140,7 @@ function CalendarScreen() {
           <Field label={t("calendar.addAdvance")} prefix="₹" inputMode="numeric" value={amount} onChange={(e) => setAmount(e.target.value)} placeholder="500" />
           <Field label={t("common.todayLabel")} type="date" value={advDate} onChange={(e) => setAdvDate(e.target.value)} />
           <Field label={`${t("calendar.history")} (${t("common.optional")})`} value={note} onChange={(e) => setNote(e.target.value)} />
-          <Button size="xl" block onClick={submitAdvance} disabled={!Number(amount)}>
+          <Button size="xl" block onClick={submitAdvance} disabled={!Number(amount)} phase={advancePhase} loadingText={t("common.saving")}>
             <Icon name="check" size={16} />
             {t("common.add")}
           </Button>

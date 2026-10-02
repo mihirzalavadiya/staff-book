@@ -6,6 +6,7 @@ import { cn } from "@/lib/cn";
 import { dayShort } from "@/lib/date";
 import { LANGUAGES, useI18n } from "@/lib/i18n";
 import { useStore } from "@/lib/store";
+import { usePhase } from "@/lib/usePhase";
 import { useOrigin } from "@/lib/useOrigin";
 import { ROLES, roleName } from "@/lib/roles";
 import type { AvatarTone, Gender, Lang, Role } from "@/lib/types";
@@ -35,7 +36,7 @@ export default function NewWorkerPage() {
   const [paidLeaves, setPaidLeaves] = useState(2);
   const [language, setLanguage] = useState<Lang>("hi");
   const [created, setCreated] = useState<{ name: string; token: string } | null>(null);
-  const [saving, setSaving] = useState(false);
+  const [phase, run] = usePhase();
   const [error, setError] = useState<string | null>(null);
   const origin = useOrigin();
 
@@ -46,9 +47,11 @@ export default function NewWorkerPage() {
     name.trim().length > 0 && Number(salary) > 0 && workDays.length > 0 && (role !== "other" || roleLabel.trim().length > 0);
 
   const create = async () => {
-    if (!valid || saving) return;
-    setSaving(true);
+    if (!valid || phase !== "idle") return;
     setError(null);
+    let token = "";
+    let failure: string | null = null;
+    const ok = await run(async () => {
     const result = await addWorker({
       name,
       gender,
@@ -60,12 +63,12 @@ export default function NewWorkerPage() {
       paidLeaves,
       language,
     });
-    setSaving(false);
-    if (!result.ok) {
-      setError(result.error);
-      return;
-    }
-    setCreated({ name: name.trim(), token: result.data.token });
+      if (result.ok) token = result.data.token;
+      else failure = result.error;
+      return result.ok;
+    });
+    if (!ok) return setError(failure);
+    setCreated({ name: name.trim(), token });
   };
 
   const link = created ? `${origin}/w/${created.token}` : "";
@@ -158,7 +161,7 @@ export default function NewWorkerPage() {
             <div className="mt-1.5 text-xs text-muted">{t("addWorker.languageHint")}</div>
           </div>
           {error && <div className="rounded-2xl bg-dispute-bg px-4 py-3 text-sm font-bold text-dispute-fg">{error}</div>}
-          <Button size="xl" block disabled={!valid || saving} onClick={create}>
+          <Button size="xl" block disabled={!valid} phase={phase} loadingText={t("addWorker.creating")} onClick={create}>
             <Icon name="whatsapp" size={18} />
             {t("addWorker.create")}
           </Button>

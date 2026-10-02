@@ -3,7 +3,7 @@
 import { dayLong, formatDayMonth, formatTime, weekdayOf } from "@/lib/date";
 import { useI18n } from "@/lib/i18n";
 import { canEdit, dayInfo } from "@/lib/ledger";
-import { useStore } from "@/lib/store";
+import { useAct, useStore } from "@/lib/store";
 import type { Worker } from "@/lib/types";
 import { Button } from "@/components/ui/Button";
 import { StateChip } from "@/components/ui/Chip";
@@ -19,7 +19,8 @@ interface Props {
 /** History of a single day plus the actions the household can take on it. */
 export function DayDetail({ worker, date }: Props) {
   const { t, lang } = useI18n();
-  const { state, dispatch } = useStore();
+  const { state } = useStore();
+  const act = useAct();
   const info = dayInfo(state, worker, date);
   const editable = canEdit(state, date);
   const future = date > state.today;
@@ -64,11 +65,11 @@ export function DayDetail({ worker, date }: Props) {
 
       {info.state === "claim" && (
         <div className="grid grid-cols-2 gap-2">
-          <Button size="lg" onClick={() => dispatch({ type: "confirmClaim", workerId: worker.id, date })}>
+          <Button size="lg" {...act({ type: "confirmClaim", workerId: worker.id, date })}>
             <Icon name="check" size={14} />
             {t("common.yes")}
           </Button>
-          <Button size="lg" variant="outline" onClick={() => dispatch({ type: "rejectClaim", workerId: worker.id, date })}>
+          <Button size="lg" variant="outline" {...act({ type: "rejectClaim", workerId: worker.id, date })}>
             <Icon name="x" size={12} />
             {t("common.no")}
           </Button>
@@ -77,11 +78,11 @@ export function DayDetail({ worker, date }: Props) {
 
       {info.state === "dispute" && (
         <div className="grid grid-cols-2 gap-2">
-          <Button size="lg" onClick={() => dispatch({ type: "resolveDispute", workerId: worker.id, date, resolution: "present" })}>
+          <Button size="lg" {...act({ type: "resolveDispute", workerId: worker.id, date, resolution: "present" })}>
             <Icon name="check" size={14} />
             {t("calendar.confirmPresent", g)}
           </Button>
-          <Button size="lg" variant="outline" onClick={() => dispatch({ type: "resolveDispute", workerId: worker.id, date, resolution: "leave" })}>
+          <Button size="lg" variant="outline" {...act({ type: "resolveDispute", workerId: worker.id, date, resolution: "leave" })}>
             <Icon name="x" size={12} />
             {t("calendar.keepLeave")}
           </Button>
@@ -95,8 +96,7 @@ export function DayDetail({ worker, date }: Props) {
             <div className="grid grid-cols-2 gap-2">
               <Button
                 size="lg"
-                disabled={info.state === "present"}
-                onClick={() => dispatch({ type: "mark", workerId: worker.id, date, state: "present", by: "household" })}
+                {...act({ type: "mark", workerId: worker.id, date, state: "present", by: "household" }, { disabled: info.state === "present" })}
               >
                 <Icon name="check" size={16} strokeWidth={3.2} />
                 {t("home.markPresent", g)}
@@ -104,8 +104,7 @@ export function DayDetail({ worker, date }: Props) {
               <Button
                 size="lg"
                 variant="soft"
-                disabled={info.state === "leave"}
-                onClick={() => dispatch({ type: "mark", workerId: worker.id, date, state: "leave", by: "household" })}
+                {...act({ type: "mark", workerId: worker.id, date, state: "leave", by: "household" }, { disabled: info.state === "leave" })}
               >
                 <Icon name="x" size={13} />
                 {t("home.markLeave")}

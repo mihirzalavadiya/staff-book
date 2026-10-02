@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/cn";
 import { useI18n } from "@/lib/i18n";
+import { SavingStatus } from "@/components/ui/SavingStatus";
 
 /**
  * Worker chrome: a single phone-width column at every viewport.
@@ -19,6 +20,7 @@ export function WorkerShell({ children }: { children: React.ReactNode }) {
       >
         {children}
       </div>
+      <SavingStatus />
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { useI18n } from "@/lib/i18n";
+import { usePhase } from "@/lib/usePhase";
 import { createHousehold } from "@/server/actions/auth";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -18,22 +19,20 @@ export default function OnboardingPage() {
   const [ownerName, setOwnerName] = useState("");
   const [name, setName] = useState("");
   const [homeLabel, setHomeLabel] = useState("");
-  const [busy, setBusy] = useState(false);
+  const [phase, run] = usePhase();
   const [error, setError] = useState<string | null>(null);
 
   const next = async () => {
-    if (step === 1) {
-      setBusy(true);
-      setError(null);
-      const r = await createHousehold({ name, ownerName });
-      setBusy(false);
-      if (!r.ok) return setError(r.error);
-      setStep(2);
-    } else {
-      setBusy(true);
-      await createHousehold({ name, ownerName, homeLabel });
-      router.push("/workers/new");
-    }
+    setError(null);
+    let failure: string | null = null;
+    const ok = await run(async () => {
+      const r = await createHousehold(step === 1 ? { name, ownerName } : { name, ownerName, homeLabel });
+      if (!r.ok) failure = r.error;
+      return r.ok;
+    });
+    if (!ok) return setError(failure);
+    if (step === 1) setStep(2);
+    else router.push("/workers/new");
   };
 
   return (
@@ -75,12 +74,12 @@ export default function OnboardingPage() {
             </div>
           )}
           {error && <div className="rounded-2xl bg-dispute-bg px-4 py-3 text-sm font-bold text-dispute-fg">{error}</div>}
-          <Button size="xl" block onClick={next} disabled={busy || (step === 1 && (!name.trim() || !ownerName.trim()))}>
+          <Button size="xl" block onClick={next} phase={phase} loadingText={t("onboarding.saving")} disabled={step === 1 && (!name.trim() || !ownerName.trim())}>
             {t("common.next")}
             <Icon name="chevronRight" size={16} />
           </Button>
           {step === 2 && (
-            <Button size="lg" variant="ghost" block disabled={busy} onClick={() => router.push("/workers/new")}>
+            <Button size="lg" variant="ghost" block disabled={phase !== "idle"} onClick={() => router.push("/workers/new")}>
               {t("onboarding.skip")}
             </Button>
           )}
