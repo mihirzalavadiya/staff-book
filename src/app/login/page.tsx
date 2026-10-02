@@ -160,6 +160,10 @@ export default function LoginPage() {
           )}
           {error && <div className="rounded-2xl bg-dispute-bg px-4 py-3 text-sm font-bold text-dispute-fg">{error}</div>}
           <div className="pt-2 text-center text-xs font-semibold text-muted">{t("login.worker")}</div>
+          <div className="flex justify-center gap-4 text-xs font-semibold text-muted-2">
+            <a href="/privacy" className="underline">Privacy</a>
+            <a href="/terms" className="underline">Terms</a>
+          </div>
         </Card>
       </div>
     </div>
