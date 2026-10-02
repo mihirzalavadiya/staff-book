@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { eq } from "drizzle-orm";
 import { ensureConfirmedUser } from "../auth/admin";
@@ -36,12 +37,25 @@ export async function verifyEmailOtp(email: string, code: string): Promise<Actio
   return error ? fail(error.message) : ok();
 }
 
+/**
+ * The site the user is on right now (localhost, a preview, or production), so
+ * OAuth returns them to the same place without depending on an env variable.
+ */
+async function requestOrigin(): Promise<string> {
+  const h = await headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host");
+  if (!host) return publicEnv.APP_URL;
+  const proto = h.get("x-forwarded-proto") ?? (host.startsWith("localhost") || host.startsWith("127.") ? "http" : "https");
+  return `${proto}://${host}`;
+}
+
 /** Returns the Google consent URL; the client navigates to it. */
 export async function googleSignInUrl(next = "/today"): Promise<ActionResult<{ url: string }>> {
   const supabase = await createSupabaseServer();
+  const origin = await requestOrigin();
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider: "google",
-    options: { redirectTo: `${publicEnv.APP_URL}/auth/callback?next=${encodeURIComponent(next)}` },
+    options: { redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}` },
   });
   if (error || !data.url) return fail(error?.message ?? "no url");
   return ok({ url: data.url });
