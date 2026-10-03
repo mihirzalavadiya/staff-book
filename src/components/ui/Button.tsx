@@ -4,8 +4,8 @@ import { Icon } from "./Icon";
 import { Spinner, WalkLoader } from "./Spinner";
 import type { Phase } from "@/lib/phase";
 
-type Variant = "primary" | "soft" | "outline" | "danger" | "success" | "ghost" | "white";
-type Size = "sm" | "md" | "lg" | "xl" | "hero";
+type Variant = "primary" | "soft" | "outline" | "danger" | "ghost";
+type Size = "sm" | "md" | "lg" | "xl";
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant;
@@ -27,9 +27,7 @@ const VARIANT: Record<Variant, string> = {
   soft: "bg-coral-soft text-ink",
   outline: "bg-surface text-ink border-2 border-ink",
   danger: "bg-dispute-bg text-dispute-fg",
-  success: "bg-present-cell text-present-fg",
   ghost: "bg-transparent text-muted",
-  white: "bg-surface text-ink",
 };
 
 const SIZE: Record<Size, string> = {
@@ -37,7 +35,6 @@ const SIZE: Record<Size, string> = {
   md: "h-11 rounded-2xl px-4 text-[15px] gap-2",
   lg: "h-[50px] rounded-2xl px-4 text-[15px] gap-2",
   xl: "h-[58px] rounded-[20px] px-5 text-base gap-2",
-  hero: "h-[66px] rounded-[22px] px-5 text-lg gap-2",
 };
 
 export function Button({

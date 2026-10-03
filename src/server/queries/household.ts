@@ -16,7 +16,7 @@ export interface HouseholdState extends LedgerState {
 /** How far back the household screens load. Older months come from settlements. */
 const HISTORY_MONTHS = 3;
 
-export async function findHouseholdByOwner(ownerUserId: string) {
+async function findHouseholdByOwner(ownerUserId: string) {
   return db.query.households.findFirst({ where: eq(households.ownerUserId, ownerUserId) });
 }
 

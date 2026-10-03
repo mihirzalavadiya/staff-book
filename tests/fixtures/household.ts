@@ -13,7 +13,7 @@ import { eq, inArray } from "drizzle-orm";
 import postgres from "postgres";
 import * as schema from "../../src/server/db/schema";
 
-export interface FixtureWorker {
+interface FixtureWorker {
   key: string;
   name: string;
   gender: "female" | "male";
@@ -33,7 +33,7 @@ export interface Fixture {
 
 const ALL_DAYS = [0, 1, 2, 3, 4, 5, 6];
 
-export const WORKERS = [
+const WORKERS = [
   { key: "claim", name: "Gopal", gender: "male", role: "driver", salary: 9000 },
   { key: "reject", name: "Kiran", gender: "female", role: "maid", salary: 3200 },
   { key: "dispute", name: "Lata", gender: "female", role: "maid", salary: 3000 },
@@ -53,7 +53,7 @@ export function previousMonth(today: string): string {
 
 export const OLDER_GAP_DAY = 10;
 
-export function todayIST(): string {
+function todayIST(): string {
   return new Intl.DateTimeFormat("en-CA", { timeZone: "Asia/Kolkata" }).format(new Date());
 }
 

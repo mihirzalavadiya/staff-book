@@ -21,7 +21,7 @@ function pendingLine({ info, worker, reminder }: PendingItem, t: T): string {
   return t("home.nobodyMarked");
 }
 
-export function PendingRow({ item, className }: { item: PendingItem; className?: string }) {
+function PendingRow({ item, className }: { item: PendingItem; className?: string }) {
   const { t, lang } = useI18n();
   const { state } = useStore();
   const isToday = item.date === state.today;

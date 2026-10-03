@@ -129,7 +129,3 @@ export function useI18n(): I18nContextValue {
   if (!ctx) throw new Error("useI18n must be used inside I18nProvider");
   return ctx;
 }
-
-export function useT() {
-  return useI18n().t;
-}

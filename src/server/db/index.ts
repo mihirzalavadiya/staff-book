@@ -23,4 +23,3 @@ const client =
 if (process.env.NODE_ENV !== "production") globalForDb.pgClient = client;
 
 export const db = drizzle(client, { schema, casing: "snake_case" });
-export type Db = typeof db;
