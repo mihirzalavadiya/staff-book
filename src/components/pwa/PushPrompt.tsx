@@ -21,7 +21,15 @@ const readDismissed = () => {
  * Asks once, politely, from a card the user taps; never a cold browser popup.
  * Hidden when push is on, blocked, unsupported, or the card was dismissed.
  */
-export function PushPrompt({ target, large }: { target: Parameters<typeof usePush>[0]; large?: boolean }) {
+export function PushPrompt({
+  target,
+  large,
+  className,
+}: {
+  target: Parameters<typeof usePush>[0];
+  large?: boolean;
+  className?: string;
+}) {
   const { t } = useI18n();
   const { status, busy, turnOn } = usePush(target);
   const dismissed = useSyncExternalStore(
@@ -36,7 +44,7 @@ export function PushPrompt({ target, large }: { target: Parameters<typeof usePus
 
   if (justEnabled) {
     return (
-      <div className="flex items-center gap-3 rounded-[24px] bg-present-bg px-4 py-3.5 font-bold text-present-fg">
+      <div className={cn("flex items-center gap-3 rounded-[24px] bg-present-bg px-4 py-3.5 font-bold text-present-fg", className)}>
         <Icon name="bell" size={20} />
         {t("pushUi.on")}
       </div>
@@ -54,7 +62,7 @@ export function PushPrompt({ target, large }: { target: Parameters<typeof usePus
   };
 
   return (
-    <div className={cn("rounded-[24px] bg-av-yellow p-4", large && "p-5")}>
+    <div className={cn("rounded-[24px] bg-av-yellow p-4", large && "p-5", className)}>
       <div className="flex items-start gap-3">
         <span className="flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-surface">
           <Icon name="bell" size={22} />
