@@ -64,7 +64,6 @@
     "pendingPill": "{count} चीज़ें बाकी",
     "pendingPillOne": "1 चीज़ बाकी",
     "pendingNone": "आज सब हो गया",
-    "pendingDetail": "{claims} पक्का करना · {unknown} पता नहीं",
     "todayStatus": "आज का हाल",
     "remaining": "{count} बाकी",
     "workers": "वर्कर",
@@ -78,7 +77,9 @@
     "nobodyMarked": "किसी ने नहीं लिखा",
     "cameAt": "{gender, select, male {आया} other {आई}} · {time}",
     "hisaabPending": "{name} का हिसाब: {count} दिन बाकी",
-    "disputeSummary": "आपने: छुट्टी · {name}: \"{gender, select, male {मैं आया था} other {मैं आई थी}}\""
+    "disputeSummary": "आपने: छुट्टी · {name}: \"{gender, select, male {मैं आया था} other {मैं आई थी}}\"",
+    "pendingClaims": "{count} पक्का करना",
+    "pendingUnknown": "{count} पता नहीं"
   },
   "calendar": {
     "title": "कैलेंडर",

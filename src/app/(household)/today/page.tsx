@@ -40,7 +40,12 @@ export default function TodayPage() {
               </span>
               {left > 0 && (
                 <span className="text-[13px] text-muted">
-                  {t("home.pendingDetail", { claims: progress.claims, unknown: progress.unknown })}
+                  {[
+                    progress.claims > 0 && t("home.pendingClaims", { count: progress.claims }),
+                    progress.unknown > 0 && t("home.pendingUnknown", { count: progress.unknown }),
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
                 </span>
               )}
             </Link>
@@ -49,13 +54,11 @@ export default function TodayPage() {
         <WeekStrip cellClassName="h-16 lg:h-[78px]" />
       </header>
 
-      <div className="-mt-[54px] flex flex-col gap-3.5 px-4 lg:mt-0 lg:grid lg:flex-1 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-4 lg:px-0">
+      <div className="-mt-[54px] flex flex-col gap-3.5 px-4 lg:mt-0 lg:grid lg:flex-1 lg:grid-cols-[minmax(0,1fr)_340px] lg:content-start lg:items-start lg:gap-4 lg:px-0">
         <div className="lg:hidden">
           <TodayStatusRow />
         </div>
-        <div className="lg:col-span-2">
-          <PushPrompt target={{ kind: "household" }} />
-        </div>
+        <PushPrompt target={{ kind: "household" }} className="lg:col-span-2" />
         <div className="mt-1 flex items-baseline justify-between lg:hidden">
           <div className="font-display text-[22px] font-extrabold tracking-[-0.02em]">{t("home.workers")}</div>
           <div className="text-[13px] font-bold text-muted">{t("home.activeCount", { count: workers.length })}</div>

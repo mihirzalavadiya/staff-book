@@ -11,7 +11,7 @@
     "settings": "Settings",
     "theme": "Light / Dark",
     "addWorker": "New worker",
-    "workersCount": "{count} workers",
+    "workersCount": "{count} {count, plural, one {worker} other {workers}}",
     "logout": "Log out"
   },
   "common": {
@@ -64,7 +64,6 @@
     "pendingPill": "{count} {count, plural, one {thing} other {things}} pending",
     "pendingPillOne": "1 thing pending",
     "pendingNone": "All done for today",
-    "pendingDetail": "{claims} claim · {unknown} not marked",
     "todayStatus": "Today's status",
     "remaining": "{count} left",
     "workers": "Workers",
@@ -78,7 +77,9 @@
     "nobodyMarked": "Nobody marked",
     "cameAt": "Came · {time}",
     "hisaabPending": "{name}'s salary: {count} {count, plural, one {day} other {days}} pending",
-    "disputeSummary": "You: leave · {name}: \"I came\""
+    "disputeSummary": "You: leave · {name}: \"I came\"",
+    "pendingClaims": "{count} {count, plural, one {claim} other {claims}}",
+    "pendingUnknown": "{count} not marked"
   },
   "calendar": {
     "title": "Calendar",
