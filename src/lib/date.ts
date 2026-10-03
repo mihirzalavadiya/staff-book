@@ -1,8 +1,8 @@
 /** Small date helpers. All dates are YYYY-MM-DD strings, months are YYYY-MM. */
 
-export const DAY_SHORT = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
-export const DAY_SHORT_HI = ["र", "सो", "मं", "बु", "गु", "शु", "श"];
-export const DAY_LONG = [
+const DAY_SHORT = ["Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"];
+const DAY_SHORT_HI = ["र", "सो", "मं", "बु", "गु", "शु", "श"];
+const DAY_LONG = [
   "Sunday",
   "Monday",
   "Tuesday",
@@ -11,7 +11,7 @@ export const DAY_LONG = [
   "Friday",
   "Saturday",
 ];
-export const DAY_LONG_HI = [
+const DAY_LONG_HI = [
   "रविवार",
   "सोमवार",
   "मंगलवार",
@@ -20,7 +20,7 @@ export const DAY_LONG_HI = [
   "शुक्रवार",
   "शनिवार",
 ];
-export const MONTH_SHORT = [
+const MONTH_SHORT = [
   "Jan",
   "Feb",
   "Mar",
@@ -34,7 +34,7 @@ export const MONTH_SHORT = [
   "Nov",
   "Dec",
 ];
-export const MONTH_LONG = [
+const MONTH_LONG = [
   "January",
   "February",
   "March",
@@ -48,7 +48,7 @@ export const MONTH_LONG = [
   "November",
   "December",
 ];
-export const MONTH_LONG_HI = [
+const MONTH_LONG_HI = [
   "जनवरी",
   "फ़रवरी",
   "मार्च",
@@ -71,15 +71,15 @@ export function dayLong(lang: "en" | "hi" = "en"): string[] {
   return lang === "hi" ? DAY_LONG_HI : DAY_LONG;
 }
 
-export function pad(n: number): string {
+function pad(n: number): string {
   return n < 10 ? `0${n}` : String(n);
 }
 
-export function toISODate(d: Date): string {
+function toISODate(d: Date): string {
   return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
 }
 
-export function parseISODate(s: string): Date {
+function parseISODate(s: string): Date {
   const [y, m, d] = s.split("-").map(Number);
   return new Date(y, m - 1, d);
 }

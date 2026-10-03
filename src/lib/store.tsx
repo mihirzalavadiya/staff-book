@@ -110,7 +110,7 @@ export type Perform = (action: Action) => Promise<{ ok: boolean; error?: string 
 const OPTIMISTIC: ReadonlySet<Action["type"]> = new Set(["updateHousehold", "updateWorker"]);
 
 /** Stable identity of an action, so the exact button that sent it can show a loader. */
-export function actionKey(action: Action): string {
+function actionKey(action: Action): string {
   return JSON.stringify(action);
 }
 
@@ -263,12 +263,3 @@ export function useStore(): StoreContextValue<AppState> {
   return ctx;
 }
 
-export function useWorker(id: string | undefined): Worker | undefined {
-  const { state } = useStore();
-  return state.workers.find((w) => w.id === id);
-}
-
-export function useActiveWorkers(): Worker[] {
-  const { state } = useStore();
-  return state.workers.filter((w) => !w.endDate);
-}

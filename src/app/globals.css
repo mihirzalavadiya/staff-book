@@ -265,7 +265,6 @@
   .sb-walker-body { animation: sb-bob 0.5s ease-in-out infinite; }
   .sb-walker * { transform-box: view-box; }
 
-  .sb-walk-track { display: block; }
   .sb-walk-path {
     position: absolute; left: 0; right: 0; bottom: 0; height: 2px; border-radius: 2px;
     background: repeating-linear-gradient(90deg, currentColor 0 3px, transparent 3px 7px);

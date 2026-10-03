@@ -87,7 +87,7 @@ describe("message files", () => {
     }
   });
   it("every message renders without leftover braces for both genders", () => {
-    const vars = { name: "X", time: "1:00", date: "1 Sept", count: 2, house: "H", link: "L", email: "e", n: 1, amount: "₹1", free: 1, unpaid: 1, days: 1, rate: "₹1", percent: 1, from: "a", to: "b", who: "w", state: "s", seconds: 3, claims: 1, unknown: 1 };
+    const vars = { name: "X", time: "1:00", date: "1 Sept", count: 2, house: "H", link: "L", email: "e", n: 1, amount: "₹1", free: 1, unpaid: 1, days: 1, rate: "₹1", percent: 1, from: "a", to: "b", who: "w", state: "s", seconds: 3, claims: 1, unknown: 1, names: "A, B", reason: "r", month: "Sept" };
     for (const tree of [en, hi] as Tree[]) {
       for (const section of Object.values(tree)) {
         for (const msg of Object.values(section)) {

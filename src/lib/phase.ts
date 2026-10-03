@@ -10,14 +10,14 @@ export type Phase = "idle" | "running" | "finishing" | "done" | "failed";
 
 /** How long the sprint-and-score and the tick stay on screen after the server says OK. */
 export const FINISH_MS = 420;
-export const DONE_MS = 450;
-export const FAIL_MS = 900;
+const DONE_MS = 450;
+const FAIL_MS = 900;
 /** Give up waiting after this long; the screen then reloads from the server to show the truth. */
-export const TIMEOUT_MS = 20_000;
+const TIMEOUT_MS = 20_000;
 /** After this long the loader switches to its "still working" look. */
 export const SLOW_MS = 4_000;
 
-export const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
+const sleep = (ms: number) => new Promise<void>((r) => setTimeout(r, ms));
 
 /**
  * Runs `task` and reports its phase: running until it resolves, then idle.

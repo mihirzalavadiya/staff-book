@@ -26,12 +26,10 @@ export type IconName =
   | "pin"
   | "logout"
   | "archive"
-  | "pencil"
   | "clock"
   | "phone"
   | "link"
   | "home"
-  | "star"
   | "whatsapp";
 
 interface IconDef {
@@ -90,12 +88,10 @@ const ICONS: Record<IconName, IconDef> = {
   pin: { circles: [[12, 9.5, 2.5]], paths: ["M12 21s7-6.5 7-11.5a7 7 0 1 0-14 0C5 14.5 12 21 12 21z"] },
   logout: { paths: ["M10 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h5", "M14 8l4 4-4 4M18 12H9"] },
   archive: { rects: [[3.5, 4, 17, 5, 1.5]], paths: ["M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9", "M10 13h4"] },
-  pencil: { paths: ["M4 20l4-1 10-10-3-3L5 16z", "M13 7l3 3"] },
   clock: { circles: [[12, 12, 8.5]], paths: ["M12 7.5V12l3 2"] },
   phone: { paths: ["M6 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L16 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 4 5a2 2 0 0 1 2-2z"] },
   link: { paths: ["M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7L11.5 6.8", "M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1.5-1.5"] },
   home: { paths: ["M3.5 11L12 4l8.5 7", "M6 10v10h12V10"] },
-  star: { paths: ["M12 3.5l2.6 5.4 5.9.8-4.3 4.1 1.1 5.8L12 16.8l-5.3 2.8 1.1-5.8-4.3-4.1 5.9-.8z"] },
   whatsapp: {
     paths: ["M4 20l1.2-4.2A8.5 8.5 0 1 1 8.4 19z", "M9.5 8.5c.2 2.5 3 5.3 5.5 5.5l1-1.2-1.8-1-.9.7c-.9-.4-1.9-1.4-2.3-2.3l.7-.9-1-1.8z"],
     strokeWidth: 1.8,

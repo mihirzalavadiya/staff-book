@@ -16,7 +16,7 @@ import { StateChip } from "@/components/ui/Chip";
 import { Icon } from "@/components/ui/Icon";
 import { StateIcon } from "@/components/ui/StateIcon";
 
-export function WorkerHeaderRow({ worker, href }: { worker: Worker; href?: string }) {
+function WorkerHeaderRow({ worker, href }: { worker: Worker; href?: string }) {
   const { t } = useI18n();
   const inner = (
     <>

@@ -29,7 +29,7 @@ export function isWorkDay(worker: Worker, date: string): boolean {
   return worker.workDays.includes(weekdayOf(date));
 }
 
-export function historyFor(state: LedgerState, workerId: string, date: string): AttendanceEntry[] {
+function historyFor(state: LedgerState, workerId: string, date: string): AttendanceEntry[] {
   return state.attendance
     .filter((a) => a.workerId === workerId && a.date === date)
     .sort((a, b) => a.at.localeCompare(b.at));
@@ -67,7 +67,7 @@ export interface PendingItem {
   reminder?: Reminder;
 }
 
-export function reminderFor(state: LedgerState, workerId: string, date: string): Reminder | undefined {
+function reminderFor(state: LedgerState, workerId: string, date: string): Reminder | undefined {
   return state.reminders.find((r) => r.workerId === workerId && r.date === date);
 }
 

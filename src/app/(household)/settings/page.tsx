@@ -14,6 +14,7 @@ import { Field } from "@/components/ui/Field";
 import { Icon } from "@/components/ui/Icon";
 import { Segmented } from "@/components/ui/Segmented";
 import { Toggle } from "@/components/ui/Toggle";
+import { usePush } from "@/components/pwa/usePush";
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
@@ -30,8 +31,8 @@ export default function SettingsPage() {
   const { t, lang, setLang } = useI18n();
   const { state, dispatch } = useStore();
   const { theme, setTheme } = useTheme();
-  const [push, setPush] = useState(true);
   const [located, setLocated] = useState(true);
+  const push = usePush({ kind: "household" });
   const [loggingOut, startLogout] = useTransition();
 
   return (
@@ -71,9 +72,16 @@ export default function SettingsPage() {
           <div className="flex items-center gap-3">
             <div className="flex-1">
               <div className="font-bold">{t("settings.push")}</div>
-              <div className="text-xs text-muted">{t("settings.pushHint")}</div>
+              <div className="text-xs text-muted">
+                {push.status === "blocked" ? t("pushUi.blocked") : push.status === "unsupported" ? t("pushUi.unsupported") : t("settings.pushHint")}
+              </div>
             </div>
-            <Toggle checked={push} onChange={setPush} label={t("settings.push")} />
+            <Toggle
+              checked={push.status === "on"}
+              disabled={push.busy || push.status === "loading" || push.status === "unsupported" || push.status === "blocked"}
+              onChange={(next) => void (next ? push.turnOn() : push.turnOff())}
+              label={t("settings.push")}
+            />
           </div>
           <div>
             <div className="mb-1.5 text-[13px] font-bold text-muted">{t("settings.reminder")}</div>

@@ -11,6 +11,7 @@ import { useWorkerLink } from "@/components/worker/WorkerStore";
 import { WorkerTopRow } from "@/components/worker/WorkerTopRow";
 import { Icon } from "@/components/ui/Icon";
 import { InstallBanner } from "@/components/pwa/InstallBanner";
+import { PushPrompt } from "@/components/pwa/PushPrompt";
 
 export default function WorkerTodayPage() {
   const { t, lang } = useI18n();
@@ -45,6 +46,7 @@ export default function WorkerTodayPage() {
           );
         })}
 
+        <PushPrompt target={{ kind: "worker", token }} large />
         <InstallBanner />
       </div>
 

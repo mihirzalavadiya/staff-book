@@ -7,7 +7,7 @@ import { FINISH_MS, SLOW_MS } from "@/lib/phase";
 import { useI18n } from "@/lib/i18n";
 
 /** A little person mid-stride: legs and arms swing, the body bobs. Inherits text colour. */
-export function Walker({ size = 18, fast, stopped, className }: { size?: number; fast?: boolean; stopped?: boolean; className?: string }) {
+function Walker({ size = 18, fast, stopped, className }: { size?: number; fast?: boolean; stopped?: boolean; className?: string }) {
   return (
     <svg
       width={size}

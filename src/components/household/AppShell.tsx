@@ -54,7 +54,7 @@ function SidebarItem({ item, badge }: { item: NavItem; badge?: number }) {
   );
 }
 
-export function Sidebar() {
+function Sidebar() {
   const { t } = useI18n();
   const { state } = useStore();
   const { toggle } = useTheme();
@@ -140,7 +140,7 @@ function TabItem({ item }: { item: NavItem }) {
   );
 }
 
-export function BottomNav() {
+function BottomNav() {
   return (
     <nav className="fixed inset-x-0 bottom-0 z-40 grid h-[84px] grid-cols-4 rounded-t-[28px] bg-surface px-2 pt-2 pb-4 shadow-nav lg:hidden">
       {TABS.map((item) => (

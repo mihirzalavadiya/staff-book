@@ -10,6 +10,7 @@ import { ownedEngagement } from "../queries/household";
 import { todayIST } from "../today";
 import { inEditWindow, isIsoDate, isMonth, isMonthFinalized, latestEntry, monthLedger, monthOf } from "./guards";
 import { fail, ok, type ActionResult } from "./result";
+import { notifyWorker } from "../push/notify";
 import { monthSummary } from "@/lib/ledger";
 import type { AvatarTone, Gender, Lang, Role } from "@/lib/types";
 
@@ -50,6 +51,10 @@ export async function markDay(input: { engagementId: string; date: string; state
     const blocked = await canEditDay(e.id, input.date);
     if (blocked) return fail(blocked);
     await db.insert(attendance).values({ engagementId: e.id, date: input.date, state: input.state, markedBy: "household" });
+    // Leave counts against the worker, so they hear about it the same day and can dispute it.
+    if (input.state === "leave" && input.date === todayIST()) {
+      notifyWorker(e.id, (w) => ({ kind: "leaveMarked", ...w }));
+    }
     refresh();
     return ok();
   } catch (err) {
@@ -145,6 +150,7 @@ export async function finalizeMonth(input: { engagementId: string; month: string
         amountDue: s.amountDue,
       })
       .onConflictDoNothing();
+    notifyWorker(e.id, (w) => ({ kind: "settled", ...w, month: input.month, amount: s.amountDue }));
     refresh();
     return ok({ amountDue: s.amountDue });
   } catch (err) {

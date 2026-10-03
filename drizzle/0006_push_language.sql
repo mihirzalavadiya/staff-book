@@ -1,0 +1,1 @@
+ALTER TABLE "push_subscriptions" ADD COLUMN "language" "lang" DEFAULT 'en' NOT NULL;
