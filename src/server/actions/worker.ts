@@ -7,6 +7,7 @@ import { tokenCanAct } from "../queries/worker";
 import { todayIST } from "../today";
 import { inEditWindow, isIsoDate, isMonthFinalized, latestEntry, monthOf } from "./guards";
 import { fail, ok, type ActionResult } from "./result";
+import { notifyHousehold } from "../push/notify";
 
 /**
  * Worker-side mutations. The secret token is the identity; each action checks
@@ -35,6 +36,7 @@ export async function workerMark(input: {
       const last = await latestEntry(input.engagementId, input.date);
       if (last && last.state !== "claim") return fail("already marked");
       await db.insert(attendance).values({ engagementId: input.engagementId, date: input.date, state: "claim", markedBy: "worker" });
+      notifyHousehold(input.engagementId, (worker) => ({ kind: "claim", worker, engagementId: input.engagementId, date: input.date, today }));
     } else {
       // Leave is final and may be planned ahead; a finalized month cannot change.
       if (await isMonthFinalized(input.engagementId, monthOf(input.date))) return fail("finalized");
@@ -46,6 +48,13 @@ export async function workerMark(input: {
         markedBy: "worker",
         note: input.note?.trim() || null,
       });
+      notifyHousehold(input.engagementId, (worker) => ({
+        kind: "leave",
+        worker,
+        engagementId: input.engagementId,
+        date: input.date,
+        reason: input.note?.trim() || undefined,
+      }));
     }
     refresh();
     return ok();
@@ -76,6 +85,7 @@ export async function workerRaiseDispute(input: {
       note: input.note.slice(0, 80),
       voiceSeconds: input.voiceSeconds ? Math.min(600, Math.round(input.voiceSeconds)) : null,
     });
+    notifyHousehold(input.engagementId, (worker) => ({ kind: "dispute", worker, engagementId: input.engagementId, date: input.date }));
     refresh();
     return ok();
   } catch (err) {
@@ -94,6 +104,7 @@ export async function workerRemind(input: { token: string; engagementId: string;
       .insert(reminders)
       .values({ engagementId: input.engagementId, date: input.date })
       .onConflictDoUpdate({ target: [reminders.engagementId, reminders.date], set: { createdAt: new Date() } });
+    notifyHousehold(input.engagementId, (worker) => ({ kind: "remind", worker, engagementId: input.engagementId, date: input.date }));
     refresh();
     return ok();
   } catch (err) {

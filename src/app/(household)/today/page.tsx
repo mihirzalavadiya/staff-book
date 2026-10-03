@@ -10,6 +10,7 @@ import { TodayStatusRow } from "@/components/household/TodayStatusRow";
 import { WeekStrip } from "@/components/household/WeekStrip";
 import { WorkerCard } from "@/components/household/WorkerCard";
 import { StateIcon } from "@/components/ui/StateIcon";
+import { PushPrompt } from "@/components/pwa/PushPrompt";
 import Link from "next/link";
 
 export default function TodayPage() {
@@ -51,6 +52,9 @@ export default function TodayPage() {
       <div className="-mt-[54px] flex flex-col gap-3.5 px-4 lg:mt-0 lg:grid lg:flex-1 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start lg:gap-4 lg:px-0">
         <div className="lg:hidden">
           <TodayStatusRow />
+        </div>
+        <div className="lg:col-span-2">
+          <PushPrompt target={{ kind: "household" }} />
         </div>
         <div className="mt-1 flex items-baseline justify-between lg:hidden">
           <div className="font-display text-[22px] font-extrabold tracking-[-0.02em]">{t("home.workers")}</div>

@@ -270,5 +270,36 @@
     "skip": "अभी छोड़ो",
     "yourName": "आपका नाम",
     "saving": "सेव हो रहा है…"
+  },
+  "push": {
+    "claimTitle": "आई थी?",
+    "claimToday": "{name} {gender, select, male {बोल रहा है आज आया} other {बोल रही है आज आई}}। पक्का करो।",
+    "claimOn": "{name} {gender, select, male {बोल रहा है {date} को आया} other {बोल रही है {date} को आई}}। पक्का करो।",
+    "disputeTitle": "झगड़ा खुला",
+    "dispute": "{name}: {date} — \"{gender, select, male {मैं आया था} other {मैं आई थी}}\"। देखो।",
+    "leaveTitle": "छुट्टी लिखी",
+    "leave": "{name} {date} को छुट्टी पर रहेंगे।",
+    "leaveWithReason": "{name} {date} को छुट्टी पर रहेंगे ({reason})।",
+    "remindTitle": "याद दिलाया",
+    "remind": "{name} {date} के बारे में पूछ रहे हैं। {gender, select, male {आया था} other {आई थी}}?",
+    "dailyTitle": "आज का रजिस्टर",
+    "dailyOne": "आज {name} {gender, select, male {आया था} other {आई थी}}?",
+    "dailyMany": "आज {count} लोगों का नहीं भरा: {names}।",
+    "dailyOlder": "पिछले {count} दिन भी बाकी हैं।",
+    "monthTitle": "हिसाब का समय",
+    "monthStart": "{month} का हिसाब बनाओ। बाकी दिन भरो और फ़ाइनल करो।",
+    "leaveMarked": "आज छुट्टी दर्ज हुई। गलत है तो बताओ।",
+    "settled": "{month} का हिसाब: {amount}"
+  },
+  "pushUi": {
+    "title": "रोज़ शाम याद दिलाएँ?",
+    "body": "सिर्फ़ तब बताएँगे जब किसी का नहीं भरा हो या वर्कर को जवाब चाहिए।",
+    "bodyWorker": "जब घर वाले छुट्टी लिखें या हिसाब फ़ाइनल करें, तब बताएँगे।",
+    "allow": "हाँ, याद दिलाओ",
+    "later": "अभी नहीं",
+    "blocked": "इस साइट की सूचनाएँ बंद हैं। ब्राउज़र सेटिंग में चालू करो।",
+    "unsupported": "यह ब्राउज़र सूचना नहीं दिखा सकता। पहले Staffbook को होम स्क्रीन पे लगाओ।",
+    "on": "रिमाइंडर चालू हैं",
+    "enabling": "चालू हो रहा है…"
   }
 }

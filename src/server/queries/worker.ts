@@ -19,7 +19,7 @@ export interface WorkerState extends LedgerState {
 const HISTORY_MONTHS = 2;
 
 /** Resolve a secret link token to its engagement, if active. */
-async function engagementByToken(token: string) {
+export async function engagementByToken(token: string) {
   return db.query.engagements.findFirst({
     where: and(eq(engagements.workerToken, token), eq(engagements.status, "active")),
   });

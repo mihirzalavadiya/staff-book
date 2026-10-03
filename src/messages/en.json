@@ -270,5 +270,36 @@
     "skip": "Skip for now",
     "yourName": "Your name",
     "saving": "Saving…"
+  },
+  "push": {
+    "claimTitle": "Did they come?",
+    "claimToday": "{name} says {gender, select, male {he} other {she}} came today. Tap to confirm.",
+    "claimOn": "{name} says {gender, select, male {he} other {she}} came on {date}. Tap to confirm.",
+    "disputeTitle": "Dispute opened",
+    "dispute": "{name} says {gender, select, male {he} other {she}} came on {date}. Take a look.",
+    "leaveTitle": "Leave added",
+    "leave": "{name} will be on leave on {date}.",
+    "leaveWithReason": "{name} will be on leave on {date} ({reason}).",
+    "remindTitle": "Reminder",
+    "remind": "{name} is asking about {date}. Did {gender, select, male {he} other {she}} come?",
+    "dailyTitle": "Today's register",
+    "dailyOne": "Did {name} come today?",
+    "dailyMany": "{count} not marked today: {names}.",
+    "dailyOlder": "{count} older {count, plural, one {day is} other {days are}} still unmarked.",
+    "monthTitle": "Time to settle",
+    "monthStart": "{month} salary is ready. Fill any gaps and finalise.",
+    "leaveMarked": "Leave recorded for today. Tell them if this is wrong.",
+    "settled": "{month} salary: {amount}"
+  },
+  "pushUi": {
+    "title": "Get a reminder every evening?",
+    "body": "We only ping you when someone is not marked, or a worker needs an answer.",
+    "bodyWorker": "We'll tell you when the house marks your leave or settles your salary.",
+    "allow": "Yes, remind me",
+    "later": "Not now",
+    "blocked": "Notifications are blocked for this site. Allow them in your browser settings.",
+    "unsupported": "This browser can't show notifications. Add Staffbook to your home screen first.",
+    "on": "Reminders are on",
+    "enabling": "Turning on…"
   }
 }

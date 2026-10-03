@@ -4,6 +4,8 @@ import { attendanceRows, createFixture, destroyFixture, type Fixture } from "../
 
 // Server actions call revalidatePath, which needs a Next.js request; here it is a no-op.
 vi.mock("next/cache", () => ({ revalidatePath: () => {} }));
+// Push notifications are scheduled with after(), which needs a request; here they are simply skipped.
+vi.mock("next/server", async (importOriginal) => ({ ...(await importOriginal<object>()), after: () => {} }));
 
 const { workerMark, workerRaiseDispute, workerRemind } = await import("@/server/actions/worker");
 const { tokenCanAct } = await import("@/server/queries/worker");

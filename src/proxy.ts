@@ -1,7 +1,7 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
-const PUBLIC_PREFIXES = ["/login", "/auth", "/w/", "/privacy", "/terms", "/manifest.webmanifest", "/icon.svg", "/sw.js"];
+const PUBLIC_PREFIXES = ["/login", "/auth", "/w/", "/privacy", "/terms", "/api/cron", "/manifest.webmanifest", "/icon.svg", "/sw.js"];
 
 /**
  * Refreshes the Supabase session cookie on every request and keeps signed-out
