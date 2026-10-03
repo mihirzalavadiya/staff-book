@@ -13,6 +13,7 @@ import { fail, ok, type ActionResult } from "./result";
 import { notifyWorker } from "../push/notify";
 import { monthSummary } from "@/lib/ledger";
 import { phoneKey } from "@/lib/phone";
+import { FLAT_MAX } from "@/lib/home";
 import type { AvatarTone, Gender, Lang, Role } from "@/lib/types";
 
 /**
@@ -267,11 +268,12 @@ export async function endWork(input: { engagementId: string; endDate: string }):
   }
 }
 
-export async function updateHousehold(input: { name?: string; homeLabel?: string; notifyAt?: string; language?: Lang }): Promise<ActionResult> {
+export async function updateHousehold(input: { name?: string; flat?: string; homeLabel?: string; notifyAt?: string; language?: Lang }): Promise<ActionResult> {
   try {
     const user = await requireOwner();
     const patch: Partial<typeof households.$inferInsert> = {};
     if (input.name?.trim()) patch.name = input.name.trim();
+    if (input.flat?.trim()) patch.flat = input.flat.trim().slice(0, FLAT_MAX);
     if (input.homeLabel !== undefined) patch.homeLabel = input.homeLabel.trim() || null;
     if (input.notifyAt && /^\d{2}:\d{2}$/.test(input.notifyAt)) patch.notifyAt = input.notifyAt;
     if (input.language) patch.language = input.language;

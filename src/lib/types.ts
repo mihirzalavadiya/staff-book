@@ -13,6 +13,8 @@ export type Gender = "female" | "male";
 export interface Household {
   id: string;
   name: string;
+  /** Flat / house number. */
+  flat: string;
   ownerName: string;
   homeLabel: string;
   notifyAt: string;

@@ -25,7 +25,7 @@ export function HouseholdStore({ initialState, children }: { initialState: AppSt
       case "endWork":
         return actions.endWork({ engagementId: a.workerId, endDate: a.endDate });
       case "updateHousehold":
-        return actions.updateHousehold({ name: a.patch.name, homeLabel: a.patch.homeLabel, notifyAt: a.patch.notifyAt });
+        return actions.updateHousehold({ name: a.patch.name, flat: a.patch.flat, homeLabel: a.patch.homeLabel, notifyAt: a.patch.notifyAt });
       case "updateWorker":
         return actions.updateWorker({
           engagementId: a.workerId,

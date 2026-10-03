@@ -65,7 +65,7 @@ async function main() {
 
   const [household] = await db
     .insert(schema.households)
-    .values({ ownerUserId, ownerName: "Priya", name: "Priya's home", homeLabel: "Koramangala, Bengaluru" })
+    .values({ ownerUserId, ownerName: "Priya", name: "Green Park Apartments", flat: "B-402", homeLabel: "Koramangala, Bengaluru" })
     .returning();
 
   const people = [

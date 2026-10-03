@@ -3,6 +3,7 @@
 import { useState, useTransition } from "react";
 import { cn } from "@/lib/cn";
 import { LANGUAGES, useI18n } from "@/lib/i18n";
+import { homeLabel } from "@/lib/home";
 import { useStore } from "@/lib/store";
 import { useTheme, type Theme } from "@/lib/theme";
 import { signOut } from "@/server/actions/auth";
@@ -73,7 +74,7 @@ export default function SettingsPage() {
           />
           <div>
             <div className="font-display text-[30px] font-extrabold leading-none tracking-[-0.03em]">
-              {state.household.name}
+              {homeLabel(state.household.name, state.household.flat)}
             </div>
             <div className="mt-1 text-[15px] font-semibold text-muted">
               {state.household.homeLabel}
@@ -84,6 +85,13 @@ export default function SettingsPage() {
 
       <div className="-mt-11 flex flex-col gap-5 px-4 lg:mt-0 lg:grid lg:grid-cols-2 lg:items-start lg:px-0">
         <Section title={t("settings.home")}>
+          <Field
+            label={t("settings.flat")}
+            value={state.household.flat}
+            placeholder={t("settings.flatPlaceholder")}
+            maxLength={30}
+            onChange={(e) => dispatch({ type: "updateHousehold", patch: { flat: e.target.value } })}
+          />
           <Field
             label={t("settings.homeName")}
             value={state.household.name}

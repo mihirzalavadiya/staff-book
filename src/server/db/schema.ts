@@ -36,7 +36,10 @@ export const households = pgTable("households", {
   /** Supabase auth.users.id of the owner. */
   ownerUserId: uuid("owner_user_id").notNull().unique(),
   ownerName: text("owner_name").notNull(),
+  /** Building or society name, e.g. "M.R. Residency". */
   name: text("name").notNull(),
+  /** Flat / house number, e.g. "B-402". Required: homes in one building share a name. */
+  flat: text("flat"),
   homeLabel: text("home_label"),
   lat: text("lat"),
   lng: text("lng"),

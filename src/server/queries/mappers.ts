@@ -63,6 +63,7 @@ export function toHousehold(h: HouseholdRow): Household {
   return {
     id: h.id,
     name: h.name,
+    flat: h.flat ?? "",
     ownerName: h.ownerName,
     homeLabel: h.homeLabel ?? "",
     notifyAt: h.notifyAt.slice(0, 5),

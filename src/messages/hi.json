@@ -192,7 +192,7 @@
   "settings": {
     "title": "सेटिंग",
     "home": "घर",
-    "homeName": "घर का नाम",
+    "homeName": "बिल्डिंग / सोसाइटी का नाम",
     "location": "घर की जगह",
     "locationHint": "सिर्फ़ \"पास में\" का छोटा निशान दिखाने के लिए। कभी रोकता नहीं।",
     "setLocation": "अभी की जगह सेट करो",
@@ -208,7 +208,10 @@
     "notifications": "सूचनाएँ",
     "push": "पुश सूचनाएँ",
     "pushHint": "सिर्फ़ जब कुछ करना हो। और कभी नहीं।",
-    "loggingOut": "लॉग आउट हो रहा है…"
+    "loggingOut": "लॉग आउट हो रहा है…",
+    "flat": "फ़्लैट / मकान नंबर",
+    "flatPlaceholder": "जैसे B-402",
+    "homeNamePlaceholder": "जैसे M.R. Residency"
   },
   "worker": {
     "greeting": "नमस्ते {name}",
