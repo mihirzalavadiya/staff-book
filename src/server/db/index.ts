@@ -6,9 +6,16 @@ import * as schema from "./schema";
 import { env } from "@/server/env";
 
 function connect() {
-  // One small pool per server process; Supabase's pooler sits on the other end.
-  // `prepare: false` is required by pgbouncer in transaction mode and harmless in session mode.
-  const client = postgres(env.DATABASE_URL, { max: 5, prepare: false, idle_timeout: 20 });
+  // On Vercel every function instance is its own process, so each must hold at most one
+  // connection, or a burst of instances exhausts the database pooler. Locally, a few help.
+  // `prepare: false` is required by Supabase's transaction pooler (port 6543).
+  const serverless = Boolean(process.env.VERCEL);
+  const client = postgres(env.DATABASE_URL, {
+    max: serverless ? 1 : 5,
+    prepare: false,
+    idle_timeout: serverless ? 5 : 20,
+    connect_timeout: 10,
+  });
   return drizzle(client, { schema, casing: "snake_case" });
 }
 
