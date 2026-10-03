@@ -79,7 +79,20 @@
     "hisaabPending": "{name} का हिसाब: {count} दिन बाकी",
     "disputeSummary": "आपने: छुट्टी · {name}: \"{gender, select, male {मैं आया था} other {मैं आई थी}}\"",
     "pendingClaims": "{count} पक्का करना",
-    "pendingUnknown": "{count} पता नहीं"
+    "pendingUnknown": "{count} पता नहीं",
+    "hello": "नमस्ते,",
+    "thisWeek": "इस हफ़्ते",
+    "register": "आज का रजिस्टर",
+    "registerCount": "{count} वर्कर · {filled} भरे",
+    "last7": "पिछले 7 दिन",
+    "workerCol": "वर्कर",
+    "cameShort": "आज {gender, select, male {आया था} other {आई थी}}?",
+    "claimQuote": "“आज {gender, select, male {आया} other {आई}}, {time}।”",
+    "claimBy": "{name} ने लिखा · सही है?",
+    "monthHisaab": "{month} का हिसाब",
+    "daysPending": "{count} दिन बाकी",
+    "fill": "भरो",
+    "claimShort": "दावा"
   },
   "calendar": {
     "title": "कैलेंडर",
@@ -137,7 +150,9 @@
     "finalized": "फ़ाइनल · {amount}",
     "markPaid": "दे दिया",
     "paidOn": "{date} को दिया",
-    "previous": "पिछले महीने"
+    "previous": "पिछले महीने",
+    "attendance": "हाज़िरी",
+    "money": "पैसा"
   },
   "workers": {
     "title": "वर्कर",

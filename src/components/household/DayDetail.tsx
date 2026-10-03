@@ -31,7 +31,7 @@ export function DayDetail({ worker, date }: Props) {
       <div className="flex items-center justify-between">
         <div>
           <div className="text-[13px] font-semibold text-muted">{dayLong(lang)[weekdayOf(date)]}</div>
-          <div className="font-display text-[26px] font-extrabold leading-tight tracking-[-0.03em]">
+          <div className="font-display text-[26px] leading-tight tracking-[-0.03em]">
             {formatDayMonth(date, lang)}
           </div>
         </div>
@@ -39,7 +39,7 @@ export function DayDetail({ worker, date }: Props) {
       </div>
 
       {info.history.length > 0 && (
-        <div className="rounded-[20px] bg-surface-2 px-3.5 py-1">
+        <div className="rounded-[6px] bg-surface-2 px-3.5 py-1">
           {info.history.map((h, i) => (
             <div key={h.id} className={`flex items-center gap-3 py-2.5 ${i > 0 ? "border-t border-line" : ""}`}>
               <StateIcon state={h.state} size={30} />
@@ -112,7 +112,7 @@ export function DayDetail({ worker, date }: Props) {
             </div>
           </div>
         ) : (
-          <div className="flex items-center gap-2.5 rounded-[18px] bg-surface-2 px-3.5 py-3 text-[13px] font-semibold text-muted">
+          <div className="flex items-center gap-2.5 rounded-[6px] bg-surface-2 px-3.5 py-3 text-[13px] font-semibold text-muted">
             <Icon name="clock" size={16} />
             <span className="flex-1">{t("calendar.editWindow")}</span>
             <Link href={`/hisaab?worker=${worker.id}&month=${date.slice(0, 7)}`} className="font-extrabold text-coral">
@@ -123,7 +123,7 @@ export function DayDetail({ worker, date }: Props) {
       )}
 
       {future && info.state === "off" && (
-        <div className="rounded-[18px] bg-surface-2 px-3.5 py-3 text-[13px] font-semibold text-muted">—</div>
+        <div className="rounded-[6px] bg-surface-2 px-3.5 py-3 text-[13px] font-semibold text-muted">—</div>
       )}
     </div>
   );

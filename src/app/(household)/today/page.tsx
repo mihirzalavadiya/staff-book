@@ -1,74 +1,85 @@
 "use client";
 
-import { dayLong, formatDayMonth, weekdayOf } from "@/lib/date";
+import { dayLong, formatMonthLong, monthOf, weekdayOf, dayOfMonth } from "@/lib/date";
 import { useI18n } from "@/lib/i18n";
 import { todayProgress } from "@/lib/ledger";
 import { useStore } from "@/lib/store";
-import { HEADER_CLASS, MobileTopRow } from "@/components/household/PageHeader";
+import { useTheme } from "@/lib/theme";
+import { pendingItems } from "@/lib/ledger";
+import { HEADER_CLASS, HeaderIconButton, MobileTopRow, SHEET_CLASS } from "@/components/household/PageHeader";
 import { PendingCard } from "@/components/household/PendingList";
+import { TodayRegister } from "@/components/household/TodayRegister";
 import { TodayStatusRow } from "@/components/household/TodayStatusRow";
 import { WeekStrip } from "@/components/household/WeekStrip";
 import { WorkerCard } from "@/components/household/WorkerCard";
-import { StateIcon } from "@/components/ui/StateIcon";
 import { PushPrompt } from "@/components/pwa/PushPrompt";
-import Link from "next/link";
 
 export default function TodayPage() {
   const { t, lang } = useI18n();
   const { state } = useStore();
+  const { toggle } = useTheme();
   const workers = state.workers.filter((w) => !w.endDate);
   const progress = todayProgress(state);
   const left = progress.total - progress.filled;
+  const today = state.today;
+  const fullDate = `${dayLong(lang)[weekdayOf(today)]} · ${dayOfMonth(today)} ${formatMonthLong(monthOf(today), lang)} ${today.slice(0, 4)}`;
+  const parts = [
+    progress.claims > 0 && t("home.pendingClaims", { count: progress.claims }),
+    progress.unknown > 0 && t("home.pendingUnknown", { count: progress.unknown }),
+  ].filter(Boolean);
+  const stop = lang === "hi" ? "।" : ".";
+  const summary =
+    left === 0
+      ? `${t("home.pendingNone")}${stop}`
+      : `${left === 1 ? t("home.pendingPillOne") : t("home.pendingPill", { count: left })}${parts.length ? ` — ${parts.join(", ")}` : ""}${stop}`;
+  const firstName = state.household.ownerName.split(" ")[0];
 
   return (
-    <div className="lg:flex lg:min-h-dvh lg:flex-col lg:gap-4 lg:p-5">
-      <header className={`${HEADER_CLASS} gap-4 pb-[76px] lg:grid lg:grid-cols-[minmax(0,1fr)_440px] lg:items-center lg:gap-6`}>
+    <div className="lg:flex lg:min-h-dvh lg:flex-col">
+      <header className={`${HEADER_CLASS} pb-[84px] lg:grid lg:grid-cols-[minmax(0,1fr)_420px] lg:items-end lg:gap-10`}>
         <MobileTopRow />
-        <div>
-          <div className="text-[15px] font-semibold text-muted">{t("home.greeting", { name: state.household.ownerName })}</div>
-          <div className="font-display text-[38px] font-extrabold leading-none tracking-[-0.04em] lg:text-[40px]">
-            <span className="lg:hidden">{t("home.dateToday", { date: formatDayMonth(state.today, lang) })}</span>
-            <span className="hidden lg:inline">
-              {dayLong(lang)[weekdayOf(state.today)]}, {formatDayMonth(state.today, lang)}
-            </span>
-          </div>
-          <div className="mt-4 hidden gap-2.5 lg:flex">
-            <Link href="/inbox" className="flex h-12 items-center gap-2.5 rounded-3xl bg-surface pr-4 pl-1.5">
-              <StateIcon state={left > 0 ? "claim" : "present"} size={36} />
-              <span className="font-extrabold">
-                {left === 0 ? t("home.pendingNone") : left === 1 ? t("home.pendingPillOne") : t("home.pendingPill", { count: left })}
-              </span>
-              {left > 0 && (
-                <span className="text-[13px] text-muted">
-                  {[
-                    progress.claims > 0 && t("home.pendingClaims", { count: progress.claims }),
-                    progress.unknown > 0 && t("home.pendingUnknown", { count: progress.unknown }),
-                  ]
-                    .filter(Boolean)
-                    .join(" · ")}
-                </span>
-              )}
-            </Link>
-          </div>
+        <div className="mt-[34px] lg:mt-0">
+          <div className="label-caps">{fullDate}</div>
+          <h1 className="mt-2.5 font-display text-[54px] leading-[0.98] tracking-[-0.035em] lg:mt-3 lg:text-[68px] lg:leading-[0.95] lg:tracking-[-0.04em]">
+            {t("home.hello")}
+            <br className="lg:hidden" /> <i>{firstName}.</i>
+          </h1>
+          <p className="mt-3 max-w-[290px] font-display text-[19px] leading-[1.35] text-muted lg:mt-2.5 lg:max-w-none lg:text-[21px]">
+            {summary}
+          </p>
         </div>
-        <WeekStrip cellClassName="h-16 lg:h-[78px]" />
+        <div className="mt-[22px] lg:mt-0">
+          <div className="mb-2.5 hidden items-center justify-between lg:flex">
+            <span className="label-caps">{t("home.thisWeek")}</span>
+            <div className="flex gap-2">
+              <HeaderIconButton icon="contrast" onClick={toggle} label={t("nav.theme")} />
+              <HeaderIconButton icon="bell" href="/inbox" badge={pendingItems(state).length} label={t("nav.inbox")} />
+            </div>
+          </div>
+          <WeekStrip className="pt-3.5 lg:pt-2.5" />
+        </div>
       </header>
 
-      <div className="-mt-[54px] flex flex-col gap-3.5 px-4 lg:mt-0 lg:grid lg:flex-1 lg:grid-cols-[minmax(0,1fr)_340px] lg:content-start lg:items-start lg:gap-4 lg:px-0">
-        <div className="lg:hidden">
-          <TodayStatusRow />
+      {/* Phone and tablet */}
+      <div className={`${SHEET_CLASS} -mt-14 pb-6 lg:hidden`}>
+        <TodayStatusRow />
+        <PushPrompt target={{ kind: "household" }} className="mt-6" />
+        <div className="mt-[30px] flex items-baseline justify-between border-b border-ink pb-2.5">
+          <span className="label-caps text-ink">{t("home.workers")}</span>
+          <span className="label-caps tabular">{String(workers.length).padStart(2, "0")}</span>
         </div>
-        <PushPrompt target={{ kind: "household" }} className="lg:col-span-2" />
-        <div className="mt-1 flex items-baseline justify-between lg:hidden">
-          <div className="font-display text-[22px] font-extrabold tracking-[-0.02em]">{t("home.workers")}</div>
-          <div className="text-[13px] font-bold text-muted">{t("home.activeCount", { count: workers.length })}</div>
+        {workers.map((w, i) => (
+          <WorkerCard key={w.id} worker={w} className={i > 0 ? "border-t border-line" : ""} />
+        ))}
+      </div>
+
+      {/* Desktop */}
+      <div className="hidden flex-1 lg:grid lg:grid-cols-[minmax(0,1fr)_320px]">
+        <div className="min-w-0 px-10 py-[26px]">
+          <PushPrompt target={{ kind: "household" }} className="mb-6" />
+          <TodayRegister />
         </div>
-        <div className="flex flex-col gap-3.5 lg:grid lg:grid-cols-2 lg:content-start">
-          {workers.map((w) => (
-            <WorkerCard key={w.id} worker={w} />
-          ))}
-        </div>
-        <div className="hidden lg:block lg:self-stretch">
+        <div className="border-l border-line px-7 py-[26px]">
           <PendingCard />
         </div>
       </div>

@@ -90,8 +90,8 @@ export function InstallBanner() {
 
   return (
     <>
-      <div className="flex items-center gap-3 rounded-[24px] bg-av-purple px-4 py-3.5">
-        <span className="flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-surface">
+      <div className="flex items-center gap-3 rounded-[6px] bg-av-purple px-4 py-3.5">
+        <span className="flex h-11 w-11 flex-none items-center justify-center rounded-[6px] bg-surface">
           <Icon name="home" size={22} />
         </span>
         <div className="min-w-0 flex-1 leading-tight">
@@ -107,11 +107,11 @@ export function InstallBanner() {
       </div>
       <Sheet open={showSteps} onClose={() => setShowSteps(false)} title={t("worker.installTitle")}>
         <ol className="flex flex-col gap-3 text-lg font-semibold">
-          <li className="flex items-center gap-3 rounded-[20px] bg-surface-2 px-4 py-3">
+          <li className="flex items-center gap-3 rounded-[6px] bg-surface-2 px-4 py-3">
             <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-coral font-display text-white">1</span>
             {t("worker.installStep1")}
           </li>
-          <li className="flex items-center gap-3 rounded-[20px] bg-surface-2 px-4 py-3">
+          <li className="flex items-center gap-3 rounded-[6px] bg-surface-2 px-4 py-3">
             <span className="flex h-9 w-9 flex-none items-center justify-center rounded-full bg-coral font-display text-white">2</span>
             {t("worker.installStep2")}
           </li>

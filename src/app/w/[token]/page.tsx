@@ -22,25 +22,27 @@ export default function WorkerTodayPage() {
   const today = state.today;
 
   return (
-    <div className="pb-[120px]">
+    <div className="pb-[130px]">
       <WorkerHeader>
         <WorkerTopRow greeting={t("worker.greeting", { name: me.name })} token={token} />
-        <div className="mt-3.5 text-[19px] font-semibold text-muted">
-          {dayLong(lang)[weekdayOf(today)]}
-        </div>
-        <div className="text-[42px] font-extrabold leading-[1.05]">{formatDayMonth(today, lang)}</div>
+        <h1 className="mt-5 font-display text-[36px] leading-[1.15]">
+          {dayLong(lang)[weekdayOf(today)]},
+          <br />
+          {formatDayMonth(today, lang)}
+        </h1>
       </WorkerHeader>
 
-      <div className="-mt-[46px] flex flex-col gap-3.5 px-4">
+      <div className="relative mx-3.5 -mt-[50px] flex flex-col rounded-t-[22px] bg-bg px-[18px] pt-1">
         {invites.map((invite) => (
           <InviteCard key={invite.id} invite={invite} />
         ))}
-        {houses.map((house) => {
+        {houses.map((house, i) => {
           const engagement = state.workers.find((w) => w.id === house.id);
           if (!engagement) return null;
           return (
             <HouseCard
               key={house.id}
+              className={i > 0 ? "border-t border-line" : ""}
               engagement={house}
               info={dayInfo(state, engagement, today)}
               came={act({ type: "mark", workerId: house.id, date: today, state: "present", by: "worker" })}
@@ -50,16 +52,16 @@ export default function WorkerTodayPage() {
           );
         })}
 
-        <PushPrompt target={{ kind: "worker", token }} large />
+        <PushPrompt target={{ kind: "worker", token }} large className="mt-3.5" />
         <InstallBanner />
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-40 mx-auto grid w-full max-w-[480px] grid-cols-2 gap-2.5 rounded-t-[28px] bg-surface px-4 pt-3 pb-safe shadow-nav">
-        <Link href={`/w/${token}/leave`} className="flex h-[66px] items-center justify-center gap-2 rounded-[22px] bg-coral-soft text-lg font-extrabold">
+      <div className="fixed inset-x-0 bottom-0 z-40 mx-auto grid w-full max-w-[480px] grid-cols-2 gap-2.5 border-t border-line bg-bg px-4 pt-3 pb-safe">
+        <Link href={`/w/${token}/leave`} className="flex h-[66px] items-center justify-center gap-[9px] rounded-[6px] border-[1.5px] border-ink bg-surface-2 text-base font-bold">
           <Icon name="calendar" size={22} />
           {t("worker.planLeave")}
         </Link>
-        <Link href={`/w/${token}/hisaab`} className="flex h-[66px] items-center justify-center gap-2 rounded-[22px] bg-coral-soft text-lg font-extrabold">
+        <Link href={`/w/${token}/hisaab`} className="flex h-[66px] items-center justify-center gap-[9px] rounded-[6px] border-[1.5px] border-ink bg-surface-2 text-base font-bold">
           <Icon name="rupee" size={22} />
           {t("worker.myHisaab")}
         </Link>

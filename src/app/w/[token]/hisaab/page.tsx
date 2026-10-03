@@ -43,7 +43,7 @@ export default function WorkerHisaabPage() {
           const isOpen = open === e.id;
           const blocked = s.pending.length > 0;
           return (
-            <Card key={e.id} padding="none" radius={28} className="overflow-hidden">
+            <Card key={e.id} padding="none" className="overflow-hidden">
               <button type="button" onClick={() => setOpen(isOpen ? "" : e.id)} className="flex w-full items-center gap-3 p-[18px] text-left">
                 <Avatar initial={e.initial} tone={e.tone} size={48} />
                 <div className="min-w-0 flex-1">
@@ -60,12 +60,12 @@ export default function WorkerHisaabPage() {
               </button>
               {isOpen && (
                 <div className="flex flex-col gap-3 bg-surface-2 p-3">
-                  <div className="rounded-[22px] bg-surface px-3 pt-3 pb-2.5">
+                  <div className="rounded-[6px] bg-surface px-3 pt-3 pb-2.5">
                     <div className="mb-2 text-lg font-extrabold">{formatMonthLong(month, lang)}</div>
                     <MonthGrid worker={engagement} month={month} />
                   </div>
                   {blocked && (
-                    <div className="flex flex-col gap-2 rounded-[22px] bg-surface p-3">
+                    <div className="flex flex-col gap-2 rounded-[6px] bg-surface p-3">
                       {s.pending.map((p) => (
                         <div key={p.date} className="flex items-center gap-3">
                           <StateIcon state={p.info.state} size={36} />
@@ -88,7 +88,7 @@ export default function WorkerHisaabPage() {
                   )}
                   <SettlementBreakdown summary={s} workerName={me.name} gender={me.gender} side="worker" className="shadow-none" />
                   {s.settlement?.paidAt && (
-                    <div className="flex items-center gap-2 rounded-[20px] bg-present-bg px-4 py-3 text-lg font-extrabold text-present-fg">
+                    <div className="flex items-center gap-2 rounded-[6px] bg-present-bg px-4 py-3 text-lg font-extrabold text-present-fg">
                       <Icon name="check" size={20} strokeWidth={3} />
                       {t("hisaab.paidOn", { date: formatDayMonth(s.settlement.paidAt.slice(0, 10), lang) })}
                     </div>

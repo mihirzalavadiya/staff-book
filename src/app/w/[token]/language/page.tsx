@@ -53,8 +53,8 @@ export default function LanguagePage() {
               onClick={() => pick(l.code)}
               dir={l.rtl ? "rtl" : undefined}
               className={cn(
-                "flex h-[72px] items-center justify-between rounded-[24px] px-6 text-[26px] font-extrabold shadow-card",
-                active ? "bg-coral text-white" : "bg-surface",
+                "flex h-[72px] items-center justify-between rounded-[6px] px-6 text-[26px] font-extrabold ",
+                active ? "bg-ink text-bg" : "bg-surface",
                 !l.available && "opacity-45",
               )}
             >

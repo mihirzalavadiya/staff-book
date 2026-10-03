@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
 import { usePhase } from "@/lib/usePhase";
 import { googleSignInUrl, postLoginPath, sendEmailOtp, signInWithPassword, verifyEmailOtp } from "@/server/actions/auth";
+import { Wordmark } from "@/components/household/PageHeader";
 import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
 import { Icon } from "@/components/ui/Icon";
 
@@ -74,13 +74,13 @@ export default function LoginPage() {
 
   return (
     <div className="flex min-h-dvh flex-col bg-bg">
-      <div className="flex flex-1 flex-col justify-end rounded-b-[38px] bg-peach px-5 pt-8 pb-[70px] sm:mx-auto sm:mt-10 sm:w-full sm:max-w-[520px] sm:flex-none sm:rounded-[30px] sm:pb-10">
-        <div className="mb-6 flex h-14 w-14 items-center justify-center rounded-[18px] bg-coral font-display text-3xl font-extrabold text-white">S</div>
-        <h1 className="font-display text-[38px] font-extrabold leading-[1.02] tracking-[-0.04em]">{t("login.title")}</h1>
-        <p className="mt-3 text-[15px] font-semibold text-muted">{t("login.subtitle")}</p>
+      <div className="flex flex-1 flex-col justify-end bg-peach px-[22px] pt-8 pb-[84px] sm:flex-none sm:pt-16 sm:pb-24">
+        <Wordmark className="mb-auto block text-[28px] sm:mx-auto sm:mb-10 sm:w-full sm:max-w-[520px]" />
+        <h1 className="font-display text-[54px] leading-[0.98] tracking-[-0.035em] sm:mx-auto sm:w-full sm:max-w-[520px]">{t("login.title")}</h1>
+        <p className="mt-3 font-display text-[19px] leading-[1.35] text-muted sm:mx-auto sm:w-full sm:max-w-[520px]">{t("login.subtitle")}</p>
       </div>
-      <div className="-mt-11 px-4 pb-8 sm:mx-auto sm:mt-4 sm:w-full sm:max-w-[520px]">
-        <Card padding="lg" className="flex flex-col gap-3">
+      <div className="relative mx-3.5 -mt-14 rounded-t-[22px] bg-bg px-[18px] pt-6 pb-8 sm:mx-auto sm:w-full sm:max-w-[560px] sm:px-5">
+        <div className="flex flex-col gap-3">
           {step === "email" ? (
             <>
               <Field
@@ -158,13 +158,13 @@ export default function LoginPage() {
               </Button>
             </>
           )}
-          {error && <div className="rounded-2xl bg-dispute-bg px-4 py-3 text-sm font-bold text-dispute-fg">{error}</div>}
+          {error && <div className="rounded-[6px] bg-dispute-bg px-4 py-3 text-sm font-bold text-dispute-fg">{error}</div>}
           <div className="pt-2 text-center text-xs font-semibold text-muted">{t("login.worker")}</div>
           <div className="flex justify-center gap-4 text-xs font-semibold text-muted-2">
             <a href="/privacy" className="underline">Privacy</a>
             <a href="/terms" className="underline">Terms</a>
           </div>
-        </Card>
+        </div>
       </div>
     </div>
   );

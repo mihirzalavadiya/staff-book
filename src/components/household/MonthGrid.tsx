@@ -64,7 +64,7 @@ export function MonthGrid({ worker, month, selected, onSelect, compact }: Props)
               className={cn(
                 "flex items-center justify-center gap-0.5 rounded-xl font-bold",
                 size,
-                isToday ? "bg-coral text-white" : CELL[st],
+                isToday ? "bg-ink text-bg" : CELL[st],
                 isSelected && !isToday && "ring-2 ring-coral ring-offset-2 ring-offset-surface",
               )}
             >

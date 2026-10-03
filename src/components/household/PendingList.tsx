@@ -2,12 +2,11 @@
 
 import Link from "next/link";
 import { cn } from "@/lib/cn";
-import { formatDayMonth, formatTime } from "@/lib/date";
+import { formatDayMonth, formatMonthLong, formatTime } from "@/lib/date";
 import { useI18n } from "@/lib/i18n";
 import { monthSummary, pendingItems, type PendingItem } from "@/lib/ledger";
 import { useStore } from "@/lib/store";
 import { monthOf } from "@/lib/date";
-import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
 import { StateIcon } from "@/components/ui/StateIcon";
 
@@ -28,23 +27,23 @@ function PendingRow({ item, className }: { item: PendingItem; className?: string
   return (
     <Link
       href={`/calendar?worker=${item.worker.id}&date=${item.date}`}
-      className={cn("flex items-center gap-3 py-[11px]", className)}
+      className={cn("flex items-start gap-3 py-3.5", className)}
     >
-      <StateIcon state={item.info.state} size={34} />
-      <div className="min-w-0 flex-1 leading-[1.3]">
-        <div className="font-bold">
-          {item.worker.name} · {isToday ? t("common.todayLabel") : formatDayMonth(item.date, lang)}
+      <StateIcon state={item.info.state} size={26} />
+      <div className="min-w-0 flex-1">
+        <div className="flex justify-between gap-2">
+          <span className="truncate font-display text-[19px] leading-[1.1]">{item.worker.name}</span>
+          <span className="label-caps flex-none text-[9.5px]">{isToday ? t("common.todayLabel") : formatDayMonth(item.date, lang)}</span>
         </div>
-        <div className="truncate text-xs text-muted">{pendingLine(item, t)}</div>
+        <div className="mt-[3px] truncate text-[12.5px] text-muted">{pendingLine(item, t)}</div>
       </div>
-      <Icon name="chevronRight" size={16} className="flex-none" />
     </Link>
   );
 }
 
-/** Compact "Pending" card for the desktop home right column. */
+/** "Pending" column for the desktop home: what needs you, then the month's blocked salary. */
 export function PendingCard({ limit = 4 }: { limit?: number }) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
   const { state } = useStore();
   const items = pendingItems(state);
   const month = monthOf(state.today);
@@ -55,12 +54,12 @@ export function PendingCard({ limit = 4 }: { limit?: number }) {
     .sort((a, b) => b.s.pending.length - a.s.pending.length)[0];
 
   return (
-    <Card padding="none" className="flex flex-col gap-1 px-[18px] py-4">
-      <div className="flex items-center justify-between">
-        <div className="text-base font-extrabold">{t("home.pendingTitle")}</div>
-        <Link href="/inbox" className="text-xs font-extrabold text-coral">
-          {t("common.viewAll")} →
+    <section className="flex h-full flex-col">
+      <div className="flex items-baseline justify-between border-b border-ink pb-2.5">
+        <Link href="/inbox" className="font-display text-[30px] leading-none tracking-[-0.02em]">
+          {t("home.pendingTitle")}
         </Link>
+        <span className="label-caps tabular">{String(items.length).padStart(2, "0")}</span>
       </div>
       {items.length === 0 ? (
         <div className="py-4 text-sm text-muted">{t("inbox.empty")}</div>
@@ -70,14 +69,19 @@ export function PendingCard({ limit = 4 }: { limit?: number }) {
         ))
       )}
       {blocked && (
-        <Link
-          href={`/hisaab?worker=${blocked.w.id}`}
-          className="mt-auto flex items-center gap-2.5 rounded-[18px] bg-dispute-bg px-3.5 py-3 text-[13px] font-bold text-dispute-fg"
-        >
-          <Icon name="warning" size={16} />
-          {t("home.hisaabPending", { name: blocked.w.name, count: blocked.s.pending.length })}
+        <Link href={`/hisaab?worker=${blocked.w.id}`} className="mt-auto border-t border-ink pt-4">
+          <div className="label-caps text-[9.5px]">{t("home.monthHisaab", { month: formatMonthLong(month, lang) })}</div>
+          <div className="mt-1.5 flex items-baseline justify-between gap-2">
+            <span className="truncate font-display text-[22px] text-dispute-fg">
+              {blocked.w.name} · {t("home.daysPending", { count: blocked.s.pending.length })}
+            </span>
+            <span className="flex flex-none items-center gap-1 text-xs font-semibold text-coral">
+              {t("home.fill")}
+              <Icon name="chevronRight" size={12} />
+            </span>
+          </div>
         </Link>
       )}
-    </Card>
+    </section>
   );
 }

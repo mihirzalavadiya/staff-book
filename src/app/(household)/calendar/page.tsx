@@ -11,7 +11,7 @@ import type { DayState } from "@/lib/types";
 import { DayDetail } from "@/components/household/DayDetail";
 import { MonthGrid } from "@/components/household/MonthGrid";
 import { MonthPicker } from "@/components/household/MonthPicker";
-import { HEADER_CLASS, MobileTopRow } from "@/components/household/PageHeader";
+import { HEADER_CLASS, SHEET_CLASS, MobileTopRow } from "@/components/household/PageHeader";
 import { WorkerSwitcher } from "@/components/household/WorkerSwitcher";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -69,19 +69,19 @@ function CalendarScreen() {
   };
 
   return (
-    <div className="lg:flex lg:min-h-dvh lg:flex-col lg:gap-4 lg:p-5">
-      <header className={`${HEADER_CLASS} gap-3.5 pb-[70px]`}>
+    <div className="lg:flex lg:min-h-dvh lg:flex-col">
+      <header className={`${HEADER_CLASS} gap-3.5 pb-[76px]`}>
         <MobileTopRow title={t("calendar.title")} />
         <div className="flex items-center justify-between gap-2">
-          <div className="hidden font-display text-[30px] font-extrabold tracking-[-0.04em] lg:block">{t("calendar.title")}</div>
+          <div className="hidden font-display text-[30px] tracking-[-0.04em] lg:block">{t("calendar.title")}</div>
           <WorkerSwitcher workers={workers} value={worker.id} onChange={selectWorker} />
           <MonthPicker value={month} latest={thisMonth} onChange={setMonth} />
         </div>
       </header>
 
-      <div className="-mt-11 flex flex-col gap-3.5 px-4 lg:mt-0 lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start lg:gap-4 lg:px-0">
+      <div className={`${SHEET_CLASS} -mt-14 pb-6 lg:pb-10 flex flex-col gap-3.5 lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start lg:gap-4`}>
         <div className="flex flex-col gap-3.5">
-          <Card padding="none" radius={28} className="px-4 pt-4 pb-3.5">
+          <Card padding="none" className="px-4 pt-4 pb-3.5">
             <MonthGrid worker={worker} month={month} selected={selected} onSelect={selectDay} />
             <div className="mt-4 flex flex-wrap gap-x-4 gap-y-2 border-t border-line pt-3">
               {LEGEND.map((s) => (
@@ -113,7 +113,7 @@ function CalendarScreen() {
                     <div className="font-bold">{formatDayMonth(a.date, lang)}</div>
                     {a.note && <div className="text-xs text-muted">{a.note}</div>}
                   </div>
-                  <span className="font-display font-bold tabular">{formatINR(a.amount)}</span>
+                  <span className="font-display tabular">{formatINR(a.amount)}</span>
                 </div>
               ))
             )}

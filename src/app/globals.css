@@ -1,115 +1,121 @@
 @import "tailwindcss";
 
-/* ---------- Design tokens (Staffbook · Peach Sunrise) ---------- */
+/* ---------- Design tokens (Staffbook · Ivory Ledger, editorial) ---------- */
 :root {
-  --bg: #fff7f1;
-  --surface: #ffffff;
-  --surface-2: #fff7f1;
-  --surface-glass: rgba(255, 255, 255, 0.7);
-  --surface-glass-2: rgba(255, 255, 255, 0.65);
+  --bg: #f7f2ea;
+  --surface: #f7f2ea;
+  --surface-2: #efe7da;
+  --surface-glass: rgba(247, 242, 234, 0.55);
+  --surface-glass-2: rgba(247, 242, 234, 0.4);
 
-  --ink: #2b1d17;
-  --ink-2: #1f1d2b;
-  --muted: #735f55;
-  --muted-2: #8e8a9c;
-  --nav-idle: #a8958a;
+  --ink: #1f1b16;
+  --ink-2: #1f1b16;
+  --muted: #6b6257;
+  --muted-2: #9a8f81;
+  --nav-idle: #9a8f81;
 
-  --peach: #ffe0cc;
-  --coral: #c9502b;
-  --coral-soft: #ffe9de;
+  /* "peach" is the sand header band; "coral" the muted terracotta accent */
+  --peach: #e6dac6;
+  --coral: #a4573a;
+  --coral-soft: #efe7da;
 
-  --line: #f5eae2;
-  --line-dashed: #f5e1d5;
+  --line: #ddd3c3;
+  --line-strong: #cdbfa9;
+  --line-dashed: #a89c8b;
 
-  --shadow-card: 0 10px 28px rgba(201, 80, 43, 0.1);
-  --shadow-nav: 0 -8px 24px rgba(201, 80, 43, 0.08);
-  --shadow-float: 0 12px 32px rgba(31, 29, 43, 0.14);
+  --shadow-card: none;
+  --shadow-nav: none;
+  --shadow-float: 0 30px 60px rgba(60, 45, 25, 0.12);
 
   /* day states */
-  --present-bg: #eaf8f0;
-  --present-icon: #bfebd1;
-  --present-fg: #1b6a43;
-  --present-cell: #d4f3e2;
-  --present-dot: #5cc98a;
-  --present-sub: #3c6b52;
+  --present-bg: #e9eee2;
+  --present-icon: #dce5d3;
+  --present-fg: #3f5e3a;
+  --present-cell: #dce5d3;
+  --present-dot: #9db590;
+  --present-sub: #3f5e3a;
 
-  --leave-bg: #f4f1f5;
-  --leave-icon: #e4e1ea;
-  --leave-fg: #55526a;
-  --leave-cell: #ece9f0;
+  --leave-bg: #efe7da;
+  --leave-icon: #e6e0d6;
+  --leave-fg: #6b6257;
+  --leave-cell: #e6e0d6;
 
-  --claim-bg: #fff4d1;
-  --claim-icon: #ffe08f;
-  --claim-fg: #6e4c00;
-  --claim-dot: #f2b53a;
+  --claim-bg: #f6ecd2;
+  --claim-icon: #f0e1b8;
+  --claim-fg: #6e5212;
+  --claim-dot: #d9b65e;
 
-  --dispute-bg: #ffe3e0;
-  --dispute-icon: #ffc6c6;
-  --dispute-fg: #a2302c;
-  --dispute-dot: #e5615b;
+  --dispute-bg: #f5e3dc;
+  --dispute-icon: #efd3cb;
+  --dispute-fg: #93392c;
+  --dispute-dot: #c27a6a;
 
-  --unknown-fg: #8e8a9c;
-  --off-fg: #b4b0be;
+  --unknown-fg: #8a7e70;
+  --off-fg: #cfc6b8;
 
   /* avatar tones */
-  --av-purple: #e7e0fa;
-  --av-blue: #d8ebfb;
-  --av-green: #d3f0e1;
-  --av-yellow: #ffefb5;
-  --av-peach: #ffe1d1;
+  --av-purple: #efdccf;
+  --av-blue: #e2e3d6;
+  --av-green: #e9eee2;
+  --av-yellow: #e7e0cd;
+  --av-peach: #eadfd0;
 }
 
 :root[data-theme="dark"] {
-  --bg: #181210;
-  --surface: #241b18;
-  --surface-2: #181210;
-  --surface-glass: rgba(255, 255, 255, 0.08);
-  --surface-glass-2: rgba(255, 255, 255, 0.06);
+  --bg: #141210;
+  --surface: #141210;
+  --surface-2: #24201b;
+  --surface-glass: rgba(239, 231, 218, 0.06);
+  --surface-glass-2: rgba(239, 231, 218, 0.04);
 
-  --ink: #f8efe8;
-  --ink-2: #f8efe8;
-  --muted: #bfa99d;
-  --muted-2: #9a908f;
-  --nav-idle: #8b7a72;
+  --ink: #efe7da;
+  --ink-2: #efe7da;
+  --muted: #b3a898;
+  --muted-2: #857b6e;
+  --nav-idle: #857b6e;
 
-  --peach: #3a2419;
-  --coral: #e0673f;
-  --coral-soft: #4a2619;
+  --peach: #1e1a16;
+  --coral: #d98a66;
+  --coral-soft: #24201b;
 
-  --line: #35281f;
-  --line-dashed: #3d2d24;
+  --line: #332d26;
+  --line-strong: #3a332b;
+  --line-dashed: #6e6458;
 
-  --shadow-card: 0 10px 28px rgba(0, 0, 0, 0.35);
-  --shadow-nav: 0 -8px 24px rgba(0, 0, 0, 0.35);
-  --shadow-float: 0 12px 32px rgba(0, 0, 0, 0.5);
+  --shadow-card: none;
+  --shadow-nav: none;
+  --shadow-float: 0 30px 60px rgba(0, 0, 0, 0.5);
 
-  --present-bg: #14301f;
-  --present-icon: #1f5a3a;
-  --present-fg: #8fe0b3;
-  --present-cell: #1a4a2c;
-  --present-sub: #8fd3aa;
+  --present-bg: #1c2619;
+  --present-icon: #22301f;
+  --present-fg: #a9cc9c;
+  --present-cell: #22301f;
+  --present-dot: #7fa472;
+  --present-sub: #a9cc9c;
 
-  --leave-bg: #2a2630;
-  --leave-icon: #3c3746;
-  --leave-fg: #c4bfd1;
-  --leave-cell: #332e3d;
+  --leave-bg: #24201b;
+  --leave-icon: #2c2823;
+  --leave-fg: #b3a898;
+  --leave-cell: #2c2823;
 
-  --claim-bg: #3a2e0f;
-  --claim-icon: #6e4c00;
-  --claim-fg: #ffe08f;
+  --claim-bg: #2a2314;
+  --claim-icon: #3a2f15;
+  --claim-fg: #e8c877;
+  --claim-dot: #c9a24a;
 
-  --dispute-bg: #3d1a18;
-  --dispute-icon: #7a2a27;
-  --dispute-fg: #ffb3ae;
+  --dispute-bg: #2c1a16;
+  --dispute-icon: #3e211c;
+  --dispute-fg: #f0a08f;
+  --dispute-dot: #c9715f;
 
-  --unknown-fg: #9a908f;
-  --off-fg: #5e5560;
+  --unknown-fg: #7e7466;
+  --off-fg: #5a5248;
 
-  --av-purple: #3b3358;
-  --av-blue: #2c3f52;
-  --av-green: #274434;
-  --av-yellow: #4d4320;
-  --av-peach: #4d3126;
+  --av-purple: #3d2c24;
+  --av-blue: #2e3128;
+  --av-green: #1c2619;
+  --av-yellow: #36301f;
+  --av-peach: #3a3128;
 }
 
 @theme inline {
@@ -127,6 +133,7 @@
   --color-coral: var(--coral);
   --color-coral-soft: var(--coral-soft);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-line-dashed: var(--line-dashed);
 
   --color-present-bg: var(--present-bg);
@@ -156,9 +163,11 @@
   --color-av-yellow: var(--av-yellow);
   --color-av-peach: var(--av-peach);
 
-  --font-sans: var(--font-figtree), var(--font-devanagari), system-ui, sans-serif;
-  --font-display: var(--font-bricolage), var(--font-figtree), sans-serif;
-  --font-deva: var(--font-devanagari), var(--font-figtree), sans-serif;
+  --font-sans: var(--font-hanken), var(--font-devanagari), system-ui, sans-serif;
+  /* Instrument Serif has one weight (400); Devanagari falls through to Tiro. */
+  --font-display: var(--font-instrument), var(--font-tiro), Georgia, serif;
+  --font-deva: var(--font-devanagari), var(--font-hanken), sans-serif;
+  --font-deva-display: var(--font-tiro), var(--font-instrument), serif;
 
   --shadow-card: var(--shadow-card);
   --shadow-nav: var(--shadow-nav);
@@ -218,6 +227,16 @@
   &::-webkit-scrollbar {
     display: none;
   }
+}
+
+/* Small uppercase label: the ledger's column heads and section titles. */
+@utility label-caps {
+  font-family: var(--font-sans);
+  font-size: 10.5px;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--muted);
 }
 
 @utility tabular {

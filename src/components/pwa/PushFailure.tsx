@@ -44,13 +44,13 @@ export function PushFailureDialog({
         <span className="flex h-16 w-16 items-center justify-center rounded-full bg-dispute-bg text-dispute-fg">
           <Icon name="bell" size={30} />
         </span>
-        <div className="mt-3 font-display text-[22px] font-extrabold leading-tight tracking-[-0.02em]">
+        <div className="mt-3 font-display text-[22px] leading-tight tracking-[-0.02em]">
           {t(kind === "blocked" ? "pushUi.blockedTitle" : "pushUi.serviceTitle")}
         </div>
       </div>
       <ol className="mt-4 flex flex-col gap-2">
         {steps.map((k, i) => (
-          <li key={k} className="flex items-start gap-3 rounded-2xl bg-surface-2 px-3.5 py-3 text-sm font-semibold leading-snug">
+          <li key={k} className="flex items-start gap-3 rounded-[6px] bg-surface-2 px-3.5 py-3 text-sm font-semibold leading-snug">
             <span className="flex h-6 w-6 flex-none items-center justify-center rounded-full bg-coral text-xs font-extrabold text-white">{i + 1}</span>
             {t(`pushUi.${k}`)}
           </li>

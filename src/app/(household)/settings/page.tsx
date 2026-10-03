@@ -7,7 +7,7 @@ import { homeLabel } from "@/lib/home";
 import { useStore } from "@/lib/store";
 import { useTheme, type Theme } from "@/lib/theme";
 import { signOut } from "@/server/actions/auth";
-import { HEADER_CLASS, MobileTopRow } from "@/components/household/PageHeader";
+import { HEADER_CLASS, SHEET_CLASS, MobileTopRow } from "@/components/household/PageHeader";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -55,14 +55,14 @@ export default function SettingsPage() {
   const [loggingOut, startLogout] = useTransition();
 
   return (
-    <div className="lg:flex lg:min-h-dvh lg:flex-col lg:gap-4 lg:p-5">
+    <div className="lg:flex lg:min-h-dvh lg:flex-col">
       <PushFailureDialog
         kind={pushProblem}
         onClose={() => setPushProblem(null)}
         onRetry={enablePush}
         retrying={push.busy}
       />
-      <header className={`${HEADER_CLASS} gap-4 pb-[70px]`}>
+      <header className={`${HEADER_CLASS} gap-4 pb-[76px]`}>
         <MobileTopRow title={t("settings.title")} />
         <div className="flex items-center gap-3">
           <Avatar
@@ -73,7 +73,7 @@ export default function SettingsPage() {
             className="bg-surface"
           />
           <div>
-            <div className="font-display text-[30px] font-extrabold leading-none tracking-[-0.03em]">
+            <div className="font-display text-[30px] leading-none tracking-[-0.03em]">
               {homeLabel(state.household.name, state.household.flat)}
             </div>
             <div className="mt-1 text-[15px] font-semibold text-muted">
@@ -83,7 +83,7 @@ export default function SettingsPage() {
         </div>
       </header>
 
-      <div className="-mt-11 flex flex-col gap-5 px-4 lg:mt-0 lg:grid lg:grid-cols-2 lg:items-start lg:px-0">
+      <div className={`${SHEET_CLASS} -mt-14 pb-6 lg:pb-10 flex flex-col gap-5 lg:grid lg:grid-cols-2 lg:items-start`}>
         <Section title={t("settings.home")}>
           <Field
             label={t("settings.flat")}
@@ -106,7 +106,7 @@ export default function SettingsPage() {
             <div className="mb-1.5 text-[13px] font-bold text-muted">
               {t("settings.location")}
             </div>
-            <div className="flex items-center gap-3 rounded-2xl bg-surface-2 px-4 py-3">
+            <div className="flex items-center gap-3 rounded-[6px] bg-surface-2 px-4 py-3">
               <Icon
                 name="pin"
                 size={18}
@@ -175,7 +175,7 @@ export default function SettingsPage() {
             <div className="mb-1.5 text-[13px] font-bold text-muted">
               {t("settings.reminder")}
             </div>
-            <div className="flex items-center gap-3 rounded-2xl bg-surface-2 px-4 py-3">
+            <div className="flex items-center gap-3 rounded-[6px] bg-surface-2 px-4 py-3">
               <Icon name="clock" size={18} className="text-muted" />
               <input
                 type="time"
@@ -186,7 +186,7 @@ export default function SettingsPage() {
                     patch: { notifyAt: e.target.value },
                   })
                 }
-                className="flex-1 bg-transparent font-display text-lg font-bold outline-none [&::-webkit-calendar-picker-indicator]:opacity-0"
+                className="flex-1 bg-transparent font-display text-lg outline-none [&::-webkit-calendar-picker-indicator]:opacity-0"
               />
             </div>
             <div className="mt-1.5 text-xs text-muted">
@@ -212,8 +212,8 @@ export default function SettingsPage() {
                 type="button"
                 onClick={() => setTheme(k)}
                 className={cn(
-                  "h-12 rounded-2xl text-[15px] font-bold",
-                  theme === k ? "bg-coral text-white" : "bg-surface-2",
+                  "h-12 rounded-[6px] text-[15px] font-bold",
+                  theme === k ? "bg-ink text-bg" : "bg-surface-2",
                 )}
               >
                 {t(`settings.${k}`)}

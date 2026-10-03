@@ -4,8 +4,8 @@
   "description": "A shared daily attendance register between households and the people who work in them.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#FFF7F1",
-  "theme_color": "#FFE0CC",
+  "background_color": "#F7F2EA",
+  "theme_color": "#E6DAC6",
   "icons": [
     {
       "src": "/icon-192.png",

@@ -9,7 +9,7 @@ import { attendancePercent } from "@/lib/ledger";
 import { formatINR } from "@/lib/money";
 import { roleName } from "@/lib/roles";
 import { useStore } from "@/lib/store";
-import { HEADER_CLASS, MobileTopRow } from "@/components/household/PageHeader";
+import { HEADER_CLASS, SHEET_CLASS, MobileTopRow } from "@/components/household/PageHeader";
 import { Avatar } from "@/components/ui/Avatar";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
@@ -23,11 +23,11 @@ export default function WorkersPage() {
   const list = tab === "active" ? active : archived;
 
   return (
-    <div className="lg:flex lg:min-h-dvh lg:flex-col lg:gap-4 lg:p-5">
-      <header className={`${HEADER_CLASS} gap-3.5 pb-[70px]`}>
+    <div className="lg:flex lg:min-h-dvh lg:flex-col">
+      <header className={`${HEADER_CLASS} gap-3.5 pb-[76px]`}>
         <MobileTopRow title={t("workers.title")} />
         <div className="flex items-center justify-between gap-3">
-          <div className="hidden font-display text-[30px] font-extrabold tracking-[-0.04em] lg:block">{t("workers.title")}</div>
+          <div className="hidden font-display text-[30px] tracking-[-0.04em] lg:block">{t("workers.title")}</div>
           <div className="flex gap-1 rounded-full bg-glass p-1">
             {(["active", "archive"] as const).map((k) => (
               <button
@@ -43,14 +43,14 @@ export default function WorkersPage() {
               </button>
             ))}
           </div>
-          <Link href="/workers/new" className="flex h-11 items-center gap-2 rounded-[22px] bg-coral px-4 text-[15px] font-bold text-white">
+          <Link href="/workers/new" className="flex h-11 items-center gap-2 rounded-[6px] bg-coral px-4 text-[15px] font-bold text-white">
             <Icon name="plus" size={16} />
             <span className="hidden sm:inline">{t("nav.addWorker")}</span>
           </Link>
         </div>
       </header>
 
-      <div className="-mt-11 flex flex-col gap-3.5 px-4 lg:mt-0 lg:grid lg:grid-cols-2 lg:px-0 xl:grid-cols-3">
+      <div className={`${SHEET_CLASS} -mt-14 pb-6 lg:pb-10 flex flex-col gap-3.5 lg:grid lg:grid-cols-2 xl:grid-cols-3`}>
         {list.length === 0 && (
           <Card padding="lg" className="text-sm text-muted">
             {tab === "active" ? t("workers.empty") : t("workers.archivedEmpty")}
@@ -74,7 +74,7 @@ export default function WorkersPage() {
                 </div>
               </div>
               <div className="text-right">
-                <div className="font-display text-lg font-bold tabular">{formatINR(w.salary)}</div>
+                <div className="font-display text-lg tabular">{formatINR(w.salary)}</div>
                 <div className="text-[11px] text-muted">{t("common.perMonth")}</div>
               </div>
             </Card>

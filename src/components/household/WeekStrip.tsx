@@ -9,7 +9,7 @@ import type { DayState } from "@/lib/types";
 
 const DOT: Record<DayState, string> = {
   present: "bg-present-dot",
-  leave: "bg-leave-icon",
+  leave: "bg-off-fg",
   claim: "bg-claim-dot",
   dispute: "bg-dispute-dot",
   unknown: "bg-transparent",
@@ -23,47 +23,32 @@ function summarize(states: DayState[]): DayState {
   return "off";
 }
 
-interface WeekStripProps {
-  workerId?: string;
-  /** Tailwind classes for the cell, mostly height. */
-  cellClassName?: string;
-  /** Cell background: translucent white on peach, or solid surface. */
-  tone?: "glass" | "surface";
-  onSelect?: (date: string) => void;
-  selected?: string;
-}
-
-export function WeekStrip({ workerId, cellClassName = "h-16", tone = "glass", onSelect, selected }: WeekStripProps) {
+/** This week as a ledger row: day label, date in a circle (today filled), a status dot. */
+export function WeekStrip({ className }: { className?: string }) {
   const { lang } = useI18n();
   const { state } = useStore();
-  const days = weekOf(state.today);
-  const workers = workerId ? state.workers.filter((w) => w.id === workerId) : state.workers.filter((w) => !w.endDate);
+  const workers = state.workers.filter((w) => !w.endDate);
 
   return (
-    <div className="grid grid-cols-7 gap-1.5">
-      {days.map((date) => {
+    <div className={cn("grid grid-cols-7 border-t border-line-strong pt-2.5", className)}>
+      {weekOf(state.today).map((date, i) => {
         const isToday = date === state.today;
-        const isSelected = selected ? selected === date : isToday;
-        const future = date > state.today;
-        const st = future ? "off" : summarize(workers.map((w) => dayInfo(state, w, date).state));
-        const Comp = onSelect ? "button" : "div";
+        const st = date > state.today ? "off" : summarize(workers.map((w) => dayInfo(state, w, date).state));
         return (
-          <Comp
-            key={date}
-            type={onSelect ? "button" : undefined}
-            onClick={onSelect ? () => onSelect(date) : undefined}
-            className={cn(
-              "flex flex-col items-center justify-center gap-0.5 rounded-[20px]",
-              cellClassName,
-              isSelected ? "bg-coral text-white" : tone === "glass" ? "bg-glass-2 text-ink" : "bg-surface text-ink",
-            )}
-          >
-            <span className={cn("text-[11px] font-semibold", isSelected ? "opacity-80" : "opacity-55")}>
+          <div key={date} className={cn("flex flex-col items-center gap-1.5 py-1", i > 0 && "border-l border-line")}>
+            <span className="text-[10px] font-semibold tracking-[0.16em] text-muted uppercase">
               {dayShort(lang)[weekdayOf(date)]}
             </span>
-            <span className="font-display text-lg font-bold leading-none">{dayOfMonth(date)}</span>
-            <span className={cn("mt-0.5 h-1.5 w-1.5 rounded-full", DOT[st])} />
-          </Comp>
+            <span
+              className={cn(
+                "flex h-9 w-9 items-center justify-center rounded-full font-display text-xl",
+                isToday ? "bg-ink text-bg" : "text-ink",
+              )}
+            >
+              {dayOfMonth(date)}
+            </span>
+            <span className={cn("h-[5px] w-[5px] rounded-full", DOT[st])} />
+          </div>
         );
       })}
     </div>

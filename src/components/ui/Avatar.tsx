@@ -5,7 +5,7 @@ interface AvatarProps {
   initial: string;
   tone: AvatarTone;
   size?: number;
-  /** "squircle" uses the design's 34% radius, "circle" is fully round. */
+  /** Kept for call sites; every avatar is round in the editorial style. */
   shape?: "squircle" | "circle";
   className?: string;
 }
@@ -18,17 +18,17 @@ const TONES: Record<AvatarTone, string> = {
   peach: "bg-av-peach",
 };
 
-export function Avatar({ initial, tone, size = 50, shape = "squircle", className }: AvatarProps) {
+export function Avatar({ initial, tone, size = 50, className }: AvatarProps) {
   return (
     <div
       style={{
         width: size,
         height: size,
-        borderRadius: shape === "circle" ? "50%" : Math.round(size * 0.34 * 100) / 100,
-        fontSize: Math.round(size * 0.4 * 10) / 10,
+        borderRadius: "50%",
+        fontSize: Math.round(size * 0.48 * 10) / 10,
       }}
       className={cn(
-        "flex flex-none items-center justify-center font-display font-extrabold text-ink",
+        "flex flex-none items-center justify-center font-display leading-none text-ink",
         TONES[tone],
         className,
       )}

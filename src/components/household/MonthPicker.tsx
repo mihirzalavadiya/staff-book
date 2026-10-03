@@ -24,8 +24,8 @@ export function MonthPicker({ value, latest, onChange, tone = "glass" }: Props) 
         type="button"
         onClick={() => setOpen(true)}
         className={cn(
-          "flex h-10 items-center gap-1.5 rounded-[20px] px-3.5 text-[13px] font-bold",
-          tone === "glass" ? "bg-glass" : "bg-surface-2",
+          "flex h-9 items-center gap-1.5 rounded-[18px] border px-3.5 text-xs font-semibold tracking-[0.08em] uppercase",
+          tone === "glass" ? "border-muted-2" : "border-line",
         )}
       >
         {formatMonth(value, lang)}
@@ -42,8 +42,8 @@ export function MonthPicker({ value, latest, onChange, tone = "glass" }: Props) 
                 setOpen(false);
               }}
               className={cn(
-                "h-12 rounded-2xl text-[15px] font-bold",
-                m === value ? "bg-coral text-white" : "bg-surface-2",
+                "h-12 rounded-[3px] border font-display text-lg",
+                m === value ? "border-ink bg-ink text-bg" : "border-line",
               )}
             >
               {formatMonth(m, lang)}

@@ -30,7 +30,7 @@ export function InviteCard({ invite }: { invite: Engagement }) {
   };
 
   return (
-    <Card padding="lg" radius={28} className="border-2 border-dashed border-coral">
+    <Card padding="lg" className="border-2 border-dashed border-coral">
       <div className="flex items-center gap-3">
         <Avatar initial={invite.initial} tone={invite.tone} size={48} />
         <div className="min-w-0 flex-1">

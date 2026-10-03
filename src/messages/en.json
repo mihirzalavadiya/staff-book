@@ -79,7 +79,20 @@
     "hisaabPending": "{name}'s salary: {count} {count, plural, one {day} other {days}} pending",
     "disputeSummary": "You: leave · {name}: \"I came\"",
     "pendingClaims": "{count} {count, plural, one {claim} other {claims}}",
-    "pendingUnknown": "{count} not marked"
+    "pendingUnknown": "{count} not marked",
+    "hello": "Namaste,",
+    "thisWeek": "This week",
+    "register": "Today's register",
+    "registerCount": "{count} {count, plural, one {worker} other {workers}} · {filled} marked",
+    "last7": "Last 7 days",
+    "workerCol": "Worker",
+    "cameShort": "Came today?",
+    "claimQuote": "“Came today, {time}.”",
+    "claimBy": "{name} marked this · is it right?",
+    "monthHisaab": "{month} salary",
+    "daysPending": "{count} {count, plural, one {day} other {days}} pending",
+    "fill": "Fill",
+    "claimShort": "Claim"
   },
   "calendar": {
     "title": "Calendar",
@@ -137,7 +150,9 @@
     "finalized": "Finalised · {amount}",
     "markPaid": "Mark as paid",
     "paidOn": "Paid on {date}",
-    "previous": "Previous months"
+    "previous": "Previous months",
+    "attendance": "Attendance",
+    "money": "Money"
   },
   "workers": {
     "title": "Workers",

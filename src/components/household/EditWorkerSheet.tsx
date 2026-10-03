@@ -65,7 +65,7 @@ function EditForm({ worker, onDone }: { worker: Worker; onDone: () => void }) {
   if (linked) {
     return (
       <div className="flex flex-col gap-3">
-        <div className="rounded-2xl bg-av-blue p-3.5 text-sm font-semibold leading-relaxed">{t("workers.linkedNow", { name: worker.name })}</div>
+        <div className="rounded-[6px] bg-av-blue p-3.5 text-sm font-semibold leading-relaxed">{t("workers.linkedNow", { name: worker.name })}</div>
         <Button size="xl" block onClick={onDone}>
           {t("common.done")}
         </Button>
@@ -76,7 +76,7 @@ function EditForm({ worker, onDone }: { worker: Worker; onDone: () => void }) {
   return (
     <div className="flex max-h-[70dvh] flex-col gap-4 overflow-y-auto pb-1">
       {shared ? (
-        <div className="rounded-2xl bg-surface-2 p-3.5 text-sm font-semibold text-muted">{t("workers.sharedNote", { name: worker.name, gender: worker.gender })}</div>
+        <div className="rounded-[6px] bg-surface-2 p-3.5 text-sm font-semibold text-muted">{t("workers.sharedNote", { name: worker.name, gender: worker.gender })}</div>
       ) : (
         <>
           <Field
@@ -119,7 +119,7 @@ function EditForm({ worker, onDone }: { worker: Worker; onDone: () => void }) {
                 type="button"
                 onClick={() => toggleDay(i)}
                 aria-pressed={on}
-                className={cn("h-11 rounded-2xl text-[13px] font-bold", on ? "bg-coral text-white" : "bg-surface-2 text-muted")}
+                className={cn("h-11 rounded-[6px] text-[13px] font-bold", on ? "bg-ink text-bg" : "bg-surface-2 text-muted")}
               >
                 {d}
               </button>
@@ -130,16 +130,16 @@ function EditForm({ worker, onDone }: { worker: Worker; onDone: () => void }) {
       <div>
         <div className="mb-2 text-[13px] font-bold text-muted">{t("addWorker.paidLeaves")}</div>
         <div className="flex items-center gap-3">
-          <button type="button" onClick={() => setPaidLeaves(Math.max(0, paidLeaves - 1))} className="flex h-11 w-11 items-center justify-center rounded-2xl bg-surface-2">
+          <button type="button" onClick={() => setPaidLeaves(Math.max(0, paidLeaves - 1))} className="flex h-11 w-11 items-center justify-center rounded-[6px] bg-surface-2">
             −
           </button>
-          <span className="w-8 text-center font-display text-2xl font-extrabold">{paidLeaves}</span>
-          <button type="button" onClick={() => setPaidLeaves(Math.min(10, paidLeaves + 1))} className="flex h-11 w-11 items-center justify-center rounded-2xl bg-surface-2">
+          <span className="w-8 text-center font-display text-2xl">{paidLeaves}</span>
+          <button type="button" onClick={() => setPaidLeaves(Math.min(10, paidLeaves + 1))} className="flex h-11 w-11 items-center justify-center rounded-[6px] bg-surface-2">
             <Icon name="plus" size={14} />
           </button>
         </div>
       </div>
-      {error && <div className="rounded-2xl bg-dispute-bg px-4 py-3 text-sm font-bold text-dispute-fg">{error}</div>}
+      {error && <div className="rounded-[6px] bg-dispute-bg px-4 py-3 text-sm font-bold text-dispute-fg">{error}</div>}
       <Button size="xl" block disabled={!valid} phase={phase} loadingText={t("common.saving")} onClick={save}>
         <Icon name="check" size={16} />
         {t("workers.save")}

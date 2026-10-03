@@ -20,12 +20,12 @@ export function Toggle({ checked, onChange, label, disabled }: ToggleProps) {
       onClick={() => onChange(!checked)}
       className={cn(
         "relative h-8 w-[52px] flex-none rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-50",
-        checked ? "bg-coral" : "bg-line",
+        checked ? "bg-ink" : "bg-line-strong",
       )}
     >
       <span
         className={cn(
-          "absolute top-1 h-6 w-6 rounded-full bg-white shadow transition-[left]",
+          "absolute top-1 h-6 w-6 rounded-full bg-bg transition-[left]",
           checked ? "left-[24px]" : "left-1",
         )}
       />
