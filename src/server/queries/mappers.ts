@@ -7,7 +7,7 @@ import type { Advance, AttendanceEntry, Household, Reminder, Settlement, Worker 
  * The UI works with one flat `Worker` per engagement (name + salary + schedule),
  * so an engagement row joined to its worker row maps to exactly that.
  */
-export function toWorker(e: EngagementRow, w: WorkerRow): Worker {
+export function toWorker(e: EngagementRow, w: WorkerRow, sharedWithOtherHomes = false): Worker {
   return {
     id: e.id,
     name: w.name,
@@ -15,6 +15,8 @@ export function toWorker(e: EngagementRow, w: WorkerRow): Worker {
     role: e.role,
     roleLabel: e.roleLabel ?? undefined,
     salary: e.monthlySalary,
+    linkPending: e.linkToWorkerId ? true : undefined,
+    sharedWithOtherHomes: sharedWithOtherHomes || undefined,
     tone: e.tone,
     workDays: e.workDays,
     paidLeavesPerMonth: e.paidLeavesPerMonth,

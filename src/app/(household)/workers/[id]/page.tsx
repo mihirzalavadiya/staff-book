@@ -20,6 +20,7 @@ import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
 import { Icon } from "@/components/ui/Icon";
 import { Sheet } from "@/components/ui/Sheet";
+import { EditWorkerSheet } from "@/components/household/EditWorkerSheet";
 
 export default function WorkerDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -27,6 +28,7 @@ export default function WorkerDetailPage({ params }: { params: Promise<{ id: str
   const { state, dispatch } = useStore();
   const router = useRouter();
   const [endOpen, setEndOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
   const [endDate, setEndDate] = useState(state.today);
   const [copied, setCopied] = useState(false);
   const [endPhase, setEndPhase] = useState<Phase>("idle");
@@ -58,11 +60,23 @@ export default function WorkerDetailPage({ params }: { params: Promise<{ id: str
         <div className="flex items-center gap-2.5">
           <HeaderIconButton icon="chevronLeft" href="/workers" label={t("common.back")} />
           <div className="flex-1" />
+          {!worker.endDate && (
+            <button type="button" onClick={() => setEditOpen(true)} className="flex h-11 items-center gap-2 rounded-[22px] bg-surface px-4 text-sm font-bold">
+              <Icon name="settings" size={16} />
+              {t("workers.edit")}
+            </button>
+          )}
         </div>
         <div className="flex items-center gap-3.5">
           <Avatar initial={worker.name[0]} tone={worker.tone} size={64} className="ring-4 ring-surface" />
           <div className="min-w-0 flex-1">
             <div className="font-display text-[30px] font-extrabold leading-none tracking-[-0.03em]">{worker.name}</div>
+            {worker.linkPending && (
+              <div className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-surface px-2.5 py-1 text-xs font-bold text-muted">
+                <Icon name="clock" size={12} />
+                {t("workers.linkPending", { name: worker.name })}
+              </div>
+            )}
             <div className="mt-1 text-[15px] font-semibold text-muted">
               {roleName(t, worker.role, worker.roleLabel)} · {t("workers.since", { date: formatDayMonth(worker.startDate, lang) })}
             </div>
@@ -177,6 +191,7 @@ export default function WorkerDetailPage({ params }: { params: Promise<{ id: str
         </div>
       </div>
 
+      <EditWorkerSheet worker={worker} open={editOpen} onClose={() => setEditOpen(false)} />
       <Sheet open={endOpen} onClose={() => setEndOpen(false)} title={t("workers.endWork")}>
         <div className="flex flex-col gap-3">
           <Field label={t("common.todayLabel")} type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />

@@ -12,12 +12,13 @@ import { WorkerTopRow } from "@/components/worker/WorkerTopRow";
 import { Icon } from "@/components/ui/Icon";
 import { InstallBanner } from "@/components/pwa/InstallBanner";
 import { PushPrompt } from "@/components/pwa/PushPrompt";
+import { InviteCard } from "@/components/worker/InviteCard";
 
 export default function WorkerTodayPage() {
   const { t, lang } = useI18n();
   const { state, dispatch } = useStore();
   const act = useAct();
-  const { token, me, houses } = useWorkerLink();
+  const { token, me, houses, invites } = useWorkerLink();
   const today = state.today;
 
   return (
@@ -31,6 +32,9 @@ export default function WorkerTodayPage() {
       </WorkerHeader>
 
       <div className="-mt-[46px] flex flex-col gap-3.5 px-4">
+        {invites.map((invite) => (
+          <InviteCard key={invite.id} invite={invite} />
+        ))}
         {houses.map((house) => {
           const engagement = state.workers.find((w) => w.id === house.id);
           if (!engagement) return null;

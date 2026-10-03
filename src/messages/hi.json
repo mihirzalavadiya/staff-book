@@ -156,7 +156,14 @@
     "empty": "अभी कोई वर्कर नहीं। पहला जोड़ो।",
     "archivedEmpty": "कोई पुराना नहीं।",
     "period": "{from} – {to}",
-    "attendanceLabel": "हाज़िरी"
+    "attendanceLabel": "हाज़िरी",
+    "linkPending": "{name} के पक्का करने का इंतज़ार",
+    "edit": "बदलो",
+    "editTitle": "{name} की जानकारी बदलो",
+    "save": "सेव करो",
+    "sharedNote": "{name} दूसरे घरों में भी काम करते हैं, इसलिए फ़ोन, भाषा और महिला/पुरुष वो खुद ही बदल सकते हैं।",
+    "phoneHint": "अगर वो दूसरे घरों में भी काम करते हैं तो पहचानने के लिए। कोई SMS नहीं जाता।",
+    "linkedNow": "यह नंबर पहले से Staffbook पर है। {name} से आपका घर पक्का करवाया जाएगा।"
   },
   "addWorker": {
     "title": "नया वर्कर",
@@ -178,7 +185,9 @@
     "gender": "महिला / पुरुष",
     "female": "महिला",
     "male": "पुरुष",
-    "creating": "बना रहे हैं…"
+    "creating": "बना रहे हैं…",
+    "alreadyTitle": "{name} पहले से Staffbook पर हैं",
+    "alreadyBody": "उन्हें अपने पुराने लिंक पर आपका घर दिखेगा और वो पक्का करेंगे। तब तक यह नया लिंक आपके घर के लिए अलग से चलेगा।"
   },
   "settings": {
     "title": "सेटिंग",
@@ -241,7 +250,11 @@
     "houses": "{count} घर",
     "installStep2": "\"Add to Home Screen\" चुनो, फिर \"Add\"।",
     "installStep1": "ब्राउज़र का Share या मेनू बटन दबाओ (⋮ या तीर वाला डिब्बा)।",
-    "comingSoon": "जल्द"
+    "comingSoon": "जल्द",
+    "inviteTitle": "{house} ने आपको जोड़ा है",
+    "inviteBody": "{role} · {salary} महीना। क्या आप वहाँ काम {gender, select, male {करते} other {करती}} हो?",
+    "inviteYes": "हाँ, मैं वहाँ काम {gender, select, male {करता} other {करती}} हूँ",
+    "inviteNo": "नहीं"
   },
   "login": {
     "title": "Staffbook में स्वागत है",
@@ -298,9 +311,21 @@
     "bodyWorker": "जब घर वाले छुट्टी लिखें या हिसाब फ़ाइनल करें, तब बताएँगे।",
     "allow": "हाँ, याद दिलाओ",
     "later": "अभी नहीं",
-    "blocked": "इस साइट की सूचनाएँ बंद हैं। ब्राउज़र सेटिंग में चालू करो।",
     "unsupported": "यह ब्राउज़र सूचना नहीं दिखा सकता। पहले Staffbook को होम स्क्रीन पे लगाओ।",
     "on": "रिमाइंडर चालू हैं",
-    "enabling": "चालू हो रहा है…"
+    "enabling": "चालू हो रहा है…",
+    "serviceTitle": "सूचनाओं की इजाज़त मिल गई, पर ब्राउज़र अपनी पुश सर्विस से नहीं जुड़ पाया।",
+    "serviceStep1": "ब्राउज़र की सेटिंग में Privacy (या Site settings) खोलो और देखो कि पुश मैसेजिंग / सूचनाएँ बंद न हों।",
+    "serviceStep2": "VPN, ऐड-ब्लॉकर या ऑफ़िस का नेटवर्क हो तो थोड़ी देर के लिए बंद करो।",
+    "serviceStep3": "ब्राउज़र बंद करके फिर खोलो, और बटन दोबारा दबाओ।",
+    "blockedTitle": "इस साइट की सूचनाएँ बंद हैं।",
+    "blockedStep1": "एड्रेस बार के बाएँ ताले या सेटिंग वाले आइकन पर क्लिक करो।",
+    "blockedStep2": "Notifications को Allow करो (या Reset permission)।",
+    "blockedStep3": "पेज रीलोड करो और बटन दोबारा दबाओ।",
+    "retry": "फिर से कोशिश करो",
+    "permission": "ब्राउज़र की इजाज़त",
+    "permission_granted": "दी हुई है",
+    "permission_denied": "बंद है",
+    "permission_default": "अभी पूछा नहीं"
   }
 }

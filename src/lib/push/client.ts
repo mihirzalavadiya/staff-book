@@ -4,6 +4,7 @@ import { publicEnv } from "@/lib/env";
 
 export type PushStatus = "unsupported" | "blocked" | "off" | "on";
 
+
 export function pushSupported(): boolean {
   return typeof window !== "undefined" && "serviceWorker" in navigator && "PushManager" in window && "Notification" in window;
 }

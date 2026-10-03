@@ -35,7 +35,7 @@ export default function NewWorkerPage() {
   const [workDays, setWorkDays] = useState<number[]>([1, 2, 3, 4, 5, 6]);
   const [paidLeaves, setPaidLeaves] = useState(2);
   const [language, setLanguage] = useState<Lang>("hi");
-  const [created, setCreated] = useState<{ name: string; token: string } | null>(null);
+  const [created, setCreated] = useState<{ name: string; token: string; alreadyOnStaffbook: boolean } | null>(null);
   const [phase, run] = usePhase();
   const [error, setError] = useState<string | null>(null);
   const origin = useOrigin();
@@ -50,6 +50,7 @@ export default function NewWorkerPage() {
     if (!valid || phase !== "idle") return;
     setError(null);
     let token = "";
+    let alreadyOnStaffbook = false;
     let failure: string | null = null;
     const ok = await run(async () => {
     const result = await addWorker({
@@ -63,12 +64,15 @@ export default function NewWorkerPage() {
       paidLeaves,
       language,
     });
-      if (result.ok) token = result.data.token;
+      if (result.ok) {
+        token = result.data.token;
+        alreadyOnStaffbook = result.data.alreadyOnStaffbook;
+      }
       else failure = result.error;
       return result.ok;
     });
     if (!ok) return setError(failure);
-    setCreated({ name: name.trim(), token });
+    setCreated({ name: name.trim(), token, alreadyOnStaffbook });
   };
 
   const link = created ? `${origin}/w/${created.token}` : "";
@@ -171,6 +175,12 @@ export default function NewWorkerPage() {
       <Sheet open={Boolean(created)} onClose={() => router.push("/today")} title={created ? t("addWorker.shareTitle", { name: created.name, gender }) : ""}>
         {created && (
           <div className="flex flex-col gap-3">
+            {created.alreadyOnStaffbook && (
+              <div className="rounded-2xl bg-av-blue p-3.5 text-sm leading-relaxed">
+                <div className="font-extrabold">{t("addWorker.alreadyTitle", { name: created.name })}</div>
+                <div className="text-muted">{t("addWorker.alreadyBody", { gender })}</div>
+              </div>
+            )}
             <div className="rounded-2xl bg-surface-2 p-3.5 text-sm leading-relaxed">
               {t("addWorker.shareBody", { name: created.name, gender, house: state.household.name, link: "" })}
               <span className="font-bold text-coral">{link}</span>

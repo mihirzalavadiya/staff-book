@@ -10,6 +10,7 @@ interface WorkerContextValue {
   token: string;
   me: WorkerState["me"];
   houses: Engagement[];
+  invites: Engagement[];
 }
 
 const WorkerContext = createContext<WorkerContextValue | null>(null);
@@ -33,7 +34,7 @@ export function WorkerStore({ token, initialState, children }: { token: string; 
   );
 
   return (
-    <WorkerContext.Provider value={{ token, me: initialState.me, houses: initialState.houses }}>
+    <WorkerContext.Provider value={{ token, me: initialState.me, houses: initialState.houses, invites: initialState.invites }}>
       <StoreProvider initialState={initialState} perform={perform} onError={(e) => console.warn("[staffbook] action rejected:", e)}>
         {children}
       </StoreProvider>

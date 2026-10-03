@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Bricolage_Grotesque, Figtree, Noto_Sans_Devanagari } from "next/font/google";
+import Script from "next/script";
 import { AppProviders } from "@/lib/providers";
 import "./globals.css";
 
@@ -48,10 +49,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
       className={`${bricolage.variable} ${figtree.variable} ${devanagari.variable}`}
     >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInit }} />
-      </head>
       <body>
+        {/* Sets dark mode before first paint so the page never flashes light. */}
+        <Script id="theme-init" strategy="beforeInteractive">
+          {themeInit}
+        </Script>
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

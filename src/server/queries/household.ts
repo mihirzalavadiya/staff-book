@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, eq, gte, inArray } from "drizzle-orm";
+import { and, eq, gte, inArray, ne } from "drizzle-orm";
 import { db } from "../db";
 import { advances, attendance, engagements, households, reminders, settlements, workers } from "../db/schema";
 import { toAdvance, toAttendance, toHousehold, toReminder, toSettlement, toWorker } from "./mappers";
@@ -40,6 +40,15 @@ export async function loadHouseholdState(ownerUserId: string): Promise<Household
     return { today, household: toHousehold(household), workers: [], attendance: [], advances: [], settlements: [], reminders: [] };
   }
 
+  const shared = new Set(
+    (
+      await db
+        .select({ workerId: engagements.workerId })
+        .from(engagements)
+        .where(and(inArray(engagements.workerId, rows.map((r) => r.w.id)), ne(engagements.householdId, household.id)))
+    ).map((r) => r.workerId),
+  );
+
   const [att, adv, sett, rem] = await Promise.all([
     db.select().from(attendance).where(and(inArray(attendance.engagementId, ids), gte(attendance.date, since))),
     db.select().from(advances).where(and(inArray(advances.engagementId, ids), gte(advances.date, since))),
@@ -50,7 +59,7 @@ export async function loadHouseholdState(ownerUserId: string): Promise<Household
   return {
     today,
     household: toHousehold(household),
-    workers: rows.map((r) => toWorker(r.e, r.w)),
+    workers: rows.map((r) => toWorker(r.e, r.w, shared.has(r.w.id))),
     attendance: att.map(toAttendance),
     advances: adv.map(toAdvance),
     settlements: sett.map(toSettlement),

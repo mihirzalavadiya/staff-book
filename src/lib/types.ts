@@ -27,6 +27,10 @@ export interface Worker {
   roleLabel?: string;
   salary: number;
   tone: AvatarTone;
+  /** True while waiting for the worker to confirm this home from their existing link. */
+  linkPending?: boolean;
+  /** True when this person also works in other homes; their phone, language and gender are then theirs to keep. */
+  sharedWithOtherHomes?: boolean;
   /** 0 = Sunday … 6 = Saturday */
   workDays: number[];
   paidLeavesPerMonth: number;

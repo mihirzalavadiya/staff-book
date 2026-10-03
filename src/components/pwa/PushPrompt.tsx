@@ -5,6 +5,7 @@ import { cn } from "@/lib/cn";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
+import { PushFailureDialog, problemAfter, type PushFailureKind } from "./PushFailure";
 import { usePush } from "./usePush";
 
 const DISMISS_KEY = "sb.push.dismissed";
@@ -41,16 +42,36 @@ export function PushPrompt({
     () => true,
   );
   const [justEnabled, setJustEnabled] = useState(false);
+  const [problem, setProblem] = useState<PushFailureKind | null>(null);
 
   if (justEnabled) {
     return (
-      <div className={cn("flex items-center gap-3 rounded-[24px] bg-present-bg px-4 py-3.5 font-bold text-present-fg", className)}>
+      <div
+        className={cn(
+          "flex items-center gap-3 rounded-[24px] bg-present-bg px-4 py-3.5 font-bold text-present-fg",
+          className,
+        )}
+      >
         <Icon name="bell" size={20} />
         {t("pushUi.on")}
       </div>
     );
   }
-  if (dismissed || status !== "off") return null;
+  const tryEnable = async () => {
+    const on = await turnOn();
+    setJustEnabled(on);
+    setProblem(problemAfter(on));
+  };
+  const dialog = (
+    <PushFailureDialog
+      kind={problem}
+      onClose={() => setProblem(null)}
+      onRetry={tryEnable}
+      retrying={busy}
+    />
+  );
+
+  if (dismissed || status !== "off") return problem ? dialog : null;
 
   const dismiss = () => {
     try {
@@ -62,32 +83,60 @@ export function PushPrompt({
   };
 
   return (
-    <div className={cn("rounded-[24px] bg-av-yellow p-4", large && "p-5", className)}>
-      <div className="flex items-start gap-3">
-        <span className="flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-surface">
-          <Icon name="bell" size={22} />
-        </span>
-        <div className="min-w-0 flex-1 leading-snug">
-          <div className={cn("font-extrabold", large ? "text-[19px]" : "text-base")}>{t("pushUi.title")}</div>
-          <div className={cn("font-semibold text-muted", large ? "text-base" : "text-sm")}>
-            {target.kind === "worker" ? t("pushUi.bodyWorker") : t("pushUi.body")}
+    <>
+      {dialog}
+      <div
+        className={cn(
+          "rounded-[24px] bg-av-yellow p-4",
+          large && "p-5",
+          className,
+        )}
+      >
+        <div className="flex items-start gap-3">
+          <span className="flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-surface">
+            <Icon name="bell" size={22} />
+          </span>
+          <div className="min-w-0 flex-1 leading-snug">
+            <div
+              className={cn(
+                "font-extrabold",
+                large ? "text-[19px]" : "text-base",
+              )}
+            >
+              {t("pushUi.title")}
+            </div>
+            <div
+              className={cn(
+                "font-semibold text-muted",
+                large ? "text-base" : "text-sm",
+              )}
+            >
+              {target.kind === "worker"
+                ? t("pushUi.bodyWorker")
+                : t("pushUi.body")}
+            </div>
           </div>
         </div>
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <Button
+            size={large ? "xl" : "md"}
+            loading={busy}
+            loadingText={t("pushUi.enabling")}
+            onClick={tryEnable}
+          >
+            <Icon name="check" size={14} />
+            {t("pushUi.allow")}
+          </Button>
+          <Button
+            size={large ? "xl" : "md"}
+            variant="outline"
+            disabled={busy}
+            onClick={dismiss}
+          >
+            {t("pushUi.later")}
+          </Button>
+        </div>
       </div>
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        <Button
-          size={large ? "xl" : "md"}
-          loading={busy}
-          loadingText={t("pushUi.enabling")}
-          onClick={async () => setJustEnabled(await turnOn())}
-        >
-          <Icon name="check" size={14} />
-          {t("pushUi.allow")}
-        </Button>
-        <Button size={large ? "xl" : "md"} variant="outline" disabled={busy} onClick={dismiss}>
-          {t("pushUi.later")}
-        </Button>
-      </div>
-    </div>
+    </>
   );
 }

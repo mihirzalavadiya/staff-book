@@ -2,8 +2,9 @@
 
 import { revalidatePath } from "next/cache";
 import { db } from "../db";
-import { attendance, reminders } from "../db/schema";
-import { tokenCanAct } from "../queries/worker";
+import { attendance, engagements, reminders, workers } from "../db/schema";
+import { and, eq } from "drizzle-orm";
+import { engagementByToken, tokenCanAct } from "../queries/worker";
 import { todayIST } from "../today";
 import { inEditWindow, isIsoDate, isMonthFinalized, latestEntry, monthOf } from "./guards";
 import { fail, ok, type ActionResult } from "./result";
@@ -105,6 +106,40 @@ export async function workerRemind(input: { token: string; engagementId: string;
       .values({ engagementId: input.engagementId, date: input.date })
       .onConflictDoUpdate({ target: [reminders.engagementId, reminders.date], set: { createdAt: new Date() } });
     notifyHousehold(input.engagementId, (worker) => ({ kind: "remind", worker, engagementId: input.engagementId, date: input.date }));
+    refresh();
+    return ok();
+  } catch (err) {
+    return fail((err as Error).message);
+  }
+}
+
+/**
+ * A home added this worker's phone. Only the worker's existing link can say
+ * yes, so a home cannot join someone's other homes just by typing their number.
+ * Yes: the home moves onto this person's link. No: it stays a separate person.
+ */
+export async function workerRespondInvite(input: { token: string; engagementId: string; accept: boolean }): Promise<ActionResult> {
+  try {
+    const mine = await engagementByToken(input.token);
+    if (!mine) return fail("forbidden");
+    const invite = await db.query.engagements.findFirst({
+      where: and(eq(engagements.id, input.engagementId), eq(engagements.linkToWorkerId, mine.workerId)),
+    });
+    if (!invite) return fail("no invite");
+
+    if (!input.accept) {
+      await db.update(engagements).set({ linkToWorkerId: null }).where(eq(engagements.id, invite.id));
+      refresh();
+      return ok();
+    }
+
+    const placeholder = invite.workerId;
+    await db.transaction(async (tx) => {
+      await tx.update(engagements).set({ workerId: mine.workerId, linkToWorkerId: null }).where(eq(engagements.id, invite.id));
+      // The home created a fresh worker row for this number; drop it once nothing points to it.
+      const stillUsed = await tx.$count(engagements, eq(engagements.workerId, placeholder));
+      if (stillUsed === 0) await tx.delete(workers).where(eq(workers.id, placeholder));
+    });
     refresh();
     return ok();
   } catch (err) {

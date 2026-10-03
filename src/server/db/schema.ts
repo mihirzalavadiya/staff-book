@@ -52,9 +52,11 @@ export const workers = pgTable("workers", {
   /** Drives grammatical gender in Hindi and pronouns in English. */
   gender: genderEnum("gender").notNull().default("female"),
   phone: text("phone"),
+  /** Last 10 digits of the phone, used to recognise the same person across homes. */
+  phoneKey: text("phone_key"),
   language: langEnum("language").notNull().default("hi"),
   createdAt: createdAt(),
-});
+}, (t) => [index("workers_phone_key_idx").on(t.phoneKey)]);
 
 export const engagements = pgTable(
   "engagements",
@@ -76,6 +78,11 @@ export const engagements = pgTable(
     tone: toneEnum("tone").notNull().default("purple"),
     startDate: date("start_date").notNull(),
     endDate: date("end_date"),
+    /**
+     * Set when this home was added with the phone of someone already on Staffbook.
+     * The home joins that person's link only after they accept from their existing link.
+     */
+    linkToWorkerId: uuid("link_to_worker_id").references(() => workers.id, { onDelete: "set null" }),
     /** Secret link token. This is the worker's identity; never expose it to other households. */
     workerToken: text("worker_token").notNull().unique(),
     status: engagementStatusEnum("status").notNull().default("active"),
