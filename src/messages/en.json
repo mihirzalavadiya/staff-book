@@ -156,7 +156,14 @@
     "empty": "No workers yet. Add the first one.",
     "archivedEmpty": "No one has been archived.",
     "period": "{from} – {to}",
-    "attendanceLabel": "Attendance"
+    "attendanceLabel": "Attendance",
+    "linkPending": "Waiting for {name} to confirm",
+    "edit": "Edit",
+    "editTitle": "Edit {name}",
+    "save": "Save changes",
+    "sharedNote": "{name} also works in other homes, so only {gender, select, male {he} other {she}} can change {gender, select, male {his} other {her}} phone, language and gender.",
+    "phoneHint": "Used to recognise {gender, select, male {him} other {her}} if {gender, select, male {he} other {she}} works in other homes too. No SMS is sent.",
+    "linkedNow": "This number is already on Staffbook. {name} will be asked to confirm your home."
   },
   "addWorker": {
     "title": "New worker",
@@ -178,7 +185,9 @@
     "gender": "Gender",
     "female": "Female",
     "male": "Male",
-    "creating": "Creating…"
+    "creating": "Creating…",
+    "alreadyTitle": "{name} is already on Staffbook",
+    "alreadyBody": "{gender, select, male {He} other {She}} will see your home on {gender, select, male {his} other {her}} usual link and confirm it. Until then, this new link works for your home on its own."
   },
   "settings": {
     "title": "Settings",
@@ -241,7 +250,11 @@
     "houses": "{count} {count, plural, one {house} other {houses}}",
     "installStep2": "Choose \"Add to Home Screen\", then \"Add\".",
     "installStep1": "Tap your browser’s Share or menu button (⋮ or the box with an arrow).",
-    "comingSoon": "soon"
+    "comingSoon": "soon",
+    "inviteTitle": "{house} added you",
+    "inviteBody": "As {role} · {salary} a month. Do you work there?",
+    "inviteYes": "Yes, I work there",
+    "inviteNo": "No"
   },
   "login": {
     "title": "Welcome to Staffbook",
@@ -298,9 +311,21 @@
     "bodyWorker": "We'll tell you when the house marks your leave or settles your salary.",
     "allow": "Yes, remind me",
     "later": "Not now",
-    "blocked": "Notifications are blocked for this site. Allow them in your browser settings.",
     "unsupported": "This browser can't show notifications. Add Staffbook to your home screen first.",
     "on": "Reminders are on",
-    "enabling": "Turning on…"
+    "enabling": "Turning on…",
+    "serviceTitle": "Notifications are allowed, but your browser couldn't connect to its push service.",
+    "serviceStep1": "In your browser's settings, open Privacy (or Site settings) and make sure push messaging / notifications are not turned off.",
+    "serviceStep2": "If you use a VPN, ad-blocker or office network, pause it for a moment.",
+    "serviceStep3": "Close and reopen the browser, then tap the button again.",
+    "blockedTitle": "Notifications are blocked for this site.",
+    "blockedStep1": "Click the lock or settings icon on the left of the address bar.",
+    "blockedStep2": "Set Notifications to Allow (or Reset permission).",
+    "blockedStep3": "Reload the page and tap the button again.",
+    "retry": "Try again",
+    "permission": "Browser permission",
+    "permission_granted": "Allowed",
+    "permission_denied": "Blocked",
+    "permission_default": "Not asked yet"
   }
 }

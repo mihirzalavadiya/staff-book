@@ -152,7 +152,11 @@ export async function destroyFixture(f: Pick<Fixture, "householdId" | "ownerUser
         await tx.delete(schema.advances).where(inArray(schema.advances.engagementId, ids));
         await tx.delete(schema.settlements).where(inArray(schema.settlements.engagementId, ids));
         await tx.delete(schema.engagements).where(inArray(schema.engagements.id, ids));
-        await tx.delete(schema.workers).where(inArray(schema.workers.id, engs.map((e) => e.workerId)));
+        // A worker row may still be used by another fixture's home after linking; keep those.
+        const workerIds = engs.map((e) => e.workerId);
+        const shared = await tx.select({ id: schema.engagements.workerId }).from(schema.engagements).where(inArray(schema.engagements.workerId, workerIds));
+        const free = workerIds.filter((id) => !shared.some((s) => s.id === id));
+        if (free.length) await tx.delete(schema.workers).where(inArray(schema.workers.id, free));
       }
       await tx.delete(schema.households).where(eq(schema.households.id, f.householdId));
     });

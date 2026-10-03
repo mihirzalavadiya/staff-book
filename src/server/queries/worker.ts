@@ -14,6 +14,8 @@ export interface WorkerState extends LedgerState {
   me: { id: string; name: string; gender: "female" | "male"; language: "en" | "hi" };
   /** One house per engagement, keyed by engagement id (same id as `workers[i].id`). */
   houses: Engagement[];
+  /** Homes that added this person's phone and are waiting for them to confirm. */
+  invites: Engagement[];
 }
 
 const HISTORY_MONTHS = 2;
@@ -53,18 +55,26 @@ export async function loadWorkerState(token: string): Promise<WorkerState | null
   ]);
 
   const me = rows.find((r) => r.e.id === mine.id)!;
+  const inviteRows = await db
+    .select({ e: engagements, h: households })
+    .from(engagements)
+    .innerJoin(households, eq(engagements.householdId, households.id))
+    .where(and(eq(engagements.linkToWorkerId, mine.workerId), eq(engagements.status, "active")))
+    .orderBy(engagements.createdAt);
+  const asHouse = (r: { e: typeof engagements.$inferSelect; h: typeof households.$inferSelect }): Engagement => ({
+    id: r.e.id,
+    houseName: r.h.name,
+    role: r.e.role,
+    roleLabel: r.e.roleLabel ?? undefined,
+    salary: r.e.monthlySalary,
+    tone: r.e.tone,
+    initial: r.h.name.trim()[0]?.toUpperCase() ?? "?",
+  });
   return {
     today,
     me: { id: me.w.id, name: me.w.name, gender: me.w.gender, language: me.w.language },
-    houses: rows.map((r) => ({
-      id: r.e.id,
-      houseName: r.h.name,
-      role: r.e.role,
-      roleLabel: r.e.roleLabel ?? undefined,
-      salary: r.e.monthlySalary,
-      tone: r.e.tone,
-      initial: r.h.name.trim()[0]?.toUpperCase() ?? "?",
-    })),
+    houses: rows.map(asHouse),
+    invites: inviteRows.map(asHouse),
     workers: rows.map((r) => toWorker(r.e, r.w)),
     attendance: att.map(toAttendance),
     advances: adv.map(toAdvance),

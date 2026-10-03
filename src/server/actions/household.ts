@@ -2,7 +2,7 @@
 
 import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
-import { and, eq } from "drizzle-orm";
+import { and, desc, eq, ne } from "drizzle-orm";
 import { db } from "../db";
 import { advances, attendance, engagements, households, settlements, workers } from "../db/schema";
 import { getAuthUser } from "../auth/supabase";
@@ -12,6 +12,7 @@ import { inEditWindow, isIsoDate, isMonth, isMonthFinalized, latestEntry, monthL
 import { fail, ok, type ActionResult } from "./result";
 import { notifyWorker } from "../push/notify";
 import { monthSummary } from "@/lib/ledger";
+import { phoneKey } from "@/lib/phone";
 import type { AvatarTone, Gender, Lang, Role } from "@/lib/types";
 
 /**
@@ -191,7 +192,7 @@ export async function addWorker(input: {
   workDays: number[];
   paidLeaves: number;
   language: Lang;
-}): Promise<ActionResult<{ engagementId: string; token: string }>> {
+}): Promise<ActionResult<{ engagementId: string; token: string; alreadyOnStaffbook: boolean }>> {
   try {
     const user = await requireOwner();
     const household = await db.query.households.findFirst({ where: eq(households.ownerUserId, user.id) });
@@ -205,11 +206,29 @@ export async function addWorker(input: {
 
     const count = await db.$count(engagements, eq(engagements.householdId, household.id));
     const token = makeToken(name);
+    const key = phoneKey(input.phone);
+    // Someone with this number already works in another home: offer to join, never auto-merge.
+    const existing = key
+      ? await db
+          .select({ id: workers.id })
+          .from(workers)
+          .innerJoin(engagements, eq(engagements.workerId, workers.id))
+          .where(and(eq(workers.phoneKey, key), eq(engagements.status, "active"), ne(engagements.householdId, household.id)))
+          .orderBy(desc(workers.createdAt))
+          .limit(1)
+      : [];
+    const linkTo = existing[0]?.id ?? null;
 
     const result = await db.transaction(async (tx) => {
       const [w] = await tx
         .insert(workers)
-        .values({ name, gender: input.gender === "male" ? "male" : "female", phone: input.phone?.trim() || null, language: input.language })
+        .values({
+          name,
+          gender: input.gender === "male" ? "male" : "female",
+          phone: input.phone?.trim() || null,
+          phoneKey: key,
+          language: input.language,
+        })
         .returning();
       const [e] = await tx
         .insert(engagements)
@@ -224,12 +243,13 @@ export async function addWorker(input: {
           tone: TONES[count % TONES.length],
           startDate: todayIST(),
           workerToken: token,
+          linkToWorkerId: linkTo,
         })
         .returning();
       return e;
     });
     refresh();
-    return ok({ engagementId: result.id, token });
+    return ok({ engagementId: result.id, token, alreadyOnStaffbook: linkTo !== null });
   } catch (err) {
     return fail((err as Error).message);
   }
@@ -264,22 +284,80 @@ export async function updateHousehold(input: { name?: string; homeLabel?: string
   }
 }
 
-export async function updateWorker(input: { engagementId: string; gender?: Gender; roleLabel?: string; salary?: number; paidLeaves?: number; workDays?: number[]; language?: Lang; phone?: string }): Promise<ActionResult> {
+export async function updateWorker(input: {
+  engagementId: string;
+  gender?: Gender;
+  roleLabel?: string;
+  salary?: number;
+  paidLeaves?: number;
+  workDays?: number[];
+  language?: Lang;
+  phone?: string;
+}): Promise<ActionResult<{ alreadyOnStaffbook: boolean }>> {
   try {
     const { e } = await requireEngagement(input.engagementId);
+
+    // Terms of work belong to this home.
     const ePatch: Partial<typeof engagements.$inferInsert> = {};
-    if (input.salary && input.salary > 0) ePatch.monthlySalary = Math.round(input.salary);
+    if (input.salary !== undefined) {
+      const salary = Math.round(Number(input.salary));
+      if (!Number.isFinite(salary) || salary <= 0) return fail("invalid");
+      ePatch.monthlySalary = salary;
+    }
     if (input.paidLeaves !== undefined) ePatch.paidLeavesPerMonth = Math.min(10, Math.max(0, Math.round(input.paidLeaves)));
-    if (input.workDays?.length) ePatch.workDays = [...new Set(input.workDays)].sort();
-    if (input.roleLabel !== undefined && e.role === "other") ePatch.roleLabel = input.roleLabel.trim().slice(0, ROLE_LABEL_MAX) || null;
-    if (Object.keys(ePatch).length) await db.update(engagements).set(ePatch).where(eq(engagements.id, e.id));
+    if (input.workDays !== undefined) {
+      const days = [...new Set(input.workDays)].filter((d) => Number.isInteger(d) && d >= 0 && d <= 6).sort();
+      if (days.length === 0) return fail("invalid");
+      ePatch.workDays = days;
+    }
+    if (input.roleLabel !== undefined && e.role === "other") {
+      const label = input.roleLabel.trim().slice(0, ROLE_LABEL_MAX);
+      if (!label) return fail("role label");
+      ePatch.roleLabel = label;
+    }
+
+    // Details of the person. Once they are linked to other homes, this home cannot change them.
     const wPatch: Partial<typeof workers.$inferInsert> = {};
     if (input.language) wPatch.language = input.language;
-    if (input.gender) wPatch.gender = input.gender;
-    if (input.phone !== undefined) wPatch.phone = input.phone.trim() || null;
-    if (Object.keys(wPatch).length) await db.update(workers).set(wPatch).where(eq(workers.id, e.workerId));
+    if (input.gender) wPatch.gender = input.gender === "male" ? "male" : "female";
+    let key: string | null | undefined;
+    if (input.phone !== undefined) {
+      key = phoneKey(input.phone);
+      wPatch.phone = input.phone.trim() || null;
+      wPatch.phoneKey = key;
+    }
+    if (Object.keys(wPatch).length) {
+      const homes = await db.$count(engagements, and(eq(engagements.workerId, e.workerId), ne(engagements.householdId, e.householdId)));
+      if (homes > 0) return fail("shared");
+    }
+
+    // A new number that belongs to someone already working elsewhere becomes an invite, as on add.
+    let linkTo: string | null = null;
+    if (key && !e.linkToWorkerId) {
+      const match = await db
+        .select({ id: workers.id })
+        .from(workers)
+        .innerJoin(engagements, eq(engagements.workerId, workers.id))
+        .where(
+          and(
+            eq(workers.phoneKey, key),
+            ne(workers.id, e.workerId),
+            eq(engagements.status, "active"),
+            ne(engagements.householdId, e.householdId),
+          ),
+        )
+        .orderBy(desc(workers.createdAt))
+        .limit(1);
+      linkTo = match[0]?.id ?? null;
+      if (linkTo) ePatch.linkToWorkerId = linkTo;
+    }
+
+    await db.transaction(async (tx) => {
+      if (Object.keys(ePatch).length) await tx.update(engagements).set(ePatch).where(eq(engagements.id, e.id));
+      if (Object.keys(wPatch).length) await tx.update(workers).set(wPatch).where(eq(workers.id, e.workerId));
+    });
     refresh();
-    return ok();
+    return ok({ alreadyOnStaffbook: linkTo !== null });
   } catch (err) {
     return fail((err as Error).message);
   }
