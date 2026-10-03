@@ -23,18 +23,18 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const VARIANT: Record<Variant, string> = {
-  primary: "bg-coral text-white",
-  soft: "bg-coral-soft text-ink",
-  outline: "bg-surface text-ink border-2 border-ink",
-  danger: "bg-dispute-bg text-dispute-fg",
+  primary: "bg-ink text-bg",
+  soft: "bg-surface-2 text-ink",
+  outline: "bg-transparent text-ink border border-ink",
+  danger: "bg-transparent text-dispute-fg border border-dispute-fg",
   ghost: "bg-transparent text-muted",
 };
 
 const SIZE: Record<Size, string> = {
-  sm: "h-[34px] rounded-[17px] px-3 text-xs gap-1",
-  md: "h-11 rounded-2xl px-4 text-[15px] gap-2",
-  lg: "h-[50px] rounded-2xl px-4 text-[15px] gap-2",
-  xl: "h-[58px] rounded-[20px] px-5 text-base gap-2",
+  sm: "h-[34px] rounded-[3px] px-3 text-[13px] gap-1.5",
+  md: "h-[46px] rounded-[3px] px-4 text-sm gap-2",
+  lg: "h-[50px] rounded-[3px] px-4 text-sm gap-2",
+  xl: "h-14 rounded-[3px] px-5 text-[15px] gap-2 tracking-[0.04em]",
 };
 
 export function Button({
@@ -60,7 +60,7 @@ export function Button({
       disabled={disabled || phase !== "idle"}
       aria-busy={busy || undefined}
       className={cn(
-        "inline-flex items-center justify-center whitespace-nowrap font-bold transition-[opacity,transform] disabled:cursor-not-allowed",
+        "inline-flex items-center justify-center whitespace-nowrap font-semibold tracking-[0.02em] transition-[opacity,transform] disabled:cursor-not-allowed",
         busy && loader === "walk" ? "sb-busy relative overflow-hidden cursor-progress" : busy ? "cursor-progress" : phase === "done" ? "" : "disabled:opacity-40",
         VARIANT[variant],
         SIZE[size],

@@ -11,10 +11,10 @@ import { SavingStatus } from "@/components/ui/SavingStatus";
 export function WorkerShell({ children }: { children: React.ReactNode }) {
   const { lang } = useI18n();
   return (
-    <div className="min-h-dvh bg-bg sm:bg-peach/60">
+    <div className="min-h-dvh bg-bg sm:bg-surface-2">
       <div
         className={cn(
-          "relative mx-auto min-h-dvh w-full max-w-[480px] bg-bg text-[19px] sm:shadow-float",
+          "relative mx-auto min-h-dvh w-full max-w-[480px] bg-bg text-[19px] sm:border-x sm:border-line",
           lang === "hi" ? "font-deva" : "font-sans",
         )}
       >
@@ -33,6 +33,6 @@ export function WorkerHeader({
   className?: string;
 }) {
   return (
-    <header className={cn("rounded-b-[38px] bg-peach px-4 pt-5 pb-[70px]", className)}>{children}</header>
+    <header className={cn("bg-peach px-5 pt-5 pb-[74px]", className)}>{children}</header>
   );
 }

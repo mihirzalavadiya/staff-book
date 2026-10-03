@@ -9,7 +9,7 @@ import { homeLabel } from "@/lib/home";
 import { useStore } from "@/lib/store";
 import { useTheme } from "@/lib/theme";
 import { Icon, type IconName } from "@/components/ui/Icon";
-import { Avatar } from "@/components/ui/Avatar";
+import { Wordmark } from "@/components/household/PageHeader";
 import { SavingStatus } from "@/components/ui/SavingStatus";
 import { Spinner } from "@/components/ui/Spinner";
 import { signOut } from "@/server/actions/auth";
@@ -40,17 +40,13 @@ function SidebarItem({ item, badge }: { item: NavItem; badge?: number }) {
     <Link
       href={item.href}
       className={cn(
-        "flex h-[46px] items-center gap-3 rounded-[15px] px-3.5",
-        active ? "bg-coral-soft font-extrabold text-coral" : "font-semibold text-muted",
+        "flex h-11 items-center gap-3",
+        active ? "border-b border-ink font-bold text-ink" : "font-medium text-muted",
       )}
     >
-      <Icon name={item.icon} size={19} />
+      <Icon name={item.icon} size={18} />
       <span className="flex-1">{t(item.key)}</span>
-      {badge ? (
-        <span className="flex h-[22px] min-w-[22px] items-center justify-center rounded-[11px] bg-coral px-1 text-[11px] font-extrabold text-white">
-          {badge}
-        </span>
-      ) : null}
+      {badge ? <span className="text-[11px] font-bold text-coral tabular">{String(badge).padStart(2, "0")}</span> : null}
     </Link>
   );
 }
@@ -60,47 +56,37 @@ function Sidebar() {
   const { state } = useStore();
   const { toggle } = useTheme();
   const pending = pendingItems(state).length;
-  const active = state.workers.filter((w) => !w.endDate).length;
 
   return (
-    <aside className="hidden h-dvh w-60 flex-none flex-col gap-1 border-r border-line bg-surface px-3.5 py-[22px] lg:flex sticky top-0">
-      <Link href="/today" className="flex items-center gap-2.5 px-1.5 pb-[22px]">
-        <div className="flex h-[38px] w-[38px] items-center justify-center rounded-[13px] bg-coral font-display text-xl font-extrabold text-white">
-          S
-        </div>
-        <div className="font-display text-[22px] font-extrabold tracking-[-0.03em]">{t("app.name")}</div>
+    <aside className="sticky top-0 hidden h-dvh w-[232px] flex-none flex-col border-r border-line px-[22px] py-[30px] text-sm lg:flex">
+      <Link href="/today">
+        <Wordmark className="block text-[28px] leading-none" />
+        <div className="label-caps mt-2 truncate text-[9.5px]">{homeLabel(state.household.name, state.household.flat)}</div>
       </Link>
-      {TABS.map((item) => (
-        <SidebarItem key={item.href} item={item} />
-      ))}
-      <SidebarItem item={{ href: "/inbox", key: "nav.inbox", icon: "tray" }} badge={pending} />
+      <nav className="mt-10 flex flex-col">
+        {TABS.map((item) => (
+          <SidebarItem key={item.href} item={item} />
+        ))}
+        <SidebarItem item={{ href: "/inbox", key: "nav.inbox", icon: "tray" }} badge={pending} />
+      </nav>
       <div className="flex-1" />
-      <button
-        type="button"
-        onClick={toggle}
-        className="flex h-11 items-center gap-3 rounded-[15px] px-3.5 font-semibold text-muted"
-      >
-        <Icon name="contrast" size={19} />
-        {t("nav.theme")}
-      </button>
-      <Link href="/settings" className="flex h-11 items-center gap-3 rounded-[15px] px-3.5 font-semibold text-muted">
-        <Icon name="settings" size={19} />
-        {t("nav.settings")}
-      </Link>
-      <LogoutItem />
+      <div className="mb-[18px] flex flex-col gap-0.5 text-muted">
+        <button type="button" onClick={toggle} className="flex h-[38px] items-center gap-3">
+          <Icon name="contrast" size={18} />
+          {t("nav.theme")}
+        </button>
+        <Link href="/settings" className="flex h-[38px] items-center gap-3">
+          <Icon name="settings" size={18} />
+          {t("nav.settings")}
+        </Link>
+        <LogoutItem />
+      </div>
       <Link
         href="/workers/new"
-        className="flex h-[46px] items-center justify-center gap-2 rounded-2xl bg-coral text-[15px] font-bold text-white"
+        className="flex h-11 items-center justify-center gap-2 rounded-[3px] border border-ink font-semibold tracking-[0.02em]"
       >
-        <Icon name="plus" size={16} />
+        <Icon name="plus" size={15} />
         {t("nav.addWorker")}
-      </Link>
-      <Link href="/settings" className="mt-3 flex items-center gap-2.5 rounded-[20px] bg-peach p-3">
-        <Avatar initial={state.household.ownerName[0]} tone="peach" size={38} shape="circle" className="bg-surface" />
-        <div className="leading-tight">
-          <div className="font-extrabold">{homeLabel(state.household.name, state.household.flat)}</div>
-          <div className="text-xs text-muted">{t("nav.workersCount", { count: active })}</div>
-        </div>
       </Link>
     </aside>
   );
@@ -114,9 +100,9 @@ function LogoutItem() {
       type="button"
       onClick={() => start(() => signOut())}
       disabled={pending}
-      className="mb-2 flex h-11 items-center gap-3 rounded-[15px] px-3.5 font-semibold text-muted disabled:cursor-progress"
+      className="flex h-[38px] items-center gap-3 disabled:cursor-progress"
     >
-      {pending ? <Spinner size={19} /> : <Icon name="logout" size={19} />}
+      {pending ? <Spinner size={18} /> : <Icon name="logout" size={18} />}
       {pending ? t("settings.loggingOut") : t("nav.logout")}
     </button>
   );
@@ -128,22 +114,20 @@ function TabItem({ item }: { item: NavItem }) {
   return (
     <Link
       href={item.href}
-      className={cn(
-        "flex flex-col items-center justify-center gap-[3px] text-[11px]",
-        active ? "font-extrabold text-coral" : "font-semibold text-nav-idle",
-      )}
+      className={cn("flex flex-col items-center justify-center gap-[5px]", active ? "text-ink" : "text-nav-idle")}
     >
-      <span className={cn("flex h-8 w-14 items-center justify-center rounded-2xl", active && "bg-coral-soft")}>
-        <Icon name={item.icon} size={22} />
+      <Icon name={item.icon} size={21} />
+      <span className={cn("text-[9.5px] tracking-[0.16em] uppercase", active ? "font-bold" : "font-semibold")}>
+        {t(item.key)}
       </span>
-      {t(item.key)}
+      <span className={cn("h-1 w-1 rounded-full", active ? "bg-coral" : "bg-transparent")} />
     </Link>
   );
 }
 
 function BottomNav() {
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-40 grid h-[84px] grid-cols-4 rounded-t-[28px] bg-surface px-2 pt-2 pb-4 shadow-nav lg:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-40 grid h-[82px] grid-cols-4 border-t border-line bg-bg px-2 pt-2.5 pb-[18px] lg:hidden">
       {TABS.map((item) => (
         <TabItem key={item.href} item={item} />
       ))}
@@ -159,7 +143,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-dvh bg-bg lg:flex">
       <Sidebar />
-      <div className="mx-auto w-full max-w-[600px] pb-[110px] lg:mx-0 lg:max-w-none lg:flex-1 lg:min-w-0 lg:pb-0">
+      <div className="mx-auto w-full max-w-[600px] pb-[104px] lg:mx-0 lg:max-w-none lg:flex-1 lg:min-w-0 lg:pb-0">
         {children}
       </div>
       <BottomNav />

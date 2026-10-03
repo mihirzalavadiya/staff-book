@@ -25,9 +25,9 @@ export function Segmented<T extends string>({ value, options, onChange, size = "
             type="button"
             onClick={() => onChange(o.value)}
             className={cn(
-              "rounded-full font-bold transition-colors",
+              "rounded-[3px] border font-semibold tracking-[0.02em] transition-colors",
               size === "lg" ? "h-12 px-5 text-[15px]" : "h-10 px-4 text-sm",
-              active ? "bg-coral text-white" : "bg-surface-2 text-ink",
+              active ? "border-ink bg-ink text-bg" : "border-line bg-transparent text-ink",
             )}
           >
             {o.label}

@@ -48,7 +48,7 @@ export function PushPrompt({
     return (
       <div
         className={cn(
-          "flex items-center gap-3 rounded-[24px] bg-present-bg px-4 py-3.5 font-bold text-present-fg",
+          "flex items-center gap-3 rounded-[3px] bg-present-bg px-4 py-3.5 font-semibold text-present-fg",
           className,
         )}
       >
@@ -87,27 +87,27 @@ export function PushPrompt({
       {dialog}
       <div
         className={cn(
-          "rounded-[24px] bg-av-yellow p-4",
+          "rounded-[3px] border border-line bg-surface-2 p-4",
           large && "p-5",
           className,
         )}
       >
         <div className="flex items-start gap-3">
-          <span className="flex h-11 w-11 flex-none items-center justify-center rounded-2xl bg-surface">
+          <span className="flex h-11 w-11 flex-none items-center justify-center rounded-full border border-muted-2">
             <Icon name="bell" size={22} />
           </span>
           <div className="min-w-0 flex-1 leading-snug">
             <div
               className={cn(
-                "font-extrabold",
-                large ? "text-[19px]" : "text-base",
+                "font-display leading-tight",
+                large ? "text-2xl" : "text-[21px]",
               )}
             >
               {t("pushUi.title")}
             </div>
             <div
               className={cn(
-                "font-semibold text-muted",
+                "mt-0.5 text-muted",
                 large ? "text-base" : "text-sm",
               )}
             >

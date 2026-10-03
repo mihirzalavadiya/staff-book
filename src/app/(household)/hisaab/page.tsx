@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { formatDayMonth, formatMonthLong, monthOf } from "@/lib/date";
@@ -7,13 +8,12 @@ import { useI18n } from "@/lib/i18n";
 import { monthSummary, pastSettlements } from "@/lib/ledger";
 import { formatINR } from "@/lib/money";
 import { useAct, useStore } from "@/lib/store";
-import { HEADER_CLASS, MobileTopRow } from "@/components/household/PageHeader";
+import { DesktopTitle, HEADER_CLASS, SHEET_CLASS, Wordmark } from "@/components/household/PageHeader";
 import { MonthPicker } from "@/components/household/MonthPicker";
 import { ResolveRow } from "@/components/household/ResolveRow";
 import { SettlementBreakdown } from "@/components/household/SettlementBreakdown";
 import { WorkerSwitcher } from "@/components/household/WorkerSwitcher";
 import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
 import { StateIcon } from "@/components/ui/StateIcon";
 
@@ -45,30 +45,14 @@ function HisaabScreen() {
     router.replace(`/hisaab?worker=${id}`);
   };
 
-  const StatusBanner = blocked ? (
-    <div className="flex items-center gap-3 rounded-3xl bg-dispute-bg px-3.5 py-3">
-      <StateIcon state="dispute" size={34} />
-      <div className="leading-[1.25]">
-        <div className="font-extrabold text-dispute-fg">{t("hisaab.blockedTitle", { count: summary.pending.length })}</div>
-        <div className="text-xs font-semibold text-dispute-fg/80">{t("hisaab.blockedSub")}</div>
-      </div>
-    </div>
-  ) : (
-    <div className="flex items-center gap-3 rounded-3xl bg-present-cell px-3.5 py-3">
-      <StateIcon state="present" size={34} />
-      <div className="leading-[1.25]">
-        <div className="font-extrabold text-present-fg">{t("hisaab.allFilledTitle")}</div>
-        <div className="text-xs font-semibold text-present-sub">{t("hisaab.allFilledSub")}</div>
-      </div>
-    </div>
-  );
+  const status = blocked ? t("hisaab.blockedTitle", { count: summary.pending.length }) : t("hisaab.allFilledTitle");
 
   const FinalizeArea = settlement?.finalizedAt ? (
-    <Card padding="md" className="flex items-center gap-3">
-      <StateIcon state="present" size={34} />
+    <div className="flex items-center gap-3 border-y border-line py-3.5">
+      <StateIcon state="present" size={26} />
       <div className="flex-1 leading-tight">
-        <div className="font-extrabold">{t("hisaab.finalized", { amount: formatINR(settlement.amountDue) })}</div>
-        <div className="text-xs text-muted">
+        <div className="font-display text-xl">{t("hisaab.finalized", { amount: formatINR(settlement.amountDue) })}</div>
+        <div className="mt-0.5 text-xs text-muted">
           {settlement.paidAt ? t("hisaab.paidOn", { date: formatDayMonth(settlement.paidAt.slice(0, 10), lang) }) : t("common.unpaid")}
         </div>
       </div>
@@ -77,103 +61,73 @@ function HisaabScreen() {
           {t("hisaab.markPaid")}
         </Button>
       )}
-    </Card>
+    </div>
   ) : (
     <Button
       size="xl"
       block
       {...act({ type: "finalize", workerId: worker.id, month, amountDue: summary.amountDue }, { disabled: blocked })}
     >
-      <span className="flex h-[26px] w-[26px] items-center justify-center rounded-full bg-present-icon text-present-fg">
-        <Icon name="check" size={14} strokeWidth={3.4} />
-      </span>
       {t("hisaab.finalize", { amount: formatINR(summary.amountDue) })}
     </Button>
   );
 
   return (
-    <div className="lg:flex lg:min-h-dvh lg:flex-col lg:gap-4 lg:p-5">
-      <header className={`${HEADER_CLASS} gap-3.5 pb-[70px]`}>
-        <MobileTopRow title={t("hisaab.title")} />
-        <div className="flex items-center justify-between">
-          <div className="hidden font-display text-[30px] font-extrabold tracking-[-0.04em] lg:block">{t("hisaab.title")}</div>
-          <WorkerSwitcher workers={workers} value={worker.id} onChange={selectWorker} />
+    <div className="lg:flex lg:min-h-dvh lg:flex-col">
+      <header className={`${HEADER_CLASS} pb-20`}>
+        <div className="flex items-center gap-2.5">
+          <Link href="/today" className="flex-1 lg:hidden">
+            <Wordmark className="text-[22px]" />
+          </Link>
+          <DesktopTitle>{t("hisaab.title")}</DesktopTitle>
+          <div className="hidden flex-1 lg:block" />
           <MonthPicker value={month} latest={thisMonth} onChange={setMonth} />
         </div>
-        <div className="mt-1.5 flex items-end justify-between gap-2.5">
-          <div>
-            <div className="text-sm font-bold text-muted">{t("hisaab.toPay", { name: worker.name })}</div>
-            <div className="font-display text-[54px] font-extrabold leading-none tracking-[-0.05em] tabular">
-              {formatINR(summary.amountDue)}
-            </div>
-          </div>
-          <span
-            className={
-              blocked
-                ? "inline-flex h-8 items-center gap-1.5 rounded-2xl bg-surface pr-3 pl-1 text-xs font-extrabold text-dispute-fg"
-                : "inline-flex h-8 items-center gap-1.5 rounded-2xl bg-surface pr-3 pl-1 text-xs font-extrabold text-present-fg"
-            }
-          >
-            <StateIcon state={blocked ? "dispute" : "present"} size={24} />
-            {blocked ? t("hisaab.blockedTitle", { count: summary.pending.length }) : t("hisaab.allFilled")}
-          </span>
+        <h1 className="mt-[26px] font-display text-[40px] leading-none tracking-[-0.03em] lg:hidden">{t("hisaab.title")}</h1>
+        <WorkerSwitcher workers={workers} value={worker.id} onChange={selectWorker} />
+        <div className="label-caps mt-[26px]">{t("hisaab.toPay", { name: worker.name })}</div>
+        <div className="mt-1.5 font-display text-[76px] leading-none tracking-[-0.04em] tabular">{formatINR(summary.amountDue)}</div>
+        <div className={`mt-3 flex items-center gap-2 text-[13px] font-semibold ${blocked ? "text-dispute-fg" : ""}`}>
+          <StateIcon state={blocked ? "dispute" : "present"} size={20} />
+          {status}
         </div>
       </header>
 
-      <div className="-mt-11 flex flex-col gap-3.5 px-4 lg:mt-0 lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start lg:gap-4 lg:px-0">
-        <div className="flex flex-col gap-3.5">
-          {StatusBanner}
+      <div className={`${SHEET_CLASS} -mt-[52px] pb-6 lg:pb-10 lg:grid lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start lg:gap-12`}>
+        <div className="flex flex-col">
           {blocked && (
-            <Card padding="none" className="px-[18px] py-1">
-              {summary.pending.map((item, i) => (
-                <ResolveRow key={item.date} item={item} className={i > 0 ? "border-t border-line" : ""} />
-              ))}
-            </Card>
-          )}
-          <div className="grid grid-cols-3 gap-2">
-            <div className="rounded-[22px] bg-av-purple p-3">
-              <div className="text-xs font-bold text-muted">{t("hisaab.workingDays")}</div>
-              <div className="font-display text-[32px] font-extrabold leading-[1.1] tracking-[-0.03em]">{summary.workingDays}</div>
-            </div>
-            <div className="rounded-[22px] bg-present-cell p-3">
-              <div className="text-xs font-bold text-muted">{t("hisaab.present", { gender: worker.gender })}</div>
-              <div className="font-display text-[32px] font-extrabold leading-[1.1] tracking-[-0.03em]">{summary.present}</div>
-            </div>
-            <div className="rounded-[22px] bg-av-blue p-3">
-              <div className="text-xs font-bold text-muted">{t("hisaab.leave")}</div>
-              <div className="font-display text-[32px] font-extrabold leading-[1.1] tracking-[-0.03em]">{summary.leave}</div>
-              <div className="text-[10px] font-semibold text-muted">
-                {t("hisaab.leaveDetail", { free: summary.paidLeaveUsed, unpaid: summary.unpaidLeave })}
+            <section className="mb-6">
+              <div className="label-caps text-dispute-fg">{t("hisaab.blockedSub")}</div>
+              <div className="mt-2">
+                {summary.pending.map((item, i) => (
+                  <ResolveRow key={item.date} item={item} className={i > 0 ? "border-t border-line" : ""} />
+                ))}
               </div>
-            </div>
-          </div>
-          <SettlementBreakdown summary={summary} workerName={worker.name} gender={worker.gender} />
+            </section>
+          )}
+          <SettlementBreakdown summary={summary} workerName={worker.name} gender={worker.gender} className="mb-[18px]" />
           {FinalizeArea}
         </div>
 
-        <Card padding="none" className="px-[18px] py-1.5">
-          <div className="pt-2.5 pb-0.5 font-extrabold">{t("hisaab.previous")}</div>
+        <section className="mt-[30px] lg:mt-0">
+          <div className="label-caps mb-1.5">{t("hisaab.previous")}</div>
           {previous.length === 0 ? (
             <div className="py-3 text-sm text-muted">—</div>
           ) : (
             previous.map((s, i) => (
-              <div key={s.month} className={`flex items-center gap-2.5 py-3 ${i > 0 ? "border-t border-line" : ""}`}>
-                <span className="flex-1 font-semibold">{formatMonthLong(s.month, lang)}</span>
+              <div key={s.month} className={`flex items-baseline gap-3 py-[13px] ${i > 0 ? "border-t border-line" : ""}`}>
+                <span className="flex-1 font-display text-xl">{formatMonthLong(s.month, lang)}</span>
                 <span
-                  className={
-                    s.paidAt
-                      ? "inline-flex h-6 items-center gap-1 rounded-xl bg-present-cell px-2.5 text-[11px] font-extrabold text-present-fg"
-                      : "inline-flex h-6 items-center gap-1 rounded-xl bg-claim-icon px-2.5 text-[11px] font-extrabold text-claim-fg"
-                  }
+                  className={`inline-flex items-center gap-[5px] text-[10px] font-bold tracking-[0.18em] uppercase ${s.paidAt ? "text-present-fg" : "text-claim-fg"}`}
                 >
-                  {s.paidAt && <Icon name="check" size={10} strokeWidth={4} />}
+                  {s.paidAt && <Icon name="check" size={10} strokeWidth={3.4} />}
                   {s.paidAt ? t("common.paid") : t("common.unpaid")}
                 </span>
-                <span className="w-[72px] text-right font-display font-bold tabular">{formatINR(s.amountDue)}</span>
+                <span className="w-[76px] text-right font-display text-xl tabular">{formatINR(s.amountDue)}</span>
               </div>
             ))
           )}
-        </Card>
+        </section>
       </div>
     </div>
   );

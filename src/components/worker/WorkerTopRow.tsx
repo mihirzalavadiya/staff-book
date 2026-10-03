@@ -6,7 +6,7 @@ import { useTheme } from "@/lib/theme";
 import { Icon } from "@/components/ui/Icon";
 
 const BTN =
-  "flex h-12 flex-none items-center gap-1.5 rounded-3xl border-2 border-ink bg-surface pr-3 pl-2.5 text-[15px] font-bold";
+  "flex h-11 flex-none items-center gap-1.5 rounded-[22px] border-[1.5px] border-ink pr-3 pl-2.5 text-[15px] font-bold";
 
 /** Greeting plus the two always-visible controls: colour and language. */
 export function WorkerTopRow({ greeting, token, back }: { greeting?: string; token: string; back?: boolean }) {
@@ -15,11 +15,11 @@ export function WorkerTopRow({ greeting, token, back }: { greeting?: string; tok
   return (
     <div className="flex items-center gap-2">
       {back ? (
-        <Link href={`/w/${token}`} aria-label={t("common.back")} className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-ink bg-surface">
+        <Link href={`/w/${token}`} aria-label={t("common.back")} className="flex h-11 w-11 flex-none items-center justify-center rounded-full border-[1.5px] border-ink">
           <Icon name="chevronLeft" size={22} />
         </Link>
       ) : null}
-      <div className="min-w-0 flex-1 text-lg font-semibold leading-tight text-muted">{greeting}</div>
+      <div className="min-w-0 flex-1 text-[17px] leading-tight text-muted">{greeting}</div>
       <button type="button" onClick={toggle} className={BTN}>
         <Icon name="contrast" size={20} />
         {t("worker.theme")}

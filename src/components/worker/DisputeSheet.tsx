@@ -67,8 +67,8 @@ function DisputeBody({ onSend }: { onSend: Props["onSend"] }) {
           onClick={() => setReason(r)}
           aria-pressed={reason === r}
           className={cn(
-            "flex h-16 items-center justify-between rounded-[20px] px-5 text-[21px] font-extrabold",
-            reason === r ? "bg-coral text-white" : "bg-surface-2",
+            "flex h-16 items-center justify-between rounded-[6px] px-5 text-[21px] font-extrabold",
+            reason === r ? "bg-ink text-bg" : "bg-surface-2",
           )}
         >
           {label(r)}
@@ -82,7 +82,7 @@ function DisputeBody({ onSend }: { onSend: Props["onSend"] }) {
         onPointerLeave={stop}
         onPointerCancel={stop}
         className={cn(
-          "mt-1 flex h-[72px] select-none items-center justify-center gap-3 rounded-[22px] border-[2.5px] text-[21px] font-extrabold",
+          "mt-1 flex h-[72px] select-none items-center justify-center gap-3 rounded-[6px] border-[2.5px] text-[21px] font-extrabold",
           recording
             ? "border-dispute-fg bg-dispute-bg text-dispute-fg"
             : "border-ink bg-surface",
@@ -103,7 +103,7 @@ function DisputeBody({ onSend }: { onSend: Props["onSend"] }) {
           if (!reason) return;
           await onSend(reason, seconds || undefined, setPhase);
         }}
-        className={cn("flex h-[66px] items-center justify-center gap-3 rounded-[22px] bg-coral text-[24px] font-extrabold text-white", sending ? "cursor-progress" : "disabled:opacity-40")}
+        className={cn("flex h-[66px] items-center justify-center gap-3 rounded-[6px] bg-coral text-[24px] font-extrabold text-white", sending ? "cursor-progress" : "disabled:opacity-40")}
       >
         {sending ? (
           <>

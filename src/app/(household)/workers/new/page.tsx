@@ -12,7 +12,7 @@ import { useOrigin } from "@/lib/useOrigin";
 import { ROLES, roleName } from "@/lib/roles";
 import type { AvatarTone, Gender, Lang, Role } from "@/lib/types";
 import { addWorker } from "@/server/actions/household";
-import { HEADER_CLASS, HeaderIconButton } from "@/components/household/PageHeader";
+import { HEADER_CLASS, SHEET_CLASS, HeaderIconButton } from "@/components/household/PageHeader";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -82,22 +82,22 @@ export default function NewWorkerPage() {
     : "";
 
   return (
-    <div className="lg:flex lg:min-h-dvh lg:flex-col lg:gap-4 lg:p-5">
-      <header className={`${HEADER_CLASS} gap-3 pb-[70px]`}>
+    <div className="lg:flex lg:min-h-dvh lg:flex-col">
+      <header className={`${HEADER_CLASS} gap-3 pb-[76px]`}>
         <div className="flex items-center gap-2.5">
           <HeaderIconButton icon="chevronLeft" href="/workers" label={t("common.back")} />
-          <div className="flex-1 font-display text-xl font-extrabold tracking-[-0.03em]">{t("addWorker.title")}</div>
+          <div className="flex-1 font-display text-xl tracking-[-0.03em]">{t("addWorker.title")}</div>
         </div>
         <div className="flex items-center gap-3">
           <Avatar initial={(name.trim()[0] ?? "?").toUpperCase()} tone={TONES[state.workers.length % TONES.length]} size={56} className="ring-4 ring-surface" />
-          <div className="font-display text-[30px] font-extrabold leading-none tracking-[-0.03em]">
+          <div className="font-display text-[30px] leading-none tracking-[-0.03em]">
             {name.trim() || t("addWorker.namePlaceholder")}
             <div className="mt-1 text-[15px] font-semibold text-muted">{roleName(t, role, roleLabel)}</div>
           </div>
         </div>
       </header>
 
-      <div className="-mt-11 px-4 lg:mt-0 lg:max-w-[640px] lg:px-0">
+      <div className={`${SHEET_CLASS} -mt-14 pb-6 lg:pb-10 lg:max-w-[640px]`}>
         <Card padding="lg" className="flex flex-col gap-5">
           <Field label={t("addWorker.name")} value={name} onChange={(e) => setName(e.target.value)} placeholder={t("addWorker.namePlaceholder")} autoFocus />
           <div>
@@ -140,7 +140,7 @@ export default function NewWorkerPage() {
                     type="button"
                     onClick={() => toggleDay(i)}
                     aria-pressed={on}
-                    className={cn("h-12 rounded-2xl text-[13px] font-bold", on ? "bg-coral text-white" : "bg-surface-2 text-muted")}
+                    className={cn("h-12 rounded-[6px] text-[13px] font-bold", on ? "bg-ink text-bg" : "bg-surface-2 text-muted")}
                   >
                     {d}
                   </button>
@@ -151,11 +151,11 @@ export default function NewWorkerPage() {
           <div>
             <div className="mb-2 text-[13px] font-bold text-muted">{t("addWorker.paidLeaves")}</div>
             <div className="flex items-center gap-3">
-              <button type="button" onClick={() => setPaidLeaves(Math.max(0, paidLeaves - 1))} className="flex h-12 w-12 items-center justify-center rounded-2xl bg-surface-2">
+              <button type="button" onClick={() => setPaidLeaves(Math.max(0, paidLeaves - 1))} className="flex h-12 w-12 items-center justify-center rounded-[6px] bg-surface-2">
                 −
               </button>
-              <span className="w-8 text-center font-display text-2xl font-extrabold">{paidLeaves}</span>
-              <button type="button" onClick={() => setPaidLeaves(Math.min(10, paidLeaves + 1))} className="flex h-12 w-12 items-center justify-center rounded-2xl bg-surface-2">
+              <span className="w-8 text-center font-display text-2xl">{paidLeaves}</span>
+              <button type="button" onClick={() => setPaidLeaves(Math.min(10, paidLeaves + 1))} className="flex h-12 w-12 items-center justify-center rounded-[6px] bg-surface-2">
                 <Icon name="plus" size={14} />
               </button>
             </div>
@@ -165,7 +165,7 @@ export default function NewWorkerPage() {
             <Segmented value={language} onChange={setLanguage} options={LANGUAGES.map((l) => ({ value: l.code, label: l.native }))} />
             <div className="mt-1.5 text-xs text-muted">{t("addWorker.languageHint")}</div>
           </div>
-          {error && <div className="rounded-2xl bg-dispute-bg px-4 py-3 text-sm font-bold text-dispute-fg">{error}</div>}
+          {error && <div className="rounded-[6px] bg-dispute-bg px-4 py-3 text-sm font-bold text-dispute-fg">{error}</div>}
           <Button size="xl" block disabled={!valid} phase={phase} loadingText={t("addWorker.creating")} onClick={create}>
             <Icon name="whatsapp" size={18} />
             {t("addWorker.create")}
@@ -177,12 +177,12 @@ export default function NewWorkerPage() {
         {created && (
           <div className="flex flex-col gap-3">
             {created.alreadyOnStaffbook && (
-              <div className="rounded-2xl bg-av-blue p-3.5 text-sm leading-relaxed">
+              <div className="rounded-[6px] bg-av-blue p-3.5 text-sm leading-relaxed">
                 <div className="font-extrabold">{t("addWorker.alreadyTitle", { name: created.name })}</div>
                 <div className="text-muted">{t("addWorker.alreadyBody", { gender })}</div>
               </div>
             )}
-            <div className="rounded-2xl bg-surface-2 p-3.5 text-sm leading-relaxed">
+            <div className="rounded-[6px] bg-surface-2 p-3.5 text-sm leading-relaxed">
               {t("addWorker.shareBody", { name: created.name, gender, house: homeLabel(state.household.name, state.household.flat), link: "" })}
               <span className="font-bold text-coral">{link}</span>
             </div>
@@ -190,7 +190,7 @@ export default function NewWorkerPage() {
               href={`https://wa.me/?text=${waText}`}
               target="_blank"
               rel="noreferrer"
-              className="flex h-[58px] items-center justify-center gap-2 rounded-[20px] bg-present-fg text-base font-bold text-white"
+              className="flex h-[58px] items-center justify-center gap-2 rounded-[6px] bg-present-fg text-base font-bold text-white"
             >
               <Icon name="whatsapp" size={20} />
               {t("addWorker.whatsapp")}

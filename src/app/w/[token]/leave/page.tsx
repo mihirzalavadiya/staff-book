@@ -51,8 +51,8 @@ function MonthPickGrid({
             onClick={() => onToggle(d)}
             aria-pressed={on}
             className={cn(
-              "flex h-12 items-center justify-center rounded-2xl text-lg font-bold",
-              on ? "bg-coral text-white" : already ? "bg-leave-cell text-leave-fg" : past ? "text-off-fg" : "bg-surface-2",
+              "flex h-12 items-center justify-center rounded-[6px] text-lg font-bold",
+              on ? "bg-ink text-bg" : already ? "bg-leave-cell text-leave-fg" : past ? "text-off-fg" : "bg-surface-2",
               isToday && !on && "ring-2 ring-coral",
             )}
           >
@@ -126,7 +126,7 @@ export default function PlanLeavePage() {
 
       <div className="-mt-[46px] flex flex-col gap-3.5 px-4">
         {[month, next].map((m) => (
-          <Card key={m} padding="lg" radius={28}>
+          <Card key={m} padding="lg">
             <div className="mb-3 text-[21px] font-extrabold">{formatMonthLong(m, lang)}</div>
             <div className="mb-1.5 grid grid-cols-7 gap-1.5">
               {dayShort(lang).map((d) => (
@@ -139,7 +139,7 @@ export default function PlanLeavePage() {
           </Card>
         ))}
 
-        <Card padding="lg" radius={28}>
+        <Card padding="lg">
           <div className="mb-3 text-[21px] font-extrabold">{t("worker.leaveReason")}</div>
           <div className="grid grid-cols-2 gap-2.5">
             {REASONS.map((r) => (
@@ -148,7 +148,7 @@ export default function PlanLeavePage() {
                 type="button"
                 onClick={() => setReason(r)}
                 aria-pressed={reason === r}
-                className={cn("h-16 rounded-[20px] text-xl font-extrabold", reason === r ? "bg-coral text-white" : "bg-surface-2")}
+                className={cn("h-16 rounded-[6px] text-xl font-extrabold", reason === r ? "bg-ink text-bg" : "bg-surface-2")}
               >
                 {reasonLabel(r)}
               </button>
@@ -157,7 +157,7 @@ export default function PlanLeavePage() {
         </Card>
 
         {engagements.length > 1 && (
-          <Card padding="lg" radius={28}>
+          <Card padding="lg">
             <div className="mb-3 text-[21px] font-extrabold">{t("worker.houses", { count: houses.size })}</div>
             <div className="flex flex-col gap-2">
               {engagements.map((e) => {
@@ -168,7 +168,7 @@ export default function PlanLeavePage() {
                     type="button"
                     onClick={() => toggleHouse(e.id)}
                     aria-pressed={on}
-                    className={cn("flex h-16 items-center gap-3 rounded-[20px] px-3 text-lg font-extrabold", on ? "bg-coral-soft" : "bg-surface-2 text-muted")}
+                    className={cn("flex h-16 items-center gap-3 rounded-[6px] px-3 text-lg font-extrabold", on ? "bg-coral-soft" : "bg-surface-2 text-muted")}
                   >
                     <Avatar initial={e.initial} tone={e.tone} size={40} />
                     <span className="flex-1 text-left">{e.houseName}</span>
@@ -181,9 +181,9 @@ export default function PlanLeavePage() {
         )}
       </div>
 
-      <div className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-[480px] rounded-t-[28px] bg-surface px-4 pt-3 pb-safe shadow-nav">
+      <div className="fixed inset-x-0 bottom-0 z-40 mx-auto w-full max-w-[480px] rounded-t-[28px] bg-surface px-4 pt-3 pb-safe ">
         {done ? (
-          <div className="flex h-[66px] items-center justify-center gap-3 rounded-[22px] bg-present-bg text-xl font-extrabold text-present-fg">
+          <div className="flex h-[66px] items-center justify-center gap-3 rounded-[6px] bg-present-bg text-xl font-extrabold text-present-fg">
             <Icon name="check" size={26} strokeWidth={3} />
             {t("worker.leaveDone")}
           </div>
@@ -193,7 +193,7 @@ export default function PlanLeavePage() {
             disabled={selected.size === 0 || !reason || saving}
             aria-busy={saving || undefined}
             onClick={submit}
-            className={cn("flex h-[66px] w-full items-center justify-center gap-3 rounded-[22px] bg-coral text-[24px] font-extrabold text-white", saving ? "cursor-progress" : "disabled:opacity-40")}
+            className={cn("flex h-[66px] w-full items-center justify-center gap-3 rounded-[6px] bg-coral text-[24px] font-extrabold text-white", saving ? "cursor-progress" : "disabled:opacity-40")}
           >
             {saving ? (
               <>

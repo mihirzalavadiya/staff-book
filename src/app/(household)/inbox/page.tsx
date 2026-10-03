@@ -4,7 +4,7 @@ import { formatDayMonth, formatTime } from "@/lib/date";
 import { useI18n } from "@/lib/i18n";
 import { pendingItems, type PendingItem } from "@/lib/ledger";
 import { useAct, useStore } from "@/lib/store";
-import { HEADER_CLASS, MobileTopRow } from "@/components/household/PageHeader";
+import { HEADER_CLASS, SHEET_CLASS, MobileTopRow } from "@/components/household/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";
@@ -97,18 +97,18 @@ export default function InboxPage() {
   const items = pendingItems(state);
 
   return (
-    <div className="lg:flex lg:min-h-dvh lg:flex-col lg:gap-4 lg:p-5">
-      <header className={`${HEADER_CLASS} gap-3 pb-[70px]`}>
+    <div className="lg:flex lg:min-h-dvh lg:flex-col">
+      <header className={`${HEADER_CLASS} gap-3 pb-[76px]`}>
         <MobileTopRow title={t("inbox.title")} />
         <div>
-          <div className="hidden font-display text-[30px] font-extrabold tracking-[-0.04em] lg:block">{t("inbox.title")}</div>
+          <div className="hidden font-display text-[30px] tracking-[-0.04em] lg:block">{t("inbox.title")}</div>
           <div className="text-[15px] font-semibold text-muted">{t("inbox.subtitle")}</div>
-          <div className="mt-2 font-display text-[38px] font-extrabold leading-none tracking-[-0.04em] lg:hidden">
+          <div className="mt-2 font-display text-[38px] leading-none tracking-[-0.04em] lg:hidden">
             {items.length} {t("common.pending").toLowerCase()}
           </div>
         </div>
       </header>
-      <div className="-mt-11 px-4 lg:mt-0 lg:max-w-[720px] lg:px-0">
+      <div className={`${SHEET_CLASS} -mt-14 pb-6 lg:pb-10 lg:max-w-[720px]`}>
         <Card padding="none" className="px-[18px] py-1">
           {items.length === 0 ? (
             <div className="flex items-center gap-3 py-5">

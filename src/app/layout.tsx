@@ -1,20 +1,27 @@
 import type { Metadata, Viewport } from "next";
-import { Bricolage_Grotesque, Figtree, Noto_Sans_Devanagari } from "next/font/google";
+import { Hanken_Grotesk, Instrument_Serif, Noto_Sans_Devanagari, Tiro_Devanagari_Hindi } from "next/font/google";
 import Script from "next/script";
 import { AppProviders } from "@/lib/providers";
 import "./globals.css";
 
-const bricolage = Bricolage_Grotesque({
-  variable: "--font-bricolage",
+const instrument = Instrument_Serif({
+  variable: "--font-instrument",
   subsets: ["latin"],
-  weight: "variable",
-  axes: ["opsz"],
+  weight: "400",
+  style: ["normal", "italic"],
 });
 
-const figtree = Figtree({
-  variable: "--font-figtree",
+const hanken = Hanken_Grotesk({
+  variable: "--font-hanken",
   subsets: ["latin"],
   weight: "variable",
+});
+
+const tiro = Tiro_Devanagari_Hindi({
+  variable: "--font-tiro",
+  subsets: ["devanagari", "latin"],
+  weight: "400",
+  style: ["normal", "italic"],
 });
 
 const devanagari = Noto_Sans_Devanagari({
@@ -34,7 +41,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#FFE0CC",
+  themeColor: "#E6DAC6",
   width: "device-width",
   initialScale: 1,
   viewportFit: "cover",
@@ -47,7 +54,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${bricolage.variable} ${figtree.variable} ${devanagari.variable}`}
+      className={`${instrument.variable} ${hanken.variable} ${tiro.variable} ${devanagari.variable}`}
     >
       <body>
         {/* Sets dark mode before first paint so the page never flashes light. */}

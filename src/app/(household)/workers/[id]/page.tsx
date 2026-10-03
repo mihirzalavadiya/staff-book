@@ -14,7 +14,7 @@ import type { Phase } from "@/lib/phase";
 import { useOrigin } from "@/lib/useOrigin";
 import { DayStateBlock } from "@/components/household/WorkerCard";
 import { MonthGrid } from "@/components/household/MonthGrid";
-import { HEADER_CLASS, HeaderIconButton } from "@/components/household/PageHeader";
+import { HEADER_CLASS, SHEET_CLASS, HeaderIconButton } from "@/components/household/PageHeader";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
@@ -56,13 +56,13 @@ export default function WorkerDetailPage({ params }: { params: Promise<{ id: str
   };
 
   return (
-    <div className="lg:flex lg:min-h-dvh lg:flex-col lg:gap-4 lg:p-5">
-      <header className={`${HEADER_CLASS} gap-4 pb-[70px]`}>
+    <div className="lg:flex lg:min-h-dvh lg:flex-col">
+      <header className={`${HEADER_CLASS} gap-4 pb-[76px]`}>
         <div className="flex items-center gap-2.5">
           <HeaderIconButton icon="chevronLeft" href="/workers" label={t("common.back")} />
           <div className="flex-1" />
           {!worker.endDate && (
-            <button type="button" onClick={() => setEditOpen(true)} className="flex h-11 items-center gap-2 rounded-[22px] bg-surface px-4 text-sm font-bold">
+            <button type="button" onClick={() => setEditOpen(true)} className="flex h-11 items-center gap-2 rounded-[6px] bg-surface px-4 text-sm font-bold">
               <Icon name="settings" size={16} />
               {t("workers.edit")}
             </button>
@@ -71,7 +71,7 @@ export default function WorkerDetailPage({ params }: { params: Promise<{ id: str
         <div className="flex items-center gap-3.5">
           <Avatar initial={worker.name[0]} tone={worker.tone} size={64} className="ring-4 ring-surface" />
           <div className="min-w-0 flex-1">
-            <div className="font-display text-[30px] font-extrabold leading-none tracking-[-0.03em]">{worker.name}</div>
+            <div className="font-display text-[30px] leading-none tracking-[-0.03em]">{worker.name}</div>
             {worker.linkPending && (
               <div className="mt-1.5 inline-flex items-center gap-1.5 rounded-full bg-surface px-2.5 py-1 text-xs font-bold text-muted">
                 <Icon name="clock" size={12} />
@@ -83,27 +83,27 @@ export default function WorkerDetailPage({ params }: { params: Promise<{ id: str
             </div>
           </div>
           <div className="text-right">
-            <div className="font-display text-[22px] font-bold tabular">{formatINR(worker.salary)}</div>
+            <div className="font-display text-[22px] tabular">{formatINR(worker.salary)}</div>
             <div className="text-[11px] text-muted">{t("common.perMonth")}</div>
           </div>
         </div>
         <div className="grid grid-cols-3 gap-2">
-          <div className="rounded-[20px] bg-glass-2 p-3">
+          <div className="rounded-[6px] bg-glass-2 p-3">
             <div className="text-[11px] font-bold text-muted">{t("workers.attendanceLabel")}</div>
-            <div className="font-display text-2xl font-extrabold">{attendancePercent(state, worker)}%</div>
+            <div className="font-display text-2xl">{attendancePercent(state, worker)}%</div>
           </div>
-          <div className="rounded-[20px] bg-glass-2 p-3">
+          <div className="rounded-[6px] bg-glass-2 p-3">
             <div className="text-[11px] font-bold text-muted">{t("hisaab.present", { gender: worker.gender })}</div>
-            <div className="font-display text-2xl font-extrabold">{summary.present}</div>
+            <div className="font-display text-2xl">{summary.present}</div>
           </div>
-          <div className="rounded-[20px] bg-glass-2 p-3">
+          <div className="rounded-[6px] bg-glass-2 p-3">
             <div className="text-[11px] font-bold text-muted">{t("hisaab.leave")}</div>
-            <div className="font-display text-2xl font-extrabold">{summary.leave}</div>
+            <div className="font-display text-2xl">{summary.leave}</div>
           </div>
         </div>
       </header>
 
-      <div className="-mt-11 flex flex-col gap-3.5 px-4 lg:mt-0 lg:grid lg:grid-cols-2 lg:items-start lg:gap-4 lg:px-0">
+      <div className={`${SHEET_CLASS} -mt-14 pb-6 lg:pb-10 flex flex-col gap-3.5 lg:grid lg:grid-cols-2 lg:items-start lg:gap-4`}>
         <div className="flex flex-col gap-3.5">
           {!worker.endDate && info.state !== "off" && (
             <Card padding="md">
@@ -111,7 +111,7 @@ export default function WorkerDetailPage({ params }: { params: Promise<{ id: str
               <DayStateBlock worker={worker} date={state.today} info={info} />
             </Card>
           )}
-          <Card padding="none" radius={28} className="px-4 pt-4 pb-3.5">
+          <Card padding="none" className="px-4 pt-4 pb-3.5">
             <div className="mb-3 flex items-center justify-between">
               <div className="font-extrabold">{t("calendar.title")}</div>
               <Link href={`/calendar?worker=${worker.id}`} className="text-xs font-extrabold text-coral">
@@ -139,7 +139,7 @@ export default function WorkerDetailPage({ params }: { params: Promise<{ id: str
             </div>
             <div className="flex items-center justify-between border-t border-line py-3">
               <span className="font-semibold text-muted">{t("workers.paidLeaves")}</span>
-              <span className="font-display font-bold">{worker.paidLeavesPerMonth}</span>
+              <span className="font-display">{worker.paidLeavesPerMonth}</span>
             </div>
             <div className="flex items-center justify-between border-t border-line py-3">
               <span className="font-semibold text-muted">{t("workers.phone")}</span>
@@ -153,7 +153,7 @@ export default function WorkerDetailPage({ params }: { params: Promise<{ id: str
 
           <Card padding="md" className="flex flex-col gap-3">
             <div className="font-extrabold">{t("workers.shareLink")}</div>
-            <div className="flex items-center gap-2 rounded-2xl bg-surface-2 px-3.5 py-3 text-[13px] font-semibold">
+            <div className="flex items-center gap-2 rounded-[6px] bg-surface-2 px-3.5 py-3 text-[13px] font-semibold">
               <Icon name="link" size={16} className="flex-none text-muted" />
               <span className="min-w-0 flex-1 truncate">/w/{worker.token}</span>
               <button type="button" onClick={copy} className="font-extrabold text-coral">
@@ -165,7 +165,7 @@ export default function WorkerDetailPage({ params }: { params: Promise<{ id: str
               href={`https://wa.me/?text=${waText}`}
               target="_blank"
               rel="noreferrer"
-              className="flex h-[50px] items-center justify-center gap-2 rounded-2xl bg-present-fg text-[15px] font-bold text-white"
+              className="flex h-[50px] items-center justify-center gap-2 rounded-[6px] bg-present-fg text-[15px] font-bold text-white"
             >
               <Icon name="whatsapp" size={18} />
               {t("addWorker.whatsapp")}

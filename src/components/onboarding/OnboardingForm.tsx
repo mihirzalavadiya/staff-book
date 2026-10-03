@@ -7,7 +7,6 @@ import { useI18n } from "@/lib/i18n";
 import { usePhase } from "@/lib/usePhase";
 import { createHousehold } from "@/server/actions/auth";
 import { Button } from "@/components/ui/Button";
-import { Card } from "@/components/ui/Card";
 import { Field } from "@/components/ui/Field";
 import { Icon } from "@/components/ui/Icon";
 
@@ -40,19 +39,19 @@ export function OnboardingForm({ initial }: { initial: { ownerName: string; name
 
   return (
     <div className="flex min-h-dvh flex-col bg-bg">
-      <div className="rounded-b-[38px] bg-peach px-5 pt-6 pb-[70px] sm:mx-auto sm:mt-10 sm:w-full sm:max-w-[520px] sm:rounded-[30px] sm:pb-8">
+      <div className="bg-peach px-[22px] pt-6 pb-[84px] sm:px-[max(22px,calc(50%-280px))] sm:pt-12">
         <div className="mb-4 flex gap-1.5">
           {[1, 2, 3].map((n) => (
-            <span key={n} className={cn("h-1.5 flex-1 rounded-full", n <= step ? "bg-coral" : "bg-glass")} />
+            <span key={n} className={cn("h-px flex-1", n <= step ? "bg-ink" : "bg-line-strong")} />
           ))}
         </div>
-        <div className="text-[13px] font-bold text-muted">{t("onboarding.step", { n: step })}</div>
-        <h1 className="mt-1 font-display text-[34px] font-extrabold leading-[1.05] tracking-[-0.04em]">
+        <div className="label-caps">{t("onboarding.step", { n: step })}</div>
+        <h1 className="mt-2 font-display text-[44px] leading-none tracking-[-0.035em]">
           {step === 1 ? t("onboarding.homeTitle") : t("onboarding.locationTitle")}
         </h1>
       </div>
-      <div className="-mt-11 px-4 sm:mx-auto sm:mt-4 sm:w-full sm:max-w-[520px]">
-        <Card padding="lg" className="flex flex-col gap-4">
+      <div className="relative mx-3.5 -mt-14 rounded-t-[22px] bg-bg px-[18px] pt-6 pb-8 sm:mx-auto sm:w-full sm:max-w-[560px] sm:px-5">
+        <div className="flex flex-col gap-5">
           {step === 1 ? (
             <>
               <Field label={t("onboarding.yourName")} value={ownerName} onChange={(e) => setOwnerName(e.target.value)} placeholder="Priya" autoFocus />
@@ -69,7 +68,7 @@ export function OnboardingForm({ initial }: { initial: { ownerName: string; name
                     setHomeLabel(`${pos.coords.latitude.toFixed(4)}, ${pos.coords.longitude.toFixed(4)}`),
                   );
                 }}
-                className="flex h-14 items-center gap-3 rounded-[20px] bg-surface-2 px-4 text-left font-bold"
+                className="flex h-14 items-center gap-3 rounded-[6px] bg-surface-2 px-4 text-left font-bold"
               >
                 <Icon name="pin" size={20} className="text-coral" />
                 <span className="flex-1">{t("settings.setLocation")}</span>
@@ -77,7 +76,7 @@ export function OnboardingForm({ initial }: { initial: { ownerName: string; name
               <div className="text-xs text-muted">{t("settings.locationHint")}</div>
             </div>
           )}
-          {error && <div className="rounded-2xl bg-dispute-bg px-4 py-3 text-sm font-bold text-dispute-fg">{error}</div>}
+          {error && <div className="rounded-[6px] bg-dispute-bg px-4 py-3 text-sm font-bold text-dispute-fg">{error}</div>}
           <Button size="xl" block onClick={next} phase={phase} loadingText={t("onboarding.saving")} disabled={step === 1 && (!name.trim() || !ownerName.trim() || !flat.trim())}>
             {t("common.next")}
             <Icon name="chevronRight" size={16} />
@@ -87,7 +86,7 @@ export function OnboardingForm({ initial }: { initial: { ownerName: string; name
               {t("onboarding.skip")}
             </Button>
           )}
-        </Card>
+        </div>
       </div>
     </div>
   );
