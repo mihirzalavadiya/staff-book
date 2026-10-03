@@ -10,6 +10,8 @@ export default async function HouseholdLayout({ children }: { children: React.Re
   if (!user) redirect("/login");
   const state = await loadHouseholdState(user.id);
   if (!state) redirect("/onboarding");
+  // Homes created before flat numbers existed finish their details once.
+  if (!state.household.flat) redirect("/onboarding");
 
   return (
     <HouseholdStore initialState={state}>

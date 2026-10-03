@@ -5,6 +5,7 @@ import { and, eq, inArray } from "drizzle-orm";
 import { db } from "../db";
 import { engagements, households, pushSubscriptions, workers } from "../db/schema";
 import { sendPush } from "./send";
+import { homeLabel } from "@/lib/home";
 import type { PushEvent } from "@/lib/push-messages";
 
 /** Who the notification is about, loaded once per send. */
@@ -50,6 +51,6 @@ export function notifyWorker(engagementId: string, build: WorkerEvent) {
       .select()
       .from(pushSubscriptions)
       .where(inArray(pushSubscriptions.engagementId, theirs.map((r) => r.id)));
-    await sendPush(subs, build({ token: ctx.e.workerToken, house: ctx.h.name }));
+    await sendPush(subs, build({ token: ctx.e.workerToken, house: homeLabel(ctx.h.name, ctx.h.flat) }));
   });
 }

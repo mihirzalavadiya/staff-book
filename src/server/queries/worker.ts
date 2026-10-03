@@ -3,6 +3,7 @@ import "server-only";
 import { and, eq, gte, inArray } from "drizzle-orm";
 import { db } from "../db";
 import { advances, attendance, engagements, households, reminders, settlements, workers } from "../db/schema";
+import { homeLabel } from "@/lib/home";
 import { toAdvance, toAttendance, toReminder, toSettlement, toWorker } from "./mappers";
 import { todayIST } from "../today";
 import { addMonths, monthOf } from "@/lib/date";
@@ -63,7 +64,7 @@ export async function loadWorkerState(token: string): Promise<WorkerState | null
     .orderBy(engagements.createdAt);
   const asHouse = (r: { e: typeof engagements.$inferSelect; h: typeof households.$inferSelect }): Engagement => ({
     id: r.e.id,
-    houseName: r.h.name,
+    houseName: homeLabel(r.h.name, r.h.flat),
     role: r.e.role,
     roleLabel: r.e.roleLabel ?? undefined,
     salary: r.e.monthlySalary,

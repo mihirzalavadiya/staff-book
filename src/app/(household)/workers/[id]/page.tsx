@@ -8,6 +8,7 @@ import { useI18n } from "@/lib/i18n";
 import { attendancePercent, dayInfo, monthSummary } from "@/lib/ledger";
 import { formatINR } from "@/lib/money";
 import { roleName } from "@/lib/roles";
+import { homeLabel } from "@/lib/home";
 import { useStore } from "@/lib/store";
 import type { Phase } from "@/lib/phase";
 import { useOrigin } from "@/lib/useOrigin";
@@ -41,7 +42,7 @@ export default function WorkerDetailPage({ params }: { params: Promise<{ id: str
   const info = dayInfo(state, worker, state.today);
   const link = `${origin}/w/${worker.token}`;
   const waText = encodeURIComponent(
-    t("addWorker.shareBody", { name: worker.name, gender: worker.gender, house: state.household.name, link }),
+    t("addWorker.shareBody", { name: worker.name, gender: worker.gender, house: homeLabel(state.household.name, state.household.flat), link }),
   );
 
   const copy = async () => {

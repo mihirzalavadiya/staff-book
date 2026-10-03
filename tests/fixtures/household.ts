@@ -97,7 +97,7 @@ export async function createFixture({ withAuthUser }: { withAuthUser: boolean })
 
     const [household] = await db
       .insert(schema.households)
-      .values({ ownerUserId, ownerName: "Asha", name: `E2E Home ${run}` })
+      .values({ ownerUserId, ownerName: "Asha", name: `E2E Home ${run}`, flat: "A-101" })
       .returning();
 
     const workers: Record<string, FixtureWorker> = {};

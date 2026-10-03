@@ -192,7 +192,7 @@
   "settings": {
     "title": "Settings",
     "home": "Home",
-    "homeName": "Home name",
+    "homeName": "Building / society name",
     "location": "Home location",
     "locationHint": "Used only to show a small \"nearby\" tick on claims. Never blocks anything.",
     "setLocation": "Set to current location",
@@ -208,7 +208,10 @@
     "notifications": "Notifications",
     "push": "Push notifications",
     "pushHint": "Only when there is something to act on. Nothing else, ever.",
-    "loggingOut": "Logging out…"
+    "loggingOut": "Logging out…",
+    "flat": "Flat / house no.",
+    "flatPlaceholder": "e.g. B-402",
+    "homeNamePlaceholder": "e.g. M.R. Residency"
   },
   "worker": {
     "greeting": "Namaste {name}",

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { useI18n } from "@/lib/i18n";
 import { pendingItems } from "@/lib/ledger";
+import { homeLabel } from "@/lib/home";
 import { useStore } from "@/lib/store";
 import { useTheme } from "@/lib/theme";
 import { Icon, type IconName } from "@/components/ui/Icon";
@@ -97,7 +98,7 @@ function Sidebar() {
       <Link href="/settings" className="mt-3 flex items-center gap-2.5 rounded-[20px] bg-peach p-3">
         <Avatar initial={state.household.ownerName[0]} tone="peach" size={38} shape="circle" className="bg-surface" />
         <div className="leading-tight">
-          <div className="font-extrabold">{state.household.name}</div>
+          <div className="font-extrabold">{homeLabel(state.household.name, state.household.flat)}</div>
           <div className="text-xs text-muted">{t("nav.workersCount", { count: active })}</div>
         </div>
       </Link>

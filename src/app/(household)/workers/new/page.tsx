@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { cn } from "@/lib/cn";
 import { dayShort } from "@/lib/date";
 import { LANGUAGES, useI18n } from "@/lib/i18n";
+import { homeLabel } from "@/lib/home";
 import { useStore } from "@/lib/store";
 import { usePhase } from "@/lib/usePhase";
 import { useOrigin } from "@/lib/useOrigin";
@@ -77,7 +78,7 @@ export default function NewWorkerPage() {
 
   const link = created ? `${origin}/w/${created.token}` : "";
   const waText = created
-    ? encodeURIComponent(t("addWorker.shareBody", { name: created.name, gender, house: state.household.name, link }))
+    ? encodeURIComponent(t("addWorker.shareBody", { name: created.name, gender, house: homeLabel(state.household.name, state.household.flat), link }))
     : "";
 
   return (
@@ -182,7 +183,7 @@ export default function NewWorkerPage() {
               </div>
             )}
             <div className="rounded-2xl bg-surface-2 p-3.5 text-sm leading-relaxed">
-              {t("addWorker.shareBody", { name: created.name, gender, house: state.household.name, link: "" })}
+              {t("addWorker.shareBody", { name: created.name, gender, house: homeLabel(state.household.name, state.household.flat), link: "" })}
               <span className="font-bold text-coral">{link}</span>
             </div>
             <a

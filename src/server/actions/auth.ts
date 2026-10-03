@@ -8,6 +8,7 @@ import { createSupabaseServer, getAuthUser } from "../auth/supabase";
 import { db } from "../db";
 import { households } from "../db/schema";
 import { publicEnv } from "@/lib/env";
+import { FLAT_MAX } from "@/lib/home";
 import { fail, ok, type ActionResult } from "./result";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -67,17 +68,22 @@ export async function signOut(): Promise<never> {
   redirect("/login");
 }
 
-/** Onboarding step 1. Idempotent: a second call just updates the name. */
-export async function createHousehold(input: { name: string; ownerName: string; homeLabel?: string }): Promise<ActionResult> {
+/** Onboarding step 1, also used to complete older homes. Idempotent: a second call updates the details. */
+export async function createHousehold(input: { name: string; ownerName: string; flat: string; homeLabel?: string }): Promise<ActionResult> {
   const user = await getAuthUser();
   if (!user) return fail("unauthenticated");
   const name = input.name.trim();
   const ownerName = input.ownerName.trim() || name;
+  const flat = input.flat.trim().slice(0, FLAT_MAX);
   if (!name) return fail("name");
+  if (!flat) return fail("flat");
   await db
     .insert(households)
-    .values({ ownerUserId: user.id, name, ownerName, homeLabel: input.homeLabel?.trim() || null })
-    .onConflictDoUpdate({ target: households.ownerUserId, set: { name, ownerName } });
+    .values({ ownerUserId: user.id, name, ownerName, flat, homeLabel: input.homeLabel?.trim() || null })
+    .onConflictDoUpdate({
+      target: households.ownerUserId,
+      set: { name, ownerName, flat, ...(input.homeLabel !== undefined ? { homeLabel: input.homeLabel.trim() || null } : {}) },
+    });
   return ok();
 }
 
