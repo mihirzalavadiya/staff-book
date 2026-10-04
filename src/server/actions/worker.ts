@@ -9,6 +9,7 @@ import { todayIST } from "../today";
 import { inEditWindow, isIsoDate, isMonthFinalized, latestEntry, monthOf } from "./guards";
 import { fail, ok, type ActionResult } from "./result";
 import { notifyHousehold } from "../push/notify";
+import { announce, type LiveTarget } from "../live";
 
 /**
  * Worker-side mutations. The secret token is the identity; each action checks
@@ -16,8 +17,10 @@ import { notifyHousehold } from "../push/notify";
  * your own interest (leave) are final, entries in your favour (came) are claims.
  */
 
-function refresh() {
+/** Re-renders this link's pages and rings the live-update bell for everyone else who sees the change. */
+function refresh(...targets: LiveTarget[]) {
   revalidatePath("/", "layout");
+  announce(...targets);
 }
 
 export async function workerMark(input: {
@@ -57,7 +60,7 @@ export async function workerMark(input: {
         reason: input.note?.trim() || undefined,
       }));
     }
-    refresh();
+    refresh({ engagementIds: [input.engagementId] });
     return ok();
   } catch (err) {
     return fail((err as Error).message);
@@ -87,7 +90,7 @@ export async function workerRaiseDispute(input: {
       voiceSeconds: input.voiceSeconds ? Math.min(600, Math.round(input.voiceSeconds)) : null,
     });
     notifyHousehold(input.engagementId, (worker) => ({ kind: "dispute", worker, engagementId: input.engagementId, date: input.date }));
-    refresh();
+    refresh({ engagementIds: [input.engagementId] });
     return ok();
   } catch (err) {
     return fail((err as Error).message);
@@ -106,7 +109,7 @@ export async function workerRemind(input: { token: string; engagementId: string;
       .values({ engagementId: input.engagementId, date: input.date })
       .onConflictDoUpdate({ target: [reminders.engagementId, reminders.date], set: { createdAt: new Date() } });
     notifyHousehold(input.engagementId, (worker) => ({ kind: "remind", worker, engagementId: input.engagementId, date: input.date }));
-    refresh();
+    refresh({ engagementIds: [input.engagementId] });
     return ok();
   } catch (err) {
     return fail((err as Error).message);
@@ -129,7 +132,7 @@ export async function workerRespondInvite(input: { token: string; engagementId: 
 
     if (!input.accept) {
       await db.update(engagements).set({ linkToWorkerId: null }).where(eq(engagements.id, invite.id));
-      refresh();
+      refresh({ engagementIds: [invite.id] }, { workerId: mine.workerId });
       return ok();
     }
 
@@ -140,7 +143,7 @@ export async function workerRespondInvite(input: { token: string; engagementId: 
       const stillUsed = await tx.$count(engagements, eq(engagements.workerId, placeholder));
       if (stillUsed === 0) await tx.delete(workers).where(eq(workers.id, placeholder));
     });
-    refresh();
+    refresh({ engagementIds: [invite.id] });
     return ok();
   } catch (err) {
     return fail((err as Error).message);

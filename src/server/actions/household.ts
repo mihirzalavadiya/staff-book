@@ -11,6 +11,7 @@ import { todayIST } from "../today";
 import { inEditWindow, isIsoDate, isMonth, isMonthFinalized, latestEntry, monthLedger, monthOf } from "./guards";
 import { fail, ok, type ActionResult } from "./result";
 import { notifyWorker } from "../push/notify";
+import { announce, type LiveTarget } from "../live";
 import { monthSummary } from "@/lib/ledger";
 import { phoneKey } from "@/lib/phone";
 import { FLAT_MAX } from "@/lib/home";
@@ -34,8 +35,10 @@ async function requireEngagement(engagementId: string) {
   return { user, e };
 }
 
-function refresh() {
+/** Re-renders this user's pages and rings the live-update bell for everyone else who sees the change. */
+function refresh(...targets: LiveTarget[]) {
   revalidatePath("/", "layout");
+  announce(...targets);
 }
 
 async function canEditDay(engagementId: string, date: string): Promise<string | null> {
@@ -57,7 +60,7 @@ export async function markDay(input: { engagementId: string; date: string; state
     if (input.state === "leave" && input.date === todayIST()) {
       notifyWorker(e.id, (w) => ({ kind: "leaveMarked", ...w }));
     }
-    refresh();
+    refresh({ engagementIds: [e.id] });
     return ok();
   } catch (err) {
     return fail((err as Error).message);
@@ -70,7 +73,7 @@ export async function confirmClaim(input: { engagementId: string; date: string }
     const last = await latestEntry(e.id, input.date);
     if (last?.state !== "claim") return fail("no claim");
     await db.insert(attendance).values({ engagementId: e.id, date: input.date, state: "present", markedBy: "household" });
-    refresh();
+    refresh({ engagementIds: [e.id] });
     return ok();
   } catch (err) {
     return fail((err as Error).message);
@@ -87,7 +90,7 @@ export async function rejectClaim(input: { engagementId: string; date: string })
       { engagementId: e.id, date: input.date, state: "leave", markedBy: "household" },
       { engagementId: e.id, date: input.date, state: "dispute", markedBy: "household", note: "claim-rejected" },
     ]);
-    refresh();
+    refresh({ engagementIds: [e.id] });
     return ok();
   } catch (err) {
     return fail((err as Error).message);
@@ -106,7 +109,7 @@ export async function resolveDispute(input: { engagementId: string; date: string
       markedBy: "household",
       note: "dispute-resolved",
     });
-    refresh();
+    refresh({ engagementIds: [e.id] });
     return ok();
   } catch (err) {
     return fail((err as Error).message);
@@ -121,7 +124,7 @@ export async function addAdvance(input: { engagementId: string; amount: number; 
     if (!isIsoDate(input.date)) return fail("bad date");
     if (await isMonthFinalized(e.id, monthOf(input.date))) return fail("finalized");
     await db.insert(advances).values({ engagementId: e.id, amount, date: input.date, note: input.note?.trim() || null });
-    refresh();
+    refresh({ engagementIds: [e.id] });
     return ok();
   } catch (err) {
     return fail((err as Error).message);
@@ -153,7 +156,7 @@ export async function finalizeMonth(input: { engagementId: string; month: string
       })
       .onConflictDoNothing();
     notifyWorker(e.id, (w) => ({ kind: "settled", ...w, month: input.month, amount: s.amountDue }));
-    refresh();
+    refresh({ engagementIds: [e.id] });
     return ok({ amountDue: s.amountDue });
   } catch (err) {
     return fail((err as Error).message);
@@ -167,7 +170,7 @@ export async function markPaid(input: { engagementId: string; month: string }): 
       .update(settlements)
       .set({ paidAt: new Date() })
       .where(and(eq(settlements.engagementId, e.id), eq(settlements.month, input.month)));
-    refresh();
+    refresh({ engagementIds: [e.id] });
     return ok();
   } catch (err) {
     return fail((err as Error).message);
@@ -249,7 +252,7 @@ export async function addWorker(input: {
         .returning();
       return e;
     });
-    refresh();
+    refresh({ engagementIds: [result.id] });
     return ok({ engagementId: result.id, token, alreadyOnStaffbook: linkTo !== null });
   } catch (err) {
     return fail((err as Error).message);
@@ -261,7 +264,7 @@ export async function endWork(input: { engagementId: string; endDate: string }):
     const { e } = await requireEngagement(input.engagementId);
     if (!isIsoDate(input.endDate)) return fail("bad date");
     await db.update(engagements).set({ endDate: input.endDate, status: "archived" }).where(eq(engagements.id, e.id));
-    refresh();
+    refresh({ engagementIds: [e.id] });
     return ok();
   } catch (err) {
     return fail((err as Error).message);
@@ -278,8 +281,12 @@ export async function updateHousehold(input: { name?: string; flat?: string; hom
     if (input.notifyAt && /^\d{2}:\d{2}$/.test(input.notifyAt)) patch.notifyAt = input.notifyAt;
     if (input.language) patch.language = input.language;
     if (Object.keys(patch).length === 0) return ok();
-    await db.update(households).set(patch).where(eq(households.ownerUserId, user.id));
-    refresh();
+    const [home] = await db
+      .update(households)
+      .set(patch)
+      .where(eq(households.ownerUserId, user.id))
+      .returning({ id: households.id });
+    if (home) refresh({ householdId: home.id, withWorkers: true });
     return ok();
   } catch (err) {
     return fail((err as Error).message);
@@ -358,7 +365,7 @@ export async function updateWorker(input: {
       if (Object.keys(ePatch).length) await tx.update(engagements).set(ePatch).where(eq(engagements.id, e.id));
       if (Object.keys(wPatch).length) await tx.update(workers).set(wPatch).where(eq(workers.id, e.workerId));
     });
-    refresh();
+    refresh({ engagementIds: [e.id] });
     return ok({ alreadyOnStaffbook: linkTo !== null });
   } catch (err) {
     return fail((err as Error).message);

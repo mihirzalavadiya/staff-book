@@ -41,7 +41,8 @@
     "saveFailed": "सेव नहीं हुआ। इंटरनेट देखो और फिर से कोशिश करो।",
     "dismiss": "ठीक है",
     "notSaved": "सेव नहीं हुआ",
-    "stillSaving": "अभी भी सेव हो रहा है… इंटरनेट धीमा है"
+    "stillSaving": "अभी भी सेव हो रहा है… इंटरनेट धीमा है",
+    "comingSoon": "जल्द आएगा"
   },
   "state": {
     "present": "{gender, select, male {आया} other {आई}}",
@@ -246,8 +247,6 @@
     "disputeCame": "{gender, select, male {मैं आया था} other {मैं आई थी}}",
     "disputeHalf": "आधा दिन",
     "disputeOther": "और कुछ",
-    "holdToRecord": "दबाकर बोलो",
-    "recording": "रिकॉर्ड हो रहा है…",
     "send": "भेजो",
     "disputeSent": "भेज दिया। घर वाले देखेंगे।",
     "leaveTitle": "कौन से दिन?",
@@ -272,7 +271,8 @@
     "inviteTitle": "{house} ने आपको जोड़ा है",
     "inviteBody": "{role} · {salary} महीना। क्या आप वहाँ काम {gender, select, male {करते} other {करती}} हो?",
     "inviteYes": "हाँ, मैं वहाँ काम {gender, select, male {करता} other {करती}} हूँ",
-    "inviteNo": "नहीं"
+    "inviteNo": "नहीं",
+    "voiceNote": "आवाज़ में बताओ"
   },
   "login": {
     "title": "Staffbook में स्वागत है",

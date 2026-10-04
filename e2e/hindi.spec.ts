@@ -11,17 +11,20 @@ test("household screens are fully Hindi, with gendered verbs", async ({ page }) 
   await page.getByRole("button", { name: "लॉगिन", exact: true }).click();
   await page.waitForURL("**/today");
 
-  await expect(workerCard(page, f.workers.hindi.engagementId).getByText("आज Suresh आया था?")).toBeVisible();
-  await expect(page.getByRole("link", { name: /बाकी काम/ })).toBeVisible();
+  await expect(workerCard(page, f.workers.hindi.engagementId).getByRole("button", { name: "आया", exact: true })).toBeVisible();
+  await expect(page.getByRole("navigation").getByRole("link", { name: /बाकी काम/ })).toBeVisible();
 
   // Only names and brand words may stay in Latin script.
-  const allowed = new Set(["Staffbook", "Asha", "E2E", "Home", "WhatsApp", "am", "pm", ...Object.values(f.workers).map((w) => w.name)]);
+  // Compared case-insensitively: small uppercase labels render names as "GOPAL".
+  const allowed = new Set(
+    ["Staffbook", "Asha", "E2E", "Home", "WhatsApp", "am", "pm", ...Object.values(f.workers).map((w) => w.name)].map((w) => w.toLowerCase()),
+  );
   for (const path of ["/today", "/inbox", "/hisaab", "/calendar", "/workers", "/settings"]) {
     await page.goto(path);
     await page.waitForLoadState("networkidle");
     // The test household's name has a random suffix; it is user data, not UI text.
-    const text = (await page.evaluate(() => document.body.innerText)).replaceAll(/E2E Home \w+/g, "");
-    const latin = [...new Set(text.match(/[A-Za-z]{3,}/g) ?? [])].filter((w) => !allowed.has(w) && !/^[0-9a-f]{8}$/.test(w));
+    const text = (await page.evaluate(() => document.body.innerText)).replaceAll(/E2E Home \w+/gi, "");
+    const latin = [...new Set(text.match(/[A-Za-z]{3,}/g) ?? [])].filter((w) => !allowed.has(w.toLowerCase()) && !/^[0-9a-f]{8}$/.test(w));
     expect(latin, `English left on ${path}`).toEqual(["English"].filter((x) => latin.includes(x)));
   }
 });

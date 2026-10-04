@@ -41,7 +41,8 @@
     "saveFailed": "Couldn't save that. Check your internet and try again.",
     "dismiss": "OK",
     "notSaved": "Not saved",
-    "stillSaving": "Still saving… slow internet"
+    "stillSaving": "Still saving… slow internet",
+    "comingSoon": "Coming soon"
   },
   "state": {
     "present": "Came",
@@ -246,8 +247,6 @@
     "disputeCame": "I came",
     "disputeHalf": "Half day",
     "disputeOther": "Something else",
-    "holdToRecord": "Hold to record",
-    "recording": "Recording…",
     "send": "Send",
     "disputeSent": "Sent. The house will look at it.",
     "leaveTitle": "Which days?",
@@ -272,7 +271,8 @@
     "inviteTitle": "{house} added you",
     "inviteBody": "As {role} · {salary} a month. Do you work there?",
     "inviteYes": "Yes, I work there",
-    "inviteNo": "No"
+    "inviteNo": "No",
+    "voiceNote": "Voice note"
   },
   "login": {
     "title": "Welcome to Staffbook",

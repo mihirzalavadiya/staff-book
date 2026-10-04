@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useState } from "react";
 import { cn } from "@/lib/cn";
 import { useI18n } from "@/lib/i18n";
 import { Icon } from "@/components/ui/Icon";
@@ -17,7 +17,7 @@ interface Props {
 
 const REASONS = ["came", "half", "other"] as const;
 
-/** "Is this wrong?" — three preset reasons and a hold-to-record voice note. */
+/** "Is this wrong?": three preset reasons. Voice notes come later; the slot shows "coming soon". */
 export function DisputeSheet({ open, onClose, onSend }: Props) {
   // The body only mounts while open, so its state resets every time the sheet closes.
   return (
@@ -35,21 +35,8 @@ function DisputeBody({ onSend }: { onSend: Props["onSend"] }) {
   const { t } = useI18n();
   const { me } = useWorkerLink();
   const [reason, setReason] = useState<(typeof REASONS)[number] | null>(null);
-  const [recording, setRecording] = useState(false);
-  const [seconds, setSeconds] = useState(0);
   const [phase, setPhase] = useState<Phase>("idle");
   const sending = phase !== "idle";
-  const timer = useRef<number | null>(null);
-
-  const start = () => {
-    setRecording(true);
-    setSeconds(0);
-    timer.current = window.setInterval(() => setSeconds((s) => s + 1), 1000);
-  };
-  const stop = () => {
-    setRecording(false);
-    if (timer.current) window.clearInterval(timer.current);
-  };
 
   const label = (r: (typeof REASONS)[number]) =>
     r === "came"
@@ -67,43 +54,31 @@ function DisputeBody({ onSend }: { onSend: Props["onSend"] }) {
           onClick={() => setReason(r)}
           aria-pressed={reason === r}
           className={cn(
-            "flex h-16 items-center justify-between rounded-[6px] px-5 text-[21px] font-extrabold",
-            reason === r ? "bg-ink text-bg" : "bg-surface-2",
+            "flex h-16 items-center justify-between rounded-[6px] border-[1.5px] px-5 text-[19px] font-bold",
+            reason === r ? "border-ink bg-ink text-bg" : "border-line bg-surface-2",
           )}
         >
           {label(r)}
           {reason === r && <Icon name="check" size={22} />}
         </button>
       ))}
-      <button
-        type="button"
-        onPointerDown={start}
-        onPointerUp={stop}
-        onPointerLeave={stop}
-        onPointerCancel={stop}
-        className={cn(
-          "mt-1 flex h-[72px] select-none items-center justify-center gap-3 rounded-[6px] border-[2.5px] text-[21px] font-extrabold",
-          recording
-            ? "border-dispute-fg bg-dispute-bg text-dispute-fg"
-            : "border-ink bg-surface",
-        )}
+      <div
+        aria-disabled="true"
+        className="mt-1 flex h-[72px] items-center justify-center gap-3 rounded-[6px] border-[1.5px] border-dashed border-line-dashed text-[19px] font-semibold text-muted"
       >
-        <Icon name="mic" size={26} />
-        {recording
-          ? `${t("worker.recording")} ${seconds}s`
-          : seconds > 0
-            ? `${t("common.voice")} · 0:${String(seconds).padStart(2, "0")}`
-            : t("worker.holdToRecord")}
-      </button>
+        <Icon name="mic" size={24} />
+        {t("worker.voiceNote")}
+        <span className="label-caps rounded-[3px] bg-surface-2 px-2 py-1 text-[10px]">{t("common.comingSoon")}</span>
+      </div>
       <button
         type="button"
         disabled={!reason || sending}
         aria-busy={sending || undefined}
         onClick={async () => {
           if (!reason) return;
-          await onSend(reason, seconds || undefined, setPhase);
+          await onSend(reason, undefined, setPhase);
         }}
-        className={cn("flex h-[66px] items-center justify-center gap-3 rounded-[6px] bg-coral text-[24px] font-extrabold text-white", sending ? "cursor-progress" : "disabled:opacity-40")}
+        className={cn("flex h-[66px] items-center justify-center gap-3 rounded-[6px] bg-ink text-[20px] font-bold text-bg", sending ? "cursor-progress" : "disabled:opacity-40")}
       >
         {sending ? (
           <>

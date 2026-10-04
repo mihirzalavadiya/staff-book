@@ -2,7 +2,9 @@
 
 import { createContext, useCallback, useContext } from "react";
 import * as actions from "@/server/actions/worker";
+import { workerTopic } from "@/lib/live";
 import { StoreProvider, type Action } from "@/lib/store";
+import { useLiveUpdates } from "@/lib/useLiveUpdates";
 import type { WorkerState } from "@/server/queries/worker";
 import type { Engagement } from "@/lib/types";
 
@@ -17,6 +19,7 @@ const WorkerContext = createContext<WorkerContextValue | null>(null);
 
 /** Wires the shared client store to the worker server actions, keyed by the link token. */
 export function WorkerStore({ token, initialState, children }: { token: string; initialState: WorkerState; children: React.ReactNode }) {
+  useLiveUpdates([workerTopic(initialState.me.id)]);
   const perform = useCallback(
     async (a: Action) => {
       switch (a.type) {

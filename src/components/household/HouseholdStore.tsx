@@ -2,10 +2,13 @@
 
 import { useCallback } from "react";
 import * as actions from "@/server/actions/household";
+import { householdTopic } from "@/lib/live";
 import { StoreProvider, type Action, type AppState } from "@/lib/store";
+import { useLiveUpdates } from "@/lib/useLiveUpdates";
 
 /** Wires the shared client store to the household server actions. */
 export function HouseholdStore({ initialState, children }: { initialState: AppState; children: React.ReactNode }) {
+  useLiveUpdates([householdTopic(initialState.household.id)]);
   const perform = useCallback(async (a: Action) => {
     switch (a.type) {
       case "mark":
