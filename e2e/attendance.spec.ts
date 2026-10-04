@@ -24,7 +24,7 @@ test.describe("attendance flows between the two sides", () => {
 
     await signIn(page, f);
     const card = workerCard(page, w.engagementId);
-    await expect(card.getByText(`${w.name} says he came today`)).toBeVisible();
+    await expect(card.getByText(/^Claim · /)).toBeVisible();
     await card.getByRole("button", { name: "Yes" }).click();
     await expect(card.getByText(/^Came · /)).toBeVisible();
     await waitForRows(w.engagementId, f.today, 2);

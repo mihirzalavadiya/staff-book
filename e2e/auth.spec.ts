@@ -26,7 +26,7 @@ test.describe("access", () => {
   test("the owner signs in with a password and lands on Today", async ({ page }) => {
     const f = loadFixture();
     await signIn(page, f);
-    await expect(page.getByText("Namaste Asha")).toBeVisible();
+    await expect(page.getByRole("heading", { name: /Namaste,\s*Asha\./ })).toBeVisible();
     for (const w of Object.values(f.workers)) await expect(page.getByText(w.name, { exact: true }).filter({ visible: true }).first()).toBeVisible();
   });
 

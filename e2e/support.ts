@@ -19,8 +19,9 @@ export async function signIn(page: Page, f: Fixture) {
 }
 
 /** The household Today card for one worker (by engagement id). */
+/** The worker's row on Today. Phone list and desktop register both carry it; only one is visible. */
 export function workerCard(page: Page, engagementId: string) {
-  return page.locator(`[data-worker-card="${engagementId}"]`);
+  return page.locator(`[data-worker-card="${engagementId}"]`).filter({ visible: true });
 }
 
 /** A fresh phone-sized page for the worker's secret link. */
