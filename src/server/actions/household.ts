@@ -9,7 +9,8 @@ import { getAuthUser } from "../auth/supabase";
 import { ownedEngagement } from "../queries/household";
 import { todayIST } from "../today";
 import { inEditWindow, isIsoDate, isMonth, isMonthFinalized, latestEntry, monthLedger, monthOf } from "./guards";
-import { fail, ok, type ActionResult } from "./result";
+import { fail, ok, RATE_LIMITED, type ActionResult } from "./result";
+import { hit, LIMITS } from "../rate-limit";
 import { notifyWorker } from "../push/notify";
 import { announce, type LiveTarget } from "../live";
 import { monthSummary } from "@/lib/ledger";
@@ -25,6 +26,7 @@ import type { AvatarTone, Gender, Lang, Role } from "@/lib/types";
 async function requireOwner() {
   const user = await getAuthUser();
   if (!user) throw new Error("unauthenticated");
+  if (!(await hit(`household:${user.id}`, LIMITS.household))) throw new Error(RATE_LIMITED);
   return user;
 }
 

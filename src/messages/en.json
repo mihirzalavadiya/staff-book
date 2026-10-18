@@ -42,7 +42,8 @@
     "dismiss": "OK",
     "notSaved": "Not saved",
     "stillSaving": "Still saving… slow internet",
-    "comingSoon": "Coming soon"
+    "comingSoon": "Coming soon",
+    "rateLimited": "Too many tries. Please wait a minute and try again."
   },
   "state": {
     "present": "Came",
