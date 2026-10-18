@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useI18n } from "@/lib/i18n";
 import { usePhase } from "@/lib/usePhase";
 import { googleSignInUrl, postLoginPath, sendEmailOtp, signInWithPassword, verifyEmailOtp } from "@/server/actions/auth";
+import { RATE_LIMITED } from "@/server/actions/result";
 import { Wordmark } from "@/components/household/PageHeader";
 import { Button } from "@/components/ui/Button";
 import { Field } from "@/components/ui/Field";
@@ -158,7 +159,7 @@ export default function LoginPage() {
               </Button>
             </>
           )}
-          {error && <div className="rounded-[6px] bg-dispute-bg px-4 py-3 text-sm font-bold text-dispute-fg">{error}</div>}
+          {error && <div className="rounded-[6px] bg-dispute-bg px-4 py-3 text-sm font-bold text-dispute-fg">{error === RATE_LIMITED ? t("common.rateLimited") : error}</div>}
           <div className="pt-2 text-center text-xs font-semibold text-muted">{t("login.worker")}</div>
           <div className="flex justify-center gap-4 text-xs font-semibold text-muted-2">
             <a href="/privacy" className="underline">Privacy</a>

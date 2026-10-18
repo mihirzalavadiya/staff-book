@@ -42,7 +42,8 @@
     "dismiss": "ठीक है",
     "notSaved": "सेव नहीं हुआ",
     "stillSaving": "अभी भी सेव हो रहा है… इंटरनेट धीमा है",
-    "comingSoon": "जल्द आएगा"
+    "comingSoon": "जल्द आएगा",
+    "rateLimited": "बहुत बार कोशिश हो गई। एक मिनट रुककर फिर से करो।"
   },
   "state": {
     "present": "{gender, select, male {आया} other {आई}}",

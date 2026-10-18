@@ -211,6 +211,16 @@ export const settlementsRelations = relations(settlements, ({ one }) => ({
 
 export type HouseholdRow = typeof households.$inferSelect;
 export type WorkerRow = typeof workers.$inferSelect;
+/**
+ * Fixed-window request counters for rate limiting, one row per key
+ * (e.g. "login:ip:1.2.3.4"). Rows are tiny and old ones are swept daily.
+ */
+export const rateLimits = pgTable("rate_limits", {
+  key: text("key").primaryKey(),
+  windowStart: timestamp("window_start", { withTimezone: true }).notNull().defaultNow(),
+  count: integer("count").notNull().default(0),
+});
+
 export type EngagementRow = typeof engagements.$inferSelect;
 export type AttendanceRow = typeof attendance.$inferSelect;
 export type AdvanceRow = typeof advances.$inferSelect;

@@ -5,7 +5,8 @@ import { db } from "../db";
 import { households, pushSubscriptions } from "../db/schema";
 import { getAuthUser } from "../auth/supabase";
 import { engagementByToken } from "../queries/worker";
-import { fail, ok, type ActionResult } from "./result";
+import { fail, ok, RATE_LIMITED, type ActionResult } from "./result";
+import { hit, LIMITS } from "../rate-limit";
 import type { Lang } from "@/lib/types";
 
 interface BrowserSubscription {
@@ -30,6 +31,7 @@ const lang = (l: unknown): Lang => (l === "hi" ? "hi" : "en");
 export async function subscribeHousehold(input: { subscription: unknown; language: Lang }): Promise<ActionResult> {
   const user = await getAuthUser();
   if (!user) return fail("unauthenticated");
+  if (!(await hit(`household:${user.id}`, LIMITS.household))) return fail(RATE_LIMITED);
   if (!valid(input.subscription)) return fail("bad subscription");
   const household = await db.query.households.findFirst({ where: eq(households.ownerUserId, user.id) });
   if (!household) return fail("no household");
@@ -46,6 +48,7 @@ export async function subscribeHousehold(input: { subscription: unknown; languag
 
 /** Saves this device for the worker whose link this is. */
 export async function subscribeWorker(input: { token: string; subscription: unknown; language: Lang }): Promise<ActionResult> {
+  if (!(await hit(`worker:${input.token}`, LIMITS.worker))) return fail(RATE_LIMITED);
   const engagement = await engagementByToken(input.token);
   if (!engagement) return fail("forbidden");
   if (!valid(input.subscription)) return fail("bad subscription");

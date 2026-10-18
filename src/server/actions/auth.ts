@@ -9,13 +9,36 @@ import { db } from "../db";
 import { households } from "../db/schema";
 import { publicEnv } from "@/lib/env";
 import { FLAT_MAX } from "@/lib/home";
-import { fail, ok, type ActionResult } from "./result";
+import { fail, ok, RATE_LIMITED, type ActionResult } from "./result";
+import { clientIp, hit, isBlocked, LIMITS } from "../rate-limit";
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+/** Every login request from one network ticks this; it is generous because mobile carriers share addresses. */
+async function allowNetwork(): Promise<boolean> {
+  const ip = await clientIp();
+  return ip ? hit(`login:ip:${ip}`, LIMITS.loginPerIp) : true;
+}
+
+/**
+ * Password and code checks: only wrong answers count, so someone who signs in
+ * often is never locked out, while guessing stops after a few misses.
+ */
+async function checkGuess(email: string, attempt: () => Promise<{ error: unknown }>): Promise<ActionResult> {
+  const key = `login:guess:${email}`;
+  if (!(await allowNetwork()) || (await isBlocked(key, LIMITS.guessPerEmail))) return fail(RATE_LIMITED);
+  const { error } = await attempt();
+  if (!error) return ok();
+  await hit(key, LIMITS.guessPerEmail);
+  return fail((error as Error).message);
+}
 
 export async function sendEmailOtp(email: string): Promise<ActionResult> {
   const clean = email.trim().toLowerCase();
   if (!EMAIL.test(clean)) return fail("bad email");
+  // Checked before anything else: each request may create a login and sends an email.
+  const [network, inbox] = await Promise.all([allowNetwork(), hit(`login:otp:${clean}`, LIMITS.otpPerEmail)]);
+  if (!network || !inbox) return fail(RATE_LIMITED);
   try {
     await ensureConfirmedUser(clean);
   } catch (err) {
@@ -27,15 +50,15 @@ export async function sendEmailOtp(email: string): Promise<ActionResult> {
 }
 
 export async function signInWithPassword(email: string, password: string): Promise<ActionResult> {
+  const clean = email.trim().toLowerCase();
   const supabase = await createSupabaseServer();
-  const { error } = await supabase.auth.signInWithPassword({ email: email.trim().toLowerCase(), password });
-  return error ? fail(error.message) : ok();
+  return checkGuess(clean, () => supabase.auth.signInWithPassword({ email: clean, password }));
 }
 
 export async function verifyEmailOtp(email: string, code: string): Promise<ActionResult> {
+  const clean = email.trim().toLowerCase();
   const supabase = await createSupabaseServer();
-  const { error } = await supabase.auth.verifyOtp({ email: email.trim().toLowerCase(), token: code.trim(), type: "email" });
-  return error ? fail(error.message) : ok();
+  return checkGuess(clean, () => supabase.auth.verifyOtp({ email: clean, token: code.trim(), type: "email" }));
 }
 
 /**

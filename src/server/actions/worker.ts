@@ -7,7 +7,8 @@ import { and, eq } from "drizzle-orm";
 import { engagementByToken, tokenCanAct } from "../queries/worker";
 import { todayIST } from "../today";
 import { inEditWindow, isIsoDate, isMonthFinalized, latestEntry, monthOf } from "./guards";
-import { fail, ok, type ActionResult } from "./result";
+import { fail, ok, RATE_LIMITED, type ActionResult } from "./result";
+import { hit, LIMITS } from "../rate-limit";
 import { notifyHousehold } from "../push/notify";
 import { announce, type LiveTarget } from "../live";
 
@@ -18,6 +19,11 @@ import { announce, type LiveTarget } from "../live";
  */
 
 /** Re-renders this link's pages and rings the live-update bell for everyone else who sees the change. */
+/** Saves per worker link are limited, so a leaked link cannot be used to flood a home. */
+async function allowWorker(token: string): Promise<boolean> {
+  return hit(`worker:${token}`, LIMITS.worker);
+}
+
 function refresh(...targets: LiveTarget[]) {
   revalidatePath("/", "layout");
   announce(...targets);
@@ -31,6 +37,7 @@ export async function workerMark(input: {
   note?: string;
 }): Promise<ActionResult> {
   try {
+    if (!(await allowWorker(input.token))) return fail(RATE_LIMITED);
     if (!(await tokenCanAct(input.token, input.engagementId))) return fail("forbidden");
     if (!isIsoDate(input.date)) return fail("bad date");
     const today = todayIST();
@@ -75,6 +82,7 @@ export async function workerRaiseDispute(input: {
   voiceSeconds?: number;
 }): Promise<ActionResult> {
   try {
+    if (!(await allowWorker(input.token))) return fail(RATE_LIMITED);
     if (!(await tokenCanAct(input.token, input.engagementId))) return fail("forbidden");
     if (!isIsoDate(input.date)) return fail("bad date");
     const last = await latestEntry(input.engagementId, input.date);
@@ -100,6 +108,7 @@ export async function workerRaiseDispute(input: {
 /** "Remind them": recorded so the household sees the nudge at the top of Pending. Push comes later. */
 export async function workerRemind(input: { token: string; engagementId: string; date: string }): Promise<ActionResult> {
   try {
+    if (!(await allowWorker(input.token))) return fail(RATE_LIMITED);
     if (!(await tokenCanAct(input.token, input.engagementId))) return fail("forbidden");
     if (!isIsoDate(input.date) || input.date > todayIST()) return fail("bad date");
     const last = await latestEntry(input.engagementId, input.date);
@@ -123,6 +132,7 @@ export async function workerRemind(input: { token: string; engagementId: string;
  */
 export async function workerRespondInvite(input: { token: string; engagementId: string; accept: boolean }): Promise<ActionResult> {
   try {
+    if (!(await allowWorker(input.token))) return fail(RATE_LIMITED);
     const mine = await engagementByToken(input.token);
     if (!mine) return fail("forbidden");
     const invite = await db.query.engagements.findFirst({

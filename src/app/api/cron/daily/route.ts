@@ -6,6 +6,7 @@ import { env } from "@/server/env";
 import { loadHouseholdState } from "@/server/queries/household";
 import { sendPush } from "@/server/push/send";
 import { dailyEvents } from "@/lib/push-messages";
+import { sweepRateLimits } from "@/server/rate-limit";
 
 export const maxDuration = 60;
 
@@ -40,6 +41,7 @@ export async function GET(request: NextRequest) {
     const subs = await db.select().from(pushSubscriptions).where(eq(pushSubscriptions.householdId, householdId));
     for (const event of events) sent += await sendPush(subs, event);
   }
+  if (!dryRun) await sweepRateLimits();
 
   return NextResponse.json({ households: owners.length, notified, sent, dryRun });
 }
