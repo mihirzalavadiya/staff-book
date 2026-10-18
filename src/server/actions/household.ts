@@ -4,7 +4,7 @@ import { randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { and, desc, eq, ne } from "drizzle-orm";
 import { db } from "../db";
-import { advances, attendance, engagements, households, settlements, workers } from "../db/schema";
+import { advances, attendance, engagements, households, pushSubscriptions, settlements, workers } from "../db/schema";
 import { getAuthUser } from "../auth/supabase";
 import { ownedEngagement } from "../queries/household";
 import { todayIST } from "../today";
@@ -266,6 +266,28 @@ export async function endWork(input: { engagementId: string; endDate: string }):
     await db.update(engagements).set({ endDate: input.endDate, status: "archived" }).where(eq(engagements.id, e.id));
     refresh({ engagementIds: [e.id] });
     return ok();
+  } catch (err) {
+    return fail((err as Error).message);
+  }
+}
+
+/**
+ * Replaces a worker's secret link when the old one may have leaked. The old link
+ * stops working at once (its open screens reload into a 404), and devices that
+ * subscribed through it stop getting notifications, which would carry the new link.
+ */
+export async function resetWorkerLink(input: { engagementId: string }): Promise<ActionResult<{ token: string }>> {
+  try {
+    const { e } = await requireEngagement(input.engagementId);
+    if (e.status !== "active") return fail("archived");
+    const person = await db.query.workers.findFirst({ where: eq(workers.id, e.workerId), columns: { name: true } });
+    const token = makeToken(person?.name ?? "");
+    await db.transaction(async (tx) => {
+      await tx.update(engagements).set({ workerToken: token }).where(eq(engagements.id, e.id));
+      await tx.delete(pushSubscriptions).where(eq(pushSubscriptions.engagementId, e.id));
+    });
+    refresh({ engagementIds: [e.id] });
+    return ok({ token });
   } catch (err) {
     return fail((err as Error).message);
   }

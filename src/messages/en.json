@@ -179,7 +179,13 @@
     "save": "Save changes",
     "sharedNote": "{name} also works in other homes, so only {gender, select, male {he} other {she}} can change {gender, select, male {his} other {her}} phone, language and gender.",
     "phoneHint": "Used to recognise {gender, select, male {him} other {her}} if {gender, select, male {he} other {she}} works in other homes too. No SMS is sent.",
-    "linkedNow": "This number is already on Staffbook. {name} will be asked to confirm your home."
+    "linkedNow": "This number is already on Staffbook. {name} will be asked to confirm your home.",
+    "resetLink": "Make a new link",
+    "resetTitle": "Make a new link?",
+    "resetBody": "Do this if the link reached someone it shouldn't have. The old link stops working right away, and {name} will need the new one.",
+    "resetConfirm": "Yes, make a new link",
+    "resetting": "Making…",
+    "resetDone": "New link ready. Send it to {name} on WhatsApp."
   },
   "addWorker": {
     "title": "New worker",

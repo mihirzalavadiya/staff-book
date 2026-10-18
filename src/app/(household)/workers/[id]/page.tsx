@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { use, useState } from "react";
+import { use, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { dayShort, formatDayMonth, monthOf } from "@/lib/date";
 import { useI18n } from "@/lib/i18n";
@@ -12,6 +12,7 @@ import { homeLabel } from "@/lib/home";
 import { useStore } from "@/lib/store";
 import type { Phase } from "@/lib/phase";
 import { useOrigin } from "@/lib/useOrigin";
+import { resetWorkerLink } from "@/server/actions/household";
 import { DayStateBlock } from "@/components/household/WorkerCard";
 import { MonthGrid } from "@/components/household/MonthGrid";
 import { HEADER_CLASS, SHEET_CLASS, HeaderIconButton } from "@/components/household/PageHeader";
@@ -33,6 +34,10 @@ export default function WorkerDetailPage({ params }: { params: Promise<{ id: str
   const [endDate, setEndDate] = useState(state.today);
   const [copied, setCopied] = useState(false);
   const [endPhase, setEndPhase] = useState<Phase>("idle");
+  const [resetOpen, setResetOpen] = useState(false);
+  const [resetDone, setResetDone] = useState(false);
+  const [resetError, setResetError] = useState(false);
+  const [resetting, startReset] = useTransition();
   const origin = useOrigin();
   const worker = state.workers.find((w) => w.id === id);
   if (!worker) return null;
@@ -170,6 +175,18 @@ export default function WorkerDetailPage({ params }: { params: Promise<{ id: str
               <Icon name="whatsapp" size={18} />
               {t("addWorker.whatsapp")}
             </a>
+            {resetDone ? (
+              <div className="flex items-center gap-2 text-[13px] font-semibold text-present-fg">
+                <Icon name="check" size={14} />
+                {t("workers.resetDone", { name: worker.name })}
+              </div>
+            ) : (
+              !worker.endDate && (
+                <button type="button" onClick={() => setResetOpen(true)} className="self-start text-[13px] font-semibold text-muted underline underline-offset-4">
+                  {t("workers.resetLink")}
+                </button>
+              )
+            )}
           </Card>
 
           {!worker.endDate ? (
@@ -211,6 +228,30 @@ export default function WorkerDetailPage({ params }: { params: Promise<{ id: str
             }}
           >
             {t("workers.endWork")}
+          </Button>
+        </div>
+      </Sheet>
+      <Sheet open={resetOpen} onClose={() => setResetOpen(false)} title={t("workers.resetTitle")}>
+        <div className="flex flex-col gap-4">
+          <p className="text-[15px] leading-relaxed text-muted">{t("workers.resetBody", { name: worker.name })}</p>
+          {resetError && <p className="text-sm font-semibold text-dispute-fg">{t("common.saveFailed")}</p>}
+          <Button
+            size="xl"
+            block
+            variant="danger"
+            loading={resetting}
+            loadingText={t("workers.resetting")}
+            onClick={() =>
+              startReset(async () => {
+                setResetError(false);
+                const r = await resetWorkerLink({ engagementId: worker.id }).catch(() => ({ ok: false as const }));
+                if (!r.ok) return setResetError(true);
+                setResetOpen(false);
+                setResetDone(true);
+              })
+            }
+          >
+            {t("workers.resetConfirm")}
           </Button>
         </div>
       </Sheet>
