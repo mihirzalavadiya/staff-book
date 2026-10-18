@@ -10,6 +10,7 @@ vi.mock("@/server/auth/supabase", () => ({ getAuthUser: async () => (auth.userId
 
 const { resetWorkerLink } = await import("@/server/actions/household");
 const { loadWorkerState, tokenCanAct } = await import("@/server/queries/worker");
+const { linkTopic, workerTopics } = await import("@/server/live");
 
 let a: Fixture;
 let b: Fixture;
@@ -39,6 +40,9 @@ describe("resetting a worker's link", () => {
       await db.end();
     }
 
+    const person = (await loadWorkerState(w.token))!.me.id;
+    expect(await workerTopics(person)).toContain(linkTopic(w.token));
+
     auth.userId = a.ownerUserId;
     const r = await resetWorkerLink({ engagementId: w.engagementId });
     expect(r.ok).toBe(true);
@@ -49,6 +53,11 @@ describe("resetting a worker's link", () => {
     expect(await tokenCanAct(w.token, w.engagementId)).toBe(false);
     expect((await loadWorkerState(token))?.me.name).toBe(w.name);
     expect(await tokenCanAct(token, w.engagementId)).toBe(true);
+    // The live-update channel moved with the link: the old one is no longer listened on.
+    const topics = await workerTopics(person);
+    expect(topics).toContain(linkTopic(token));
+    expect(topics).not.toContain(linkTopic(w.token));
+    expect(linkTopic(token)).not.toContain(token);
 
     const check = sql();
     try {

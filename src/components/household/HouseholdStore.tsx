@@ -2,13 +2,13 @@
 
 import { useCallback } from "react";
 import * as actions from "@/server/actions/household";
-import { householdTopic } from "@/lib/live";
 import { StoreProvider, type Action, type AppState } from "@/lib/store";
 import { useLiveUpdates } from "@/lib/useLiveUpdates";
 
 /** Wires the shared client store to the household server actions. */
-export function HouseholdStore({ initialState, children }: { initialState: AppState; children: React.ReactNode }) {
-  useLiveUpdates([householdTopic(initialState.household.id)]);
+/** `liveTopics` are the secret channel names the server picked for this home. */
+export function HouseholdStore({ initialState, liveTopics, children }: { initialState: AppState; liveTopics: string[]; children: React.ReactNode }) {
+  useLiveUpdates(liveTopics);
   const perform = useCallback(async (a: Action) => {
     switch (a.type) {
       case "mark":

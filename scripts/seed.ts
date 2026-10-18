@@ -10,6 +10,7 @@
  *
  * Worker side needs no login: open /w/sunita-demo-1 (also ramu-demo-2, kamla-demo-3, raju-demo-4).
  */
+import { randomBytes } from "node:crypto";
 import { createClient } from "@supabase/supabase-js";
 import { drizzle } from "drizzle-orm/postgres-js";
 import { eq } from "drizzle-orm";
@@ -75,6 +76,7 @@ async function main() {
     { name: "Raju", gender: "male", role: "milk", salary: 1800, tone: "yellow", days: [0, 1, 2, 3, 4, 5, 6], phone: "+91 99xxx xx102" },
   ] as const;
 
+  const links: string[] = [];
   for (const [i, p] of people.entries()) {
     const [w] = await db.insert(schema.workers).values({ name: p.name, gender: p.gender, phone: p.phone, language: "hi" }).returning();
     const [e] = await db
@@ -87,9 +89,11 @@ async function main() {
         workDays: [...p.days],
         tone: p.tone,
         startDate: `${prevMonth(4)}-01`,
-        workerToken: `${p.name.toLowerCase()}-demo-${i + 1}`,
+        // Same shape as real links: the name, then 72 random bits, so demo links cannot be guessed either.
+        workerToken: `${p.name.toLowerCase()}-${randomBytes(9).toString("base64url")}`,
       })
       .returning();
+    links.push(`/w/${e.workerToken}`);
 
     // Current month up to yesterday: mostly present, a couple of leaves, and for
     // the first worker a few unresolved days so the pending flows have data.
@@ -143,7 +147,7 @@ async function main() {
     );
   }
 
-  console.log(`Seeded ${people.length} workers.\nHousehold login: ${email} / ${password}\nWorker link (no login): /w/sunita-demo-1`);
+  console.log(`Seeded ${people.length} workers.\nHousehold login: ${email} / ${password}\nWorker links (no login):\n${links.join("\n")}`);
 }
 
 main()
