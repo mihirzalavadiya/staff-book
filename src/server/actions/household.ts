@@ -288,7 +288,8 @@ export async function resetWorkerLink(input: { engagementId: string }): Promise<
       await tx.update(engagements).set({ workerToken: token }).where(eq(engagements.id, e.id));
       await tx.delete(pushSubscriptions).where(eq(pushSubscriptions.engagementId, e.id));
     });
-    refresh({ engagementIds: [e.id] });
+    // The old link's channel hears one last bell, so screens still open on it reload into a 404.
+    refresh({ engagementIds: [e.id] }, { oldToken: e.workerToken });
     return ok({ token });
   } catch (err) {
     return fail((err as Error).message);

@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import { WorkerShell } from "@/components/worker/WorkerShell";
 import { WorkerStore } from "@/components/worker/WorkerStore";
 import { loadWorkerState } from "@/server/queries/worker";
+import { workerTopics } from "@/server/live";
 import { clientIp, hit, isBlocked, LIMITS } from "@/server/rate-limit";
 
 /**
@@ -21,7 +22,7 @@ export default async function WorkerLayout({ params, children }: { params: Promi
   }
 
   return (
-    <WorkerStore token={token} initialState={state}>
+    <WorkerStore token={token} initialState={state} liveTopics={await workerTopics(state.me.id)}>
       <WorkerShell>{children}</WorkerShell>
     </WorkerStore>
   );

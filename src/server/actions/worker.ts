@@ -153,7 +153,7 @@ export async function workerRespondInvite(input: { token: string; engagementId: 
       const stillUsed = await tx.$count(engagements, eq(engagements.workerId, placeholder));
       if (stillUsed === 0) await tx.delete(workers).where(eq(workers.id, placeholder));
     });
-    refresh({ engagementIds: [invite.id] });
+    refresh({ engagementIds: [invite.id] }, { workerId: mine.workerId });
     return ok();
   } catch (err) {
     return fail((err as Error).message);

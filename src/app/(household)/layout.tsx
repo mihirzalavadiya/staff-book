@@ -3,6 +3,7 @@ import { AppShell } from "@/components/household/AppShell";
 import { HouseholdStore } from "@/components/household/HouseholdStore";
 import { getAuthUser } from "@/server/auth/supabase";
 import { loadHouseholdState } from "@/server/queries/household";
+import { householdTopic } from "@/server/live";
 
 /** Loads the household ledger once per request and hands it to the client store. */
 export default async function HouseholdLayout({ children }: { children: React.ReactNode }) {
@@ -14,7 +15,7 @@ export default async function HouseholdLayout({ children }: { children: React.Re
   if (!state.household.flat) redirect("/onboarding");
 
   return (
-    <HouseholdStore initialState={state}>
+    <HouseholdStore initialState={state} liveTopics={[householdTopic(state.household.id)]}>
       <AppShell>{children}</AppShell>
     </HouseholdStore>
   );
